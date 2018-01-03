@@ -72,6 +72,8 @@ seg_colors{2} = [0 0 255];
 
 [seg_values] = segment_wheel(num_segments,seg_colors);
 
+segment_score = zeros(num_segments,2);
+
 if strcmp(Modeflag,'InitializeBlock')
     clear Stimuli_sets
     
@@ -190,6 +192,7 @@ if strcmp(Modeflag,'InitializeBlock')
         wheel_probs(i) = probs(prob_count);
     end
     score = 0;
+    
 elseif strcmp(Modeflag,'InitializeTrial')
     
     
@@ -259,54 +262,59 @@ elseif strcmp(Modeflag,'InitializeTrial')
         %
         
         y_offset = 75;
-        rewardtext_locy = locy - 300;
+        rewardtext_locy = locy - 400;
         token_locy = locy - 100;
         
         %Find prob of click space
-        selected_prob = wheel_probs(color_response);        
-
+        selected_prob = wheel_probs(color_response);
+        
         %Find selected segment of the wheel
         show_selected_segment;
-%         (seg_values,color_response);
-            
-
         
         chance = rand(1);
         if chance <= selected_prob
+            
+            %Add a point to the selected segment
+            segment_score(selected_row,1) = segment_score(selected_row,1) + 1;
+            
+            %Add to the counter of how many times this segment was selected
+            segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
+            
             score = score + 1;
+            
             color_wheel_time = color_wheel_time + 1.5;
             for spin = 1:10
                 spin_time = spin*2*.1;
                 reward_time = instruction_display_time+spin_time;
                 if score < 2
-                    Events = newevent_show_stimulus(Events,reward,1,locx,rewardtext_locy+y_offset,reward_time,'screenshot_no','clear_yes'); %reward coin
                     %Loads color Wheel
                     command =   'load(''selected_segment'');';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_no'); %selected segment
+                    Events = newevent_command(Events,reward_time,command,'clear_no'); %selected segment
                     command =   'load(''colorWheelLocations1'');';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+                    Events = newevent_command(Events,reward_time,command,'clear_no');
                     command =   'load(''colorWheelLocations2'');';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+                    Events = newevent_command(Events,reward_time,command,'clear_no');
                     command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
+                    Events = newevent_command(Events,reward_time,command,'clear_yes');
                     command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+                    Events = newevent_command(Events,reward_time,command,'clear_no');
+                    Events = newevent_show_stimulus(Events,reward,1,locx,rewardtext_locy+y_offset,reward_time,'screenshot_no','clear_no'); %reward coin
                 else
-                    Events = newevent_show_stimulus(Events,reward,3,locx,rewardtext_locy+y_offset,reward_time,'screenshot_no','clear_yes'); %reward coin
                     %Loads color Wheel
                     command =   'load(''selected_segment'');';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_no'); %selected segment
+                    Events = newevent_command(Events,reward_time,command,'clear_no'); %selected segment
                     command =   'load(''colorWheelLocations1'');';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+                    Events = newevent_command(Events,reward_time,command,'clear_no');
                     command =   'load(''colorWheelLocations2'');';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+                    Events = newevent_command(Events,reward_time,command,'clear_no');
                     command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
+                    Events = newevent_command(Events,reward_time,command,'clear_yes');
                     command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+                    Events = newevent_command(Events,reward_time,command,'clear_no');
+                    Events = newevent_show_stimulus(Events,reward,3,locx,rewardtext_locy+y_offset,reward_time,'screenshot_no','clear_no'); %reward coin
                 end
                 Events = newevent_show_stimulus(Events,reward,4,locx,locy+75+y_offset,reward_time,'screenshot_no','clear_no');
-                Events = newevent_show_stimulus(Events,40,score,locx,locy+150+y_offset,reward_time,'screenshot_no','clear_no');
+                Events = newevent_show_stimulus(Events,40,score,locx,locy+125+y_offset,reward_time,'screenshot_no','clear_no');
                 %             Events = newevent_show_stimulus(Events,token,1,locx,token_locy+y_offset,instruction_display_time,'screenshot_no','clear_no'); %token
                 if spin < 5
                     Events = newevent_show_stimulus(Events,token,spin,locx,token_locy+y_offset,reward_time,'screenshot_no','clear_no'); %token
@@ -317,6 +325,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 end
             end
         else
+            
+            %Add to the counter of how many times this segment was selected
+            segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
+
             %Loads color Wheel
             command =   'load(''selected_segment'');';
             Events = newevent_command(Events,instruction_display_time,command,'clear_no'); %selected segment
@@ -328,8 +340,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
             command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
             Events = newevent_command(Events,instruction_display_time,command,'clear_no');
-                        Events = newevent_show_stimulus(Events,reward,2,locx,locy,instruction_display_time,'screenshot_no','clear_no'); %no reward
-
+            Events = newevent_show_stimulus(Events,reward,2,locx,locy,instruction_display_time,'screenshot_no','clear_no'); %no reward
+            
         end
         
         %         %Response
