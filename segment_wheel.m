@@ -1,4 +1,4 @@
-function segment_wheel(num_segments,seg_colors)
+function [seg_values] = segment_wheel(num_segments,seg_colors)
 %This function creates a 360 degree color wheel, segmented by distinct colors
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,6 +16,11 @@ boxes_in_segment = num_wheel_boxes/num_segments;
 
 for add_seg = 1:num_segments
     change_spot(add_seg) = boxes_in_segment*add_seg+1;
+    if add_seg == 1
+    seg_values(add_seg,:) = 1:change_spot(add_seg)-1;
+    else
+        seg_values(add_seg,:) = change_spot(add_seg-1):change_spot(add_seg)-1;
+    end
 end
 
 spot = 1;
@@ -31,6 +36,6 @@ for box = 1:num_wheel_boxes
     
 end
 
-save('wheel360','fullcolormatrix');
+save('wheel360','fullcolormatrix','num_wheel_boxes');
 
 end
