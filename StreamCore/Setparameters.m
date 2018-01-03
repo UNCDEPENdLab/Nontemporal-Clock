@@ -62,7 +62,7 @@ end
 Parameters.skipsynctests = 1;
 Parameters.datafilename = 'ExpSub';    %data file prefix
 % Parameters.whichscreen = max(Screen('Screens'));  %which of the displays do we use?  (only relevant if there are multiple monitors)
-Parameters.whichscreen = 0;  %which of the displays do we use?  (only relevant if there are multiple monitors)
+Parameters.whichscreen = 2;  %which of the displays do we use?  (only relevant if there are multiple monitors)
 Parameters.backgroundcolor = [255 255 255];   %what color is the background screen in RGB (0-255)
 Parameters.disableinput = 0;   %turn off all user input
 Parameters.interruptible = 1;   % if set to 1, users can abort the experiment in between trials by pressing escape

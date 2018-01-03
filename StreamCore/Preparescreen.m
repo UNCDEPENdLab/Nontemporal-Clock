@@ -38,12 +38,12 @@ if(Parameters.audioinput |Parameters.audiooutput )
         PsychPortAudio('Close',0);   %shutdown existing audio
     catch
     end
-    
-    try
-        pahandle = PsychPortAudio('Open', [], [], 2, freq, 2, 0, suggestedLatencySecs );
-    catch
-        pahandle = PsychPortAudio('Open', [], [], 2, freq, 2, 0, suggestedLatencySecs );
-    end
+%     
+%     try
+%         pahandle = PsychPortAudio('Open', [], [], 2, freq, 2, 0, suggestedLatencySecs );
+%     catch
+%         pahandle = PsychPortAudio('Open', [], [], 2, freq, 2, 0, suggestedLatencySecs );
+%     end
     
     if IsOSX
         %Following advice from Psychtoolbox Website:
@@ -57,8 +57,8 @@ if(Parameters.audioinput |Parameters.audiooutput )
         %Not a mac, you should figure this out yourself.
         latbias = 0;
     end
-    prelat = PsychPortAudio('LatencyBias', pahandle, latbias);
-    Parameters.pahandle = pahandle;
+%     prelat = PsychPortAudio('LatencyBias', pahandle, latbias);
+%     Parameters.pahandle = pahandle;
 end
 %see http://docs.psychtoolbox.org/InitializePsychSound for information
 %about latency
