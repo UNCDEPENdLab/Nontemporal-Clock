@@ -4,9 +4,7 @@ load('blockvars')
 
 %Paradigm coded by Michael R Hess, August '15
 
-
 %Experiment is adjusted for a screen resolution of 1024x768
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Parameters%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,7 +33,6 @@ total_feedback_time = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %Enables mouse
 Parameters.mouse.enabled = 1;
@@ -67,7 +64,7 @@ save('colorWheelLocations1','colorWheelLocations1');
 save('colorWheelLocations2','colorWheelLocations2');
 
 num_segments = 12;
-seg_colors{1} = [255 0 0];
+seg_colors{1} = [255 155 0];
 seg_colors{2} = [0 0 255];
 
 [seg_values] = segment_wheel(num_segments,seg_colors);
@@ -102,6 +99,26 @@ if strcmp(Modeflag,'InitializeBlock')
     stimstruct.stimsize = 0.25;
     Stimuli_sets(token) = Preparestimuli(Parameters,stimstruct);
     
+    %No reward
+    left_x = 501;
+    right_x = 502;
+    red_xs = [left_x right_x];
+    for xs = 1:length(red_xs)
+        stimstruct = CreateStimStruct('shape');
+        stimstruct.stimuli = {'DrawLine'};
+        stimstruct.linelength = 425;
+        stimstruct.linewidth = 35;
+        stimstruct.color = [255 0 0];
+        if xs == 1
+            stimstruct.lineangle = 45;
+            red_x = left_x;
+        else
+            stimstruct.lineangle = 135;
+            red_x = right_x;
+        end
+        Stimuli_sets(red_x) = Preparestimuli(Parameters,stimstruct);
+    end
+    
     %Shape Structs & Instructions
     
     %Fixation Cross & Questions
@@ -114,7 +131,6 @@ if strcmp(Modeflag,'InitializeBlock')
     %Instructions (before practice trials)
     stimstruct = CreateStimStruct('text');
     stimstruct.wrapat = 0;
-    %     stimstruct.stimuli = {'Move the mouse along the color wheel to match the color of your square','on the right to the colored square displayed on the left.', 'Click once you believe that the colors match. Press any key to start.'};
     stimstruct.stimuli = {'On each trial, you will see a face surrounded by a "points wheel".','Your task is to click on different parts of this points wheel in','order to figure out which section is more likely to award you more points.','Press any button once you''re ready to begin.'};
     stimstruct.stimsize = 20;
     stimstruct.wrapat = 0;
@@ -195,42 +211,31 @@ if strcmp(Modeflag,'InitializeBlock')
     
 elseif strcmp(Modeflag,'InitializeTrial')
     
-    
     Events.variableNames{1} = 'StimNum';
     Events.variableFunctions{1} = 'StimNum(Parameters)';
     
-    
     Events.variableNames{3}  = 'ReportedColor';
     Events.variableFunctions{3} = '';
-    
     
     %Center coordinates
     locx = Parameters.centerx;
     locy = Parameters.centery;
     
-    
     %Mouse appears
     Events = newevent_mouse_cursor(Events,instruction_display_time,locx,locy,0);
     
-    
     %Mouse Parameters
     mouseresponse_color = CreateResponseStruct;
-    mouseresponse_see_line = CreateResponseStruct;
-    mouseresponse_line_location = CreateResponseStruct;
-    mouseresponse_angle = CreateResponseStruct;
     
     %Responsestruct
     responsestruct = CreateResponseStruct;
     responsestruct.x = locx;
     responsestruct.y = locy;
     
-    
     %Instruction Display (before practice trials)
     if Trial == 1
         Events = newevent_mouse_cursor(Events,0,locx,locy,0);
         Events = newevent_show_stimulus(Events,31,1,locx,locy-100,instruction_display_time,'screenshot_no','clear_yes');
-        
-        %                 Events = newevent_show_stimulus(Events,face_stims,rand_faces(Trial),locx,locy,instruction_display_time,'screenshot_no','clear_yes');
         
         Events = newevent_show_stimulus(Events,31,2,locx,locy,instruction_display_time,'screenshot_no','clear_no');
         Events = newevent_show_stimulus(Events,31,3,locx,locy+100,instruction_display_time,'screenshot_no','clear_no');
@@ -241,25 +246,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
         shuffled_colors = randperm(360);
         color_probe = shuffled_colors(1);
         
-        %Color Feedback (Trial > 1)
     else
-        
-        %         accuracy_feedback_locy = locy + 150;
-        %         accuracy_number = locx + 85;
-        %
-        %         Events = newevent_show_stimulus(Events,40,accuracy_percentage,accuracy_number+17,accuracy_feedback_locy,instruction_display_time,'screenshot_no','clear_yes');
-        %         Events = newevent_show_stimulus(Events,41,1,accuracy_number - 250,accuracy_feedback_locy,instruction_display_time,'screenshot_no','clear_no');
-        %         Events = newevent_show_stimulus(Events,41,2,accuracy_number + 60,accuracy_feedback_locy,instruction_display_time,'screenshot_no','clear_no');
-        %         Events = newevent_show_stimulus(Events,41,3,accuracy_number + 175,accuracy_feedback_locy,instruction_display_time,'screenshot_no','clear_no');
-        %
-        %         %Feedback color squares
-        %         probe_color_locx = locx - 200;
-        %         report_color_locx = locx + 200;
-        %
-        %         %Probed
-        %         Events = newevent_show_stimulus(Events,50,color_probe,probe_color_locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        %         Events = newevent_show_stimulus(Events,36,2,probe_color_locx,locy-100,instruction_display_time,'screenshot_no','clear_no');
-        %
+        %%Feedback%%
         
         y_offset = 75;
         rewardtext_locy = locy - 400;
@@ -286,6 +274,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
             for spin = 1:10
                 spin_time = spin*2*.1;
                 reward_time = instruction_display_time+spin_time;
+                
+                %Won a token!
                 if score < 2
                     %Loads color Wheel
                     command =   'load(''selected_segment'');';
@@ -315,7 +305,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 end
                 Events = newevent_show_stimulus(Events,reward,4,locx,locy+75+y_offset,reward_time,'screenshot_no','clear_no');
                 Events = newevent_show_stimulus(Events,40,score,locx,locy+125+y_offset,reward_time,'screenshot_no','clear_no');
-                %             Events = newevent_show_stimulus(Events,token,1,locx,token_locy+y_offset,instruction_display_time,'screenshot_no','clear_no'); %token
                 if spin < 5
                     Events = newevent_show_stimulus(Events,token,spin,locx,token_locy+y_offset,reward_time,'screenshot_no','clear_no'); %token
                 elseif spin == 5 || spin == 10
@@ -324,11 +313,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
                     Events = newevent_show_stimulus(Events,token,spin-5,locx,token_locy+y_offset,reward_time,'screenshot_no','clear_no'); %token
                 end
             end
-        else
             
+            %Didn't win a token :'(
+        else
             %Add to the counter of how many times this segment was selected
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
-
+            
             %Loads color Wheel
             command =   'load(''selected_segment'');';
             Events = newevent_command(Events,instruction_display_time,command,'clear_no'); %selected segment
@@ -340,19 +330,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
             command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
             Events = newevent_command(Events,instruction_display_time,command,'clear_no');
-            Events = newevent_show_stimulus(Events,reward,2,locx,locy,instruction_display_time,'screenshot_no','clear_no'); %no reward
-            
+            Events = newevent_show_stimulus(Events,reward,2,locx,rewardtext_locy+y_offset,instruction_display_time,'screenshot_no','clear_no'); %no reward
+            %Display red X mark
+            Events = newevent_show_stimulus(Events,left_x,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,right_x,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
         end
-        
-        %         %Response
-        %         Events = newevent_show_stimulus(Events,50,color_response,report_color_locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        %         Events = newevent_show_stimulus(Events,36,3,report_color_locx,locy-100,instruction_display_time,'screenshot_no','clear_no');
-        %
-        %         %Selects a random color
-        %         shuffled_colors = randperm(360);
-        %         color_probe = shuffled_colors(1);
     end
-    
     
     if Trial <= Numtrials
         
@@ -369,17 +352,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_command(Events,color_wheel_time,command,'clear_yes');
             command =   'load(''colorWheelLocations2'');';
             Events = newevent_command(Events,color_wheel_time,command,'clear_no');
-            %         command =   'load(''colorwheel360'');';
-            % for j = 1:3;for i = 1:360;fullcolormatrix(i,j) = 0;if mod(i,2);fullcolormatrix(i,j)=fullcolormatrix(i,j)+255;end;end;end
             command =   'load(''wheel360'');';
             Events = newevent_command(Events,color_wheel_time,command,'clear_no');
             command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, fullcolormatrix'', [], 1);';
             Events = newevent_command(Events,color_wheel_time,command,'clear_yes');
             command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, fullcolormatrix'', [], 1);';
             Events = newevent_command(Events,color_wheel_time,command,'clear_no');
-            %         Events = newevent_show_stimulus(Events,50,color_probe,locx-100,locy,color_wheel_time,'screenshot_no','clear_no');
-            %         Events = newevent_show_stimulus(Events,50,'StimNum',locx+100,locy,color_wheel_time,'screenshot_no','clear_no');
-            %                 Events = newevent_show_stimulus(Events,face_stims,rand_faces(Trial),locx,locy,color_wheel_time,'screenshot_no','clear_no');
             
             Events = newevent_show_stimulus(Events,30,2,locx,locy-300,color_wheel_time,'screenshot_no','clear_no');
             
@@ -390,33 +368,26 @@ elseif strcmp(Modeflag,'InitializeTrial')
             mouseresponse_color.spatialwindows = buttonlocs;
             [Events,color_response] = newevent_mouse(Events,color_wheel_time,mouseresponse_color);
             
-            
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             color_feedback_time = color_wheel_time + .01; %CHANGEHERE% When color feedback is given
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             Events = newevent_blank(Events,color_feedback_time);
             
-            
             %Mouse disappears after response
             Events = newevent_mouse_cursor(Events,color_feedback_time,locx,locy,0);
             
         end
         
-        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         trial_end_time = color_feedback_time + .2; %CHANGEHERE% When the trial ends
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
     else
-        
         trial_end_time = total_feedback_time;
-        
     end
     
     %Ends trial
     Events = newevent_end_trial(Events,trial_end_time);
-    
     
 elseif strcmp(Modeflag,'EndTrial');
     
@@ -428,11 +399,8 @@ elseif strcmp(Modeflag,'EndTrial');
             Trial_Export.color_response = 0;
         end
         
-        
         color_response = (Events.windowclicked{color_response});
-        
         difference = color_response - color_probe;
-        
         
         if(difference > 180)
             difference = difference - 360;
@@ -469,7 +437,6 @@ elseif strcmp(Modeflag,'EndTrial');
         
     end
     
-    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Output Descriptions%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -501,7 +468,6 @@ elseif strcmp(Modeflag,'EndTrial');
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
     
 elseif strcmp(Modeflag,'EndBlock');
 else

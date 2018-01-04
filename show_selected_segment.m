@@ -11,7 +11,7 @@ for wheel = 1:num_wheel_boxes
     if current_row == selected_row
         selected_segment(wheel,:) = fullcolormatrix(wheel,:);
     else
-        selected_segment(wheel,:) = Parameters.backgroundcolor;
+        selected_segment(wheel,:) = Parameters.backgroundcolor - 75;
     end
 end
 % sca;keyboard
