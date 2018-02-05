@@ -325,7 +325,7 @@ while(alldone ==0)    %loop through all of the events
             end
             Events.variableLastUpdated(varnum)  = nowtime;
             redrawflag = 1;
-            flipneeded = 1;
+            flipneeded = 1; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                         
         end
         

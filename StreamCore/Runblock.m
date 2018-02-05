@@ -66,7 +66,7 @@ try
         
         trial =  trial + 1;
         
-        if(Parameters.trialrestart)
+        if(Parameters.trialrestart) && trial == 1
             Parameters = Preparescreen(Parameters);    %initialize the PTB screen
         end
         

@@ -1,7 +1,7 @@
 function [Events Parameters Stimuli_sets Block_Export Trial_Export  Numtrials]=Demo(Parameters, Stimuli_sets, Trial, Blocknum, Modeflag, ...
     Events,Block_Export,Trial_Export,Demodata)
 load('blockvars')
-
+points_wheel = 1;
 %Paradigm coded by Michael R Hess, August '15
 
 %Experiment is adjusted for a screen resolution of 1024x768
@@ -34,20 +34,37 @@ total_feedback_time = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Create segmented wheel
+num_segments = 12;
+seg_colors{1} = [255 155 0];
+seg_colors{2} = [0 0 255];
+add_wheel_borders = 1;
+
+[seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);save('seg_values','seg_values');
+segment_score = zeros(num_segments,2);
+segment_score_name = 'segment_score';
+save('segment_score_name','segment_score');
+
 %Enables mouse
 Parameters.mouse.enabled = 1;
 
 %Color Wheel 1 (Outer)
-colorWheelRadius = 260; %radius of color wheel
+colorWheelRadius1 = 260; %radius of color wheel
 %Cartesian Conversion
-colorWheelLocations1 = [cosd(1:360).*colorWheelRadius + Parameters.centerx; ...
-    sind(1:360).*colorWheelRadius + Parameters.centery];
+colorWheelLocations1 = [cosd(1:360).*colorWheelRadius1 + Parameters.centerx; ...
+    sind(1:360).*colorWheelRadius1 + Parameters.centery];
 
 %Color Wheel 2 (Inner)
-colorWheelRadius = 252; %radius of color wheel
+colorWheelRadius2 = 252; %radius of color wheel
 %Cartesian Conversion
-colorWheelLocations2 = [cosd(1:360).*colorWheelRadius + Parameters.centerx; ...
-    sind(1:360).*colorWheelRadius + Parameters.centery];
+colorWheelLocations2 = [cosd(1:360).*colorWheelRadius2 + Parameters.centerx; ...
+    sind(1:360).*colorWheelRadius2 + Parameters.centery];
+
+%Points Wheel (Outer-most)
+pointsWheelRadius = colorWheelRadius1 + 18; %radius of color wheel
+%Cartesian Conversion
+pointsWheelLocations = [cosd(1:360).*pointsWheelRadius + Parameters.centerx; ...
+    sind(1:360).*pointsWheelRadius + Parameters.centery];
 
 %Location Wheel
 locationWheelRadius = 258; %radius of color wheel
@@ -62,14 +79,7 @@ end
 
 save('colorWheelLocations1','colorWheelLocations1');
 save('colorWheelLocations2','colorWheelLocations2');
-
-num_segments = 12;
-seg_colors{1} = [255 155 0];
-seg_colors{2} = [0 0 255];
-
-[seg_values] = segment_wheel(num_segments,seg_colors);
-
-segment_score = zeros(num_segments,2);
+save('pointsWheelLocations','pointsWheelLocations','scorecolormatrix','seg_values','change_spot');
 
 if strcmp(Modeflag,'InitializeBlock')
     clear Stimuli_sets
@@ -170,6 +180,7 @@ if strcmp(Modeflag,'InitializeBlock')
     stimstruct.vSpacing = 5;
     Stimuli_sets(reward) = Preparestimuli(Parameters,stimstruct);
     
+    %Base blocks of the wheel
     for  stimstruct = CreateStimStruct('shape');
         stimstruct.stimuli = {'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
             'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
@@ -199,6 +210,7 @@ if strcmp(Modeflag,'InitializeBlock')
     rand_faces = randperm(length(face_dir)-2);
     
     probs = [0.2 0.4 0.6 0.8];
+    probs = [1 1 1 1]; %TESTING%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     probs = Shuffle(probs);
     prob_count = 1;
     for i = 1:360
@@ -210,7 +222,7 @@ if strcmp(Modeflag,'InitializeBlock')
     score = 0;
     
 elseif strcmp(Modeflag,'InitializeTrial')
-    
+    add=0;
     Events.variableNames{1} = 'StimNum';
     Events.variableFunctions{1} = 'StimNum(Parameters)';
     
@@ -259,16 +271,27 @@ elseif strcmp(Modeflag,'InitializeTrial')
         %Find selected segment of the wheel
         show_selected_segment;
         
+        win = 0;
+        
         chance = rand(1);
         if chance <= selected_prob
-            
+            win = 1;
+%             load('segment_score');
+%                        before_add= segment_score(selected_row,2)
             %Add a point to the selected segment
-            segment_score(selected_row,1) = segment_score(selected_row,1) + 1;
+%             segment_score(selected_row,1) = segment_score(selected_row,1) + 1;
             
             %Add to the counter of how many times this segment was selected
-            segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             
+%             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
+%                        after_add= segment_score(selected_row,2)
+%             sca;keyboard
             score = score + 1;
+% score = segment_score(selected_row,2) + 1;
+% save('segment_score','segment_score');
+            save('pointsWheelLocations','pointsWheelLocations','scorecolormatrix','seg_values','change_spot','color_response','win','selected_row','add','score');
+            
+%             show_score
             
             color_wheel_time = color_wheel_time + 1.5;
             for spin = 1:10
@@ -288,6 +311,25 @@ elseif strcmp(Modeflag,'InitializeTrial')
                     Events = newevent_command(Events,reward_time,command,'clear_yes');
                     command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
                     Events = newevent_command(Events,reward_time,command,'clear_no');
+                    
+                    if points_wheel
+%                                                 command =   'show_score';
+%                                                 Events = newevent_command(Events,reward_time,command,'clear_no');
+                                                command =   'load(''pointsWheelLocations'');';
+                                                Events = newevent_command(Events,reward_time,command,'clear_no');
+%                         %                         sca;keyboard
+%                         %                         show_score
+%                         segment_score_name = sprintf('segment_score%d',Trial);
+%                         save(segment_score_name,'segment_score');
+%                         save('seg_filename','segment_score_name');
+%                         %                                                                         command =   'load(''segment_score'');load(''pointsWheelLocations'');load(''seg_values'');[selected_row,w,x]=find(seg_values==color_response);if add==0;segment_score(selected_row,2) = segment_score(selected_row,2) + 1;add=1;end;show_score;';
+%                                                                                                 showscorecommand =   'load(segment_score_name);load(''pointsWheelLocations'');load(''seg_values'');[selected_row,w,x]=find(seg_values==color_response);if add==0;segment_score(selected_row,2) = segment_score(selected_row,2) + 1;save(segment_score_name,''segment_score'');[add]=show_score(segment_score,add);end';
+%                         %                         showscorecommand = ('
+%                         Events = newevent_command(Events,reward_time,showscorecommand,'clear_no');
+                        showdotscommand =   'Screen(''DrawDots'', Parameters.window, pointsWheelLocations, 10, scorecolormatrix'', [], 1);';
+                        Events = newevent_command(Events,reward_time,showdotscommand,'clear_no');
+                    end
+                    
                     Events = newevent_show_stimulus(Events,reward,1,locx,rewardtext_locy+y_offset,reward_time,'screenshot_no','clear_no'); %reward coin
                 else
                     %Loads color Wheel
@@ -301,8 +343,28 @@ elseif strcmp(Modeflag,'InitializeTrial')
                     Events = newevent_command(Events,reward_time,command,'clear_yes');
                     command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
                     Events = newevent_command(Events,reward_time,command,'clear_no');
+                    
+                    if points_wheel
+                        command =   'load(''pointsWheelLocations'');';
+                        Events = newevent_command(Events,reward_time,command,'clear_no');
+%                         command =   'Screen(''DrawDots'', Parameters.window, pointsWheelLocations, 10, scorecolormatrix'', [], 1);';
+%                         Events = newevent_command(Events,reward_time,command,'clear_no');
+%                                                                         showscorecommand =   'load(''segment_score'');load(''pointsWheelLocations'');load(''seg_values'');[selected_row,w,x]=find(seg_values==color_response);if add==0;segment_score(selected_row,2) = segment_score(selected_row,2) + 1;add=1;end;show_score;';
+%                                                 Events = newevent_command(Events,reward_time,showscorecommand,'clear_no');
+%                         showdotscommand =   'Screen(''DrawDots'', Parameters.window, pointsWheelLocations, 10, scorecolormatrix'', [], 1);';
+                        Events = newevent_command(Events,reward_time,showdotscommand,'clear_no');
+                    end
+                    
                     Events = newevent_show_stimulus(Events,reward,3,locx,rewardtext_locy+y_offset,reward_time,'screenshot_no','clear_no'); %reward coin
                 end
+                
+                if points_wheel
+                    command =   'load(''pointsWheelLocations'');';
+                    Events = newevent_command(Events,reward_time,command,'clear_no');
+                    command =   'Screen(''DrawDots'', Parameters.window, pointsWheelLocations, 10, scorecolormatrix'', [], 1);';
+                    Events = newevent_command(Events,reward_time,command,'clear_no');
+                end
+                
                 Events = newevent_show_stimulus(Events,reward,4,locx,locy+75+y_offset,reward_time,'screenshot_no','clear_no');
                 Events = newevent_show_stimulus(Events,40,score,locx,locy+125+y_offset,reward_time,'screenshot_no','clear_no');
                 if spin < 5
@@ -318,6 +380,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
         else
             %Add to the counter of how many times this segment was selected
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
+            save('pointsWheelLocations','pointsWheelLocations','scorecolormatrix','seg_values','change_spot','color_response','segment_score');
+                        show_score
             
             %Loads color Wheel
             command =   'load(''selected_segment'');';
@@ -334,6 +398,13 @@ elseif strcmp(Modeflag,'InitializeTrial')
             %Display red X mark
             Events = newevent_show_stimulus(Events,left_x,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,right_x,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+            
+            if points_wheel
+                command =   'load(''pointsWheelLocations'');';
+                Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+                command =   'Screen(''DrawDots'', Parameters.window, pointsWheelLocations, 10, scorecolormatrix'', [], 1);';
+                Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+            end
         end
     end
     
@@ -358,6 +429,13 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_command(Events,color_wheel_time,command,'clear_yes');
             command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, fullcolormatrix'', [], 1);';
             Events = newevent_command(Events,color_wheel_time,command,'clear_no');
+            
+            if points_wheel
+                command =   'load(''pointsWheelLocations'');';
+                Events = newevent_command(Events,color_wheel_time,command,'clear_no');
+                command =   'Screen(''DrawDots'', Parameters.window, pointsWheelLocations, 10, scorecolormatrix'', [], 1);';
+                Events = newevent_command(Events,color_wheel_time,command,'clear_no');
+            end
             
             Events = newevent_show_stimulus(Events,30,2,locx,locy-300,color_wheel_time,'screenshot_no','clear_no');
             
@@ -411,7 +489,6 @@ elseif strcmp(Modeflag,'EndTrial');
         end
         
         if Trial > 1
-            
             if Trial == 2
                 total_accuracy = (accuracy_percentage + round(100 - ((sqrt(difference^2))/180)*100))/2;
             elseif Trial > 2
@@ -434,7 +511,6 @@ elseif strcmp(Modeflag,'EndTrial');
         Trial_Export.color_probe = 'feedback trial';
         Trial_Export.color_response = 'feedback trial';
         Trial_Export.total_accuracy = 'feedback trial';
-        
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
