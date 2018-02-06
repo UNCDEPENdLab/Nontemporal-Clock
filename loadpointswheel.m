@@ -1,0 +1,10 @@
+% command = load('scorecolormatrix');
+% Events = newevent_command(Events,points_time,command,'clear_yes'); %selected segment
+% command = load('pointsWheelLocations1');
+% Events = newevent_command(Events,points_time,command,'clear_yes'); %selected segment
+% command = load('pointsWheelLocations2');
+% Events = newevent_command(Events,points_time,command,'clear_yes'); %selected segment
+% showdotscommand1 =   'Screen(''DrawDots'', Parameters.window, pointsWheelLocations1, 10, scorecolormatrix'', [], 1);';
+% Events = newevent_command(Events,points_time,showdotscommand1,'clear_no');
+% showdotscommand2 =   'Screen(''DrawDots'', Parameters.window, pointsWheelLocations2, 10, scorecolormatrix'', [], 1);';
+% Events = newevent_command(Events,points_time,showdotscommand2,'clear_no');

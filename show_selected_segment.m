@@ -3,7 +3,7 @@
 
 load('wheel360');
 
-[selected_row,w,x]=find(seg_values==color_response);
+[selected_row,w,x]=find(seg_values==segment_response);
 
 current_row = 1;
 for wheel = 1:num_wheel_boxes
