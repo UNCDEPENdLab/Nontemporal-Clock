@@ -10,7 +10,7 @@ if nargin < 1
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-num_wheel_boxes = 359;
+num_wheel_boxes = 360;
 fullcolormatrix = zeros(num_wheel_boxes,3);
 boxes_in_segment = round(num_wheel_boxes/num_segments);
 
@@ -35,33 +35,23 @@ for box = 1:num_wheel_boxes
     fullcolormatrix(box,:) = box_color;
     
 end
-% sca;keyboard
+
 if add_wheel_borders
-    num_wheel_boxes = 359;
-%     fullcolormatrix = repmat(180,num_wheel_boxes,3);
     for add_partition = 1:num_segments
         if add_partition == num_segments
-            fullcolormatrix(1,:) = [0 0 0];
+            fullcolormatrix(360,:) = [0 0 0];
         else
-            try
-                fullcolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
-                %         catch
-                %             sca;keyboard
-            end
+            fullcolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
         end
     end
 end
 
-scorecolormatrix = repmat(180,359,3);
+scorecolormatrix = repmat(180,num_wheel_boxes,3);
 for add_partition = 1:num_segments
     if add_partition == num_segments
         scorecolormatrix(1,:) = [0 0 0];
     else
-        try
-            scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
-            %         catch
-            %             sca;keyboard
-        end
+        scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
     end
 end
 

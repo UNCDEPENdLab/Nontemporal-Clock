@@ -3,7 +3,9 @@ function [Events] = load_pointswheel(time,Events)
 command =   'load(''pointsWheelLocations'');';
 Events = newevent_command(Events,time,command,'clear_no');
 %
-command =   'load(''scorecolormatrix'');';
+% command =   'load(''scorecolormatrix'');';
+
+command = 'csvread(''scorecolormatrix'');';
 Events = newevent_command(Events,time,command,'clear_no');
 
 % load('scorecolormatrix');

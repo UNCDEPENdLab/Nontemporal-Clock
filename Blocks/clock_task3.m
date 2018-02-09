@@ -1,6 +1,6 @@
 function [Events Parameters Stimuli_sets Block_Export Trial_Export  Numtrials]=clock_task2(Parameters, Stimuli_sets, Trial, Blocknum, Modeflag, ...
     Events,Block_Export,Trial_Export,Demodata)
-load('blockvars')
+load('blockvars');addpath(genpath('util'));
 
 %Paradigm coded by Michael R Hess, February '18
 
@@ -19,11 +19,13 @@ type = 3; %paradigm type: 1 = probabilities average(40-60%), 2 = uneven, 3 = gol
 
 %Create segmented wheel
 num_segments = 12; %number of segments
-seg_colors{1} = [0 135 255]; %colors of segments
+seg_colors{1} = [0 105 255]; %colors of segments
 seg_colors{2} = seg_colors{1};
 add_wheel_borders = 1;
 
-bot_choices = randperm(359);
+%Selects a random color
+shuffled_colors = randperm(360);
+color_probe = shuffled_colors(1);
 
 %Timing variables
 %When the instructions will be displayed from the start of the experiment (Trial 1)
@@ -35,17 +37,15 @@ seg_wheel_time = instruction_display_time + 2;
 %CHANGEHERE% %How long the total accuracy score will display on screen at the end of the trials
 total_feedback_time = 1;
 
-click_time2 = seg_wheel_time + .01;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set up Stimuli
 
 [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
-save('scorecolormatrix','scorecolormatrix');
+% save('scorecolormatrix','scorecolormatrix');
+csvwrite('scorecolormatrix.csv',scorecolormatrix);
 save('seg_values','seg_values');
-segment_score = zeros(num_segments,2);
 % save('segment_score','segment_score');
 % segment_score_name = 'segment_score';
 % save('segment_score_name','segment_score');
@@ -59,7 +59,6 @@ colorWheelRadius1 = 260; %radius of color wheel
 colorWheelLocations1 = [cosd(1:num_wheel_boxes).*colorWheelRadius1 + Parameters.centerx; ...
     sind(1:num_wheel_boxes).*colorWheelRadius1 + Parameters.centery];
 
-
 %Color Wheel 2 (Inner)
 colorWheelRadius2 = 252; %radius of color wheel
 %Cartesian Conversion
@@ -69,14 +68,20 @@ colorWheelLocations2 = [cosd(1:num_wheel_boxes).*colorWheelRadius2 + Parameters.
 %Points Wheel 1 (Inner)
 pointsWheelRadius1 = colorWheelRadius1 + 40; %radius of color wheel
 %Cartesian Conversion
-pointsWheelLocations1 = [cosd(1:359).*pointsWheelRadius1 + Parameters.centerx; ...
-    sind(1:359).*pointsWheelRadius1 + Parameters.centery];
+pointsWheelLocations1 = [cosd(1:num_wheel_boxes).*pointsWheelRadius1 + Parameters.centerx; ...
+    sind(1:num_wheel_boxes).*pointsWheelRadius1 + Parameters.centery];
+
+pointswheel1_endnotch = [cosd(360).*pointsWheelRadius1 + Parameters.centerx; ...
+    sind(360).*pointsWheelRadius1 + Parameters.centery];
 
 %Points Wheel (Outer)
-pointsWheelRadius2 = pointsWheelRadius1 + 7; %radius of color wheel
+pointsWheelRadius2 = pointsWheelRadius1 + 8; %radius of color wheel
 %Cartesian Conversion
-pointsWheelLocations2 = [cosd(1:359).*pointsWheelRadius2 + Parameters.centerx; ...
-    sind(1:359).*pointsWheelRadius2 + Parameters.centery];
+pointsWheelLocations2 = [cosd(1:num_wheel_boxes).*pointsWheelRadius2 + Parameters.centerx; ...
+    sind(1:num_wheel_boxes).*pointsWheelRadius2 + Parameters.centery];
+
+pointswheel2_endnotch = [cosd(360).*pointsWheelRadius2 + Parameters.centerx; ...
+    sind(360).*pointsWheelRadius2 + Parameters.centery];
 
 %Location Wheel
 locationWheelRadius = 258; %radius of color wheel
@@ -89,10 +94,15 @@ for i = 1:num_wheel_boxes
     buttonlocs{i} = [locationWheelLocations(1,i),locationWheelLocations(2,i),12];
 end
 
+%Set up the bot's segment choices
+bot_choices = randperm(num_wheel_boxes);
+
 save('colorWheelLocations1','colorWheelLocations1');
 save('colorWheelLocations2','colorWheelLocations2');
 save('pointsWheelLocations1','pointsWheelLocations1');
-save('pointsWheelLocations2','pointsWheelLocations2')
+save('pointsWheelLocations2','pointsWheelLocations2');
+save('pointswheel1_endnotch','pointswheel1_endnotch');
+save('pointswheel2_endnotch','pointswheel2_endnotch');
 % ,'seg_values','change_spot');
 
 if strcmp(Modeflag,'InitializeBlock')
@@ -101,7 +111,7 @@ if strcmp(Modeflag,'InitializeBlock')
     locx = Parameters.centerx;
     locy = Parameters.centery;
     
-    border_offset = 10;
+    border_offset = 8;
     
     %Color Wheel 1 Border
     cwb1 = 800;
@@ -142,15 +152,6 @@ if strcmp(Modeflag,'InitializeBlock')
         if i==2;stimstruct.stimsize = 1.01;end
         Stimuli_sets(pwb2+i-1) = Preparestimuli(Parameters,stimstruct);
     end
-    
-    %     %Block out inside of wheel
-    %     stimstruct = CreateStimStruct('shape');
-    %         fill_wheel = 805;
-    %         stimstruct.stimuli = {'FillOval'};
-    %         stimstruct.xdim = pointsWheelRadius1*2-border_offset-5;
-    %         stimstruct.ydim = stimstruct.xdim;
-    %         stimstruct.color = Parameters.backgroundcolor;
-    %         Stimuli_sets(fill_wheel) = Preparestimuli(Parameters,stimstruct);
     
     %Bot button
     bot_but = 1010;
@@ -276,31 +277,7 @@ if strcmp(Modeflag,'InitializeBlock')
     Stimuli_sets(reward) = Preparestimuli(Parameters,stimstruct);
     
     %Base blocks of the wheel
-    for  stimstruct = CreateStimStruct('shape')
-        stimstruct.stimuli = {'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';
-            'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FillRect';'FrameRect'};
-        stimstruct.color = zeros(1,3,360) + 220;
-        stimstruct.xdim = [100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100];
-        stimstruct.ydim = [100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100];
-        
-        Stimuli_sets(50) = Preparestimuli(Parameters,stimstruct);
-    end
+    setupwheelblocks;
     
     rand_faces = randperm(length(face_dir)-2);
     
@@ -318,6 +295,7 @@ if strcmp(Modeflag,'InitializeBlock')
         end
         wheel_probs(i) = probs(prob_count);
     end
+    
     score = 0;
     
 elseif strcmp(Modeflag,'InitializeTrial')
@@ -372,16 +350,16 @@ elseif strcmp(Modeflag,'InitializeTrial')
             responsestruct.allowedchars = 0;
             Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
         end
-        
-        %Selects a random color
-        shuffled_colors = randperm(360);
-        color_probe = shuffled_colors(1);
+        segment_score = zeros(num_segments,2);
         
     else
         %% Feedback %%
         
+        if Trial > 2
+            segment_score = csvread('segment_score')
+        end
+        
         y_offset = 100;
-        %         75;
         rewardtext_locy = locy - 400;
         token_locy = locy - 100;
         
@@ -397,15 +375,22 @@ elseif strcmp(Modeflag,'InitializeTrial')
         if chance <= selected_prob
             win = 1;
             
+            %Wheel borders
+            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_yes');
+            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+            
             %Loads segmented wheel
             command =   'load(''selected_segment'');';
-            Events = newevent_command(Events,instruction_display_time,command,'clear_yes'); %selected segment
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no'); %selected segment
             command =   'load(''colorWheelLocations1'');';
-            Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no');
             command =   'load(''colorWheelLocations2'');';
-            Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no');
             command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, selected_segment'', [], 1);';
-            Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no');
             command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
             Events = newevent_command(Events,instruction_display_time,command,'clear_no');
             
@@ -415,19 +400,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 loadpointswheel
             end
             
-            %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            
             %             load('segment_score');
             %                        before_add= segment_score(selected_row,2)
             %Add a point to the selected segment
             segment_score(selected_row,1) = segment_score(selected_row,1) + 1;
-            segment_score(selected_row,2)
-            segment_score(selected_row,2) = segment_score(selected_row,2) + 1
+            %             segment_score(selected_row,2)
+            segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             %                         save('segment_score','segment_score');
             %Add to the counter of how many times this segment was selected
             
@@ -438,10 +416,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
             % score = segment_score(selected_row,2) + 1;
             % save('segment_score','segment_score');
             %             save('pointsWheelLocations','pointsWheelLocations1','pointsWheelLocations2','seg_values','change_spot','segment_response','win','selected_row','add','score');
-            load('scorecolormatrix');
-            [add scorecolormatrix] = show_score(segment_score,add,scorecolormatrix,win,seg_values,segment_response,change_spot);
+            %             load('scorecolormatrix');
+            scorecolormatrix=csvread('scorecolormatrix.csv');
+            [add] = show_score(segment_score,add,scorecolormatrix,win,seg_values,segment_response,change_spot,Trial);
             
-            %             seg_wheel_time = seg_wheel_time + 1.5;
             for spin = 1:10
                 spin_time = spin*2*.1;
                 reward_time = instruction_display_time+spin_time;
@@ -453,53 +431,31 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 else
                     seg_wheel_time = reward_time + 1;
                 end
-                click_time2 = seg_wheel_time + .01;
-                %Won a token!
+                
+                %Wheel borders
+                Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
+                Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+                Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
+                Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+                Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
+                
+                %Loads segmented wheel
+                command =   'load(''selected_segment'');';
+                Events = newevent_command(Events,reward_time,command,'clear_no'); %selected segment
+                command =   'load(''colorWheelLocations1'');';
+                Events = newevent_command(Events,reward_time,command,'clear_no');
+                command =   'load(''colorWheelLocations2'');';
+                Events = newevent_command(Events,reward_time,command,'clear_no');
+                command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, selected_segment'', [], 1);';
+                Events = newevent_command(Events,reward_time,command,'clear_no');
+                command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
+                Events = newevent_command(Events,reward_time,command,'clear_no');
+                
+                
                 if score < 2
-                    %Loads color Wheel
-                    
-                    %                     Events = newevent_show_stimulus(Events,fill_wheel,1,locx,locy,instruction_display_time,'screenshot_no','clear_no'); %selected segment
-                    
-                    command =   'load(''selected_segment'');';
-                    Events = newevent_command(Events,reward_time,command,'clear_no'); %selected segment
-                    command =   'load(''colorWheelLocations1'');';
-                    Events = newevent_command(Events,reward_time,command,'clear_no');
-                    command =   'load(''colorWheelLocations2'');';
-                    Events = newevent_command(Events,reward_time,command,'clear_no');
-                    command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,reward_time,command,'clear_no');
-                    command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,reward_time,command,'clear_no');
-                    
-                    %Wheel borders
-                    Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    
-                    Events = newevent_show_stimulus(Events,reward,1,locx,rewardtext_locy+y_offset-100,reward_time,'screenshot_no','clear_no'); %reward text
+                    Events = newevent_show_stimulus(Events,reward,1,locx,rewardtext_locy+y_offset-100,reward_time,'screenshot_no','clear_no'); %"you won a token!'
                 else
-                    %Loads color Wheel
-                    command =   'load(''selected_segment'');';
-                    Events = newevent_command(Events,reward_time,command,'clear_yes'); %selected segment
-                    command =   'load(''colorWheelLocations1'');';
-                    Events = newevent_command(Events,reward_time,command,'clear_yes');
-                    command =   'load(''colorWheelLocations2'');';
-                    Events = newevent_command(Events,reward_time,command,'clear_yes');
-                    command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,reward_time,command,'clear_yes');
-                    command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,reward_time,command,'clear_no');
-                    
-                    %Wheel borders
-                    Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-                    
-                    Events = newevent_show_stimulus(Events,reward,3,locx,rewardtext_locy+y_offset-100,reward_time,'screenshot_no','clear_no'); %reward text
+                    Events = newevent_show_stimulus(Events,reward,3,locx,rewardtext_locy+y_offset-100,reward_time,'screenshot_no','clear_no'); %"you won ANOTHER token!"
                 end
                 
                 if load_points_wheel
@@ -507,15 +463,15 @@ elseif strcmp(Modeflag,'InitializeTrial')
                     loadpointswheel
                 end
                 
-                %                 Events = newevent_show_stimulus(Events,reward,4,locx,locy+75+y_offset,reward_time,'screenshot_no','clear_no');
-                %                 Events = newevent_show_stimulus(Events,40,score,locx,locy+125+y_offset,reward_time,'screenshot_no','clear_no');
+                %Spinning token
                 if spin < 5
-                    Events = newevent_show_stimulus(Events,token,spin,locx,token_locy+y_offset,reward_time,'screenshot_no','clear_no'); %token
+                    Events = newevent_show_stimulus(Events,token,spin,locx,token_locy+y_offset,reward_time,'screenshot_no','clear_no');
                 elseif spin == 5 || spin == 10
-                    Events = newevent_show_stimulus(Events,token,1,locx,token_locy+y_offset,reward_time,'screenshot_no','clear_no'); %token
+                    Events = newevent_show_stimulus(Events,token,1,locx,token_locy+y_offset,reward_time,'screenshot_no','clear_no');
                 else
-                    Events = newevent_show_stimulus(Events,token,spin-5,locx,token_locy+y_offset,reward_time,'screenshot_no','clear_no'); %token
+                    Events = newevent_show_stimulus(Events,token,spin-5,locx,token_locy+y_offset,reward_time,'screenshot_no','clear_no');
                 end
+                
             end
             
             %Didn't win a token :'(
@@ -525,36 +481,38 @@ elseif strcmp(Modeflag,'InitializeTrial')
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1
             %                         save('segment_score','segment_score');
             %             save('pointsWheelLocations','pointsWheelLocations1','pointsWheelLocations2','seg_values','change_spot','segment_response','segment_score');
-            load('scorecolormatrix');
-            [~, scorecolormatrix] = show_score(segment_score,add,scorecolormatrix,win,seg_values,segment_response,change_spot);
-            
-                %Loads color Wheel
-                    command =   'load(''selected_segment'');';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_yes'); %selected segment
-                    command =   'load(''colorWheelLocations1'');';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
-                    command =   'load(''colorWheelLocations2'');';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
-                    command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_yes');
-                    command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
-                    Events = newevent_command(Events,instruction_display_time,command,'clear_no');
-                    
-            
-            %Loads color wheel
-            if load_points_wheel
-                points_time = instruction_display_time;
-                loadpointswheel
-            end
+            %             load('scorecolormatrix');
+            scorecolormatrix=csvread('scorecolormatrix.csv');
+            [add] = show_score(segment_score,add,scorecolormatrix,win,seg_values,segment_response,change_spot,Trial);
             
             %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_yes');
             Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
             
-            Events = newevent_show_stimulus(Events,reward,2,locx,rewardtext_locy+y_offset-100,instruction_display_time,'screenshot_no','clear_no'); %no reward
+            %Loads segmented wheel
+            command =   'load(''selected_segment'');';
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no'); %selected segment
+            command =   'load(''colorWheelLocations1'');';
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+            command =   'load(''colorWheelLocations2'');';
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+            command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, selected_segment'', [], 1);';
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+            command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, selected_segment'', [], 1);';
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+            
+            %Loads points wheel
+            if load_points_wheel
+                points_time = instruction_display_time;
+                loadpointswheel
+            end
+            
+            %"No reward" test
+            Events = newevent_show_stimulus(Events,reward,2,locx,rewardtext_locy+y_offset-100,instruction_display_time,'screenshot_no','clear_no');
+            
             %Display red X mark
             Events = newevent_show_stimulus(Events,left_x,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,right_x,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
@@ -565,67 +523,65 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %% Pariticipant response display %%
     
     if Trial <= Numtrials
-        for color_question = 1
-            
-            if bot_mode
-                %Show cursor
-                Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,0);
-                %Mouse Parameters
-                bot_response = CreateResponseStruct;
-                Events = newevent_show_stimulus(Events,bot_but,1,locx,locy,seg_wheel_time,'screenshot_no','clear_yes');
-                Events = newevent_show_stimulus(Events,bot_but_frame,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-                %text
-                Events = newevent_show_stimulus(Events,whose_turn,1,locx,locy-400,seg_wheel_time,'screenshot_no','clear_no');
-                Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,seg_wheel_time,'screenshot_no','clear_no');
-                Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,seg_wheel_time,'screenshot_no','clear_no');
-                %Mouse Click Windows
-                bot_buttonlocs{1}=[locx,locy,300];
-                bot_response.spatialwindows = bot_buttonlocs;
-                %                                 Events = newevent_show_stimulus(Events,fill_wheel,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no'); %selected segment
-                [Events bot_button_click] = newevent_mouse(Events,seg_wheel_time,bot_response);
-                clear_screen = 'clear_no';
-            else
-                clear_screen = 'clear_yes';
-            end
-            
-            Trial_Export.color_probe = color_probe;
-            
-            %Mouse appears
-            Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,Parameters.mouse.cursorsize);
-            
-            %Loads color Wheel
-            command =   'load(''colorWheelLocations1'');';
-            Events = newevent_command(Events,seg_wheel_time,command,clear_screen);
-            command =   'load(''colorWheelLocations2'');';
-            Events = newevent_command(Events,seg_wheel_time,command,clear_screen);
-            command =   'load(''wheel360'');';
-            Events = newevent_command(Events,seg_wheel_time,command,clear_screen);
-            command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, fullcolormatrix'', [], 1);';
-            Events = newevent_command(Events,seg_wheel_time,command,clear_screen);
-            command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, fullcolormatrix'', [], 1);';
-            Events = newevent_command(Events,seg_wheel_time,command,'clear_no');
-            
-            %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            
-            if load_points_wheel
-                points_time = seg_wheel_time;
-                loadpointswheel
-            end
-            
-            if ~bot_mode
-                %Mouse Click Windows
-                mouseresponse_seg.variableInputName='ReportedColor';
-                mouseresponse_seg.variableInputMapping=[1:360;1:360]';
-                mouseresponse_seg.spatialwindows = buttonlocs;
-                %                                 Events = newevent_show_stimulus(Events,fill_wheel,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no'); %selected segment
-                [Events,segment_response] = newevent_mouse(Events,seg_wheel_time,mouseresponse_seg);
-                Events = newevent_show_stimulus(Events,whose_turn,2,locx,locy-400,seg_wheel_time,'screenshot_no','clear_no'); %your turn!
-            end
+        
+        if bot_mode
+            %Show cursor
+            Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,0);
+            %Mouse Parameters
+            bot_response = CreateResponseStruct;
+            Events = newevent_show_stimulus(Events,bot_but,1,locx,locy,seg_wheel_time,'screenshot_no','clear_yes');
+            Events = newevent_show_stimulus(Events,bot_but_frame,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            %text
+            Events = newevent_show_stimulus(Events,whose_turn,1,locx,locy-400,seg_wheel_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,seg_wheel_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,seg_wheel_time,'screenshot_no','clear_no');
+            %Mouse Click Windows
+            bot_buttonlocs{1}=[locx,locy,300];
+            bot_response.spatialwindows = bot_buttonlocs;
+            %                                 Events = newevent_show_stimulus(Events,fill_wheel,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no'); %selected segment
+            [Events bot_button_click] = newevent_mouse(Events,seg_wheel_time,bot_response);
+            clear_screen = 'clear_no';
+        else
+            clear_screen = 'clear_yes';
+        end
+        
+        Trial_Export.color_probe = color_probe;
+        
+        %Mouse appears
+        Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,Parameters.mouse.cursorsize);
+        
+        %Wheel borders
+        Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,seg_wheel_time,'screenshot_no',clear_screen);
+        Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+        
+        %Loads segmented wheel
+        command =   'load(''colorWheelLocations1'');';
+        Events = newevent_command(Events,seg_wheel_time,command,'clear_no');
+        command =   'load(''colorWheelLocations2'');';
+        Events = newevent_command(Events,seg_wheel_time,command,'clear_no');
+        command =   'load(''wheel360'');';
+        Events = newevent_command(Events,seg_wheel_time,command,'clear_no');
+        command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations1, 10, fullcolormatrix'', [], 1);';
+        Events = newevent_command(Events,seg_wheel_time,command,'clear_no');
+        command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations2, 10, fullcolormatrix'', [], 1);';
+        Events = newevent_command(Events,seg_wheel_time,command,'clear_no');
+        
+        if load_points_wheel
+            points_time = seg_wheel_time;
+            loadpointswheel
+        end
+        
+        if ~bot_mode
+            %Mouse Click Windows
+            mouseresponse_seg.variableInputName='ReportedColor';
+            mouseresponse_seg.variableInputMapping=[1:360;1:360]';
+            mouseresponse_seg.spatialwindows = buttonlocs;
+            %                                 Events = newevent_show_stimulus(Events,fill_wheel,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no'); %selected segment
+            [Events,segment_response] = newevent_mouse(Events,seg_wheel_time,mouseresponse_seg);
+            Events = newevent_show_stimulus(Events,whose_turn,2,locx,locy-400,seg_wheel_time,'screenshot_no','clear_no'); %your turn!
         end
         trial_end_time = seg_wheel_time + .01; %when the trial ends
     else
