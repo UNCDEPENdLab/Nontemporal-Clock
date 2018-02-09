@@ -103,7 +103,6 @@ save('pointsWheelLocations1','pointsWheelLocations1');
 save('pointsWheelLocations2','pointsWheelLocations2');
 save('pointswheel1_endnotch','pointswheel1_endnotch');
 save('pointswheel2_endnotch','pointswheel2_endnotch');
-% ,'seg_values','change_spot');
 
 if strcmp(Modeflag,'InitializeBlock')
     clear Stimuli_sets
@@ -640,38 +639,6 @@ elseif strcmp(Modeflag,'EndTrial')
         Trial_Export.segment_response = 'feedback trial';
         Trial_Export.total_accuracy = 'feedback trial';
     end
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Output Descriptions%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    %accuracy_percentage:
-    %This is a calculation that determines how close the participant's
-    %reported color is to the displayed color.
-    
-    %color_accuracy:
-    %This outputs the distance in color space between the actual color
-    %and the reported color.
-    
-    %color_probe & segment_response:
-    %These outputs are the color value of the square displayed on screen during the trial (color_probe)
-    %and the color value of the color that the participant selected (segment_response).
-    %Colored squares line the circumference, numbered 1-360, with 1 at the rightmost edge.
-    %Values of the squares increase by 1 clockwise around the circle.
-    
-    %total_accuracy:
-    %This is the average of the total of the accuracy percentages across all trials.
-    
-    
-    %%%NOTE%%% Because of how this blockfile runs, feedback is technically given at
-    %%%%%%%%%% the start of the next trial. Therefore, a blank feedback trial is
-    %%%%%%%%%% needed at the end of the last trial in order to give feedback for
-    %%%%%%%%%% that trial. The output for that trial will have all output
-    %%%%%%%%%% variables set to 'feedback trial.'
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
 elseif strcmp(Modeflag,'EndBlock')
 else

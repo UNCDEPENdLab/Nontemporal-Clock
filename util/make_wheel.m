@@ -1,4 +1,3 @@
-% load('wheel360')
 fullcolormatrix = zeros(360,3);
 for j = 1:6
     for i = 1:60

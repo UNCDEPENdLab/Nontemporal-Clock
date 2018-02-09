@@ -1,6 +1,3 @@
-% function
-% show_selected_segment(seg_values,color_response)
-
 load('wheel360');
 
 [selected_row,w,x]=find(seg_values==segment_response);
@@ -24,14 +21,8 @@ for wheel = 1:num_wheel_boxes
             selected_segment(wheel,:) = fullcolormatrix(wheel,:);
         end
     else
-%         if add_wheel_borders
-%             selected_segment(wheel,:) = Parameters.backgroundcolor;
-%         else
             selected_segment(wheel,:) = Parameters.backgroundcolor - 75;
-%         end
     end
 end
-% sca;keyboard
-save('selected_segment','selected_segment');
 
-% end
+save('selected_segment','selected_segment');
