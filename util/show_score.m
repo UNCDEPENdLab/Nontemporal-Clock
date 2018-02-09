@@ -15,7 +15,12 @@ if ~add
     seg_score_startingpoint = change_spot(selected_row) - 1;
     
     current_seg_score = segment_score(selected_row,2);
+    
+    if current_seg_score == 1
     seg_score_currentpoint = seg_score_startingpoint +  current_seg_score - num_wheel_boxes/num_segments;
+    else
+            seg_score_currentpoint = seg_score_startingpoint +  current_seg_score - num_wheel_boxes/num_segments + current_seg_score - 1;
+    end
     
     seg_scorekeeper(seg_score_currentpoint)=win+1;
     
@@ -29,8 +34,10 @@ if ~add
                 if current_row == score_row
                     if seg_scorekeeper(i) == 2
                         scorecolormatrix(i,:) = [255 255 0];
+                                                scorecolormatrix(i+1,:) = [255 255 0];
                     else
                         scorecolormatrix(i,:) = [255 0 0];
+                                                scorecolormatrix(i+1,:) = [255 0 0];
                     end
                 end
             end

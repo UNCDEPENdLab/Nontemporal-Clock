@@ -17,7 +17,7 @@ Numtrials = 50 + 1; %Because of the way this block file runs, set Numtrials equa
 test_mode = 1; %test mode deactivates instructions atm
 load_points_wheel = 1; %load the points wheel?
 type = 3; %paradigm type: 1 = probabilities average(40-60%), 2 = uneven, 3 = gold mine(one:75%,rest:40%)
-turn_bot_off = 1; %turn off bot mode?
+turn_bot_off = 0; %turn off bot mode?
 
 %Create segmented wheel
 num_segments = 8; %number of segments
