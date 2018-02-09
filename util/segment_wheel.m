@@ -4,7 +4,7 @@ function [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_whe
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Enter the number of segments you want to create
 if nargin < 1
-    num_segments = 12;
+    num_segments = 8;
     seg_colors{1} = [0 0 0];
     seg_colors{2} = [255 255 255];
 end
