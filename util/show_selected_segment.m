@@ -21,7 +21,7 @@ for wheel = 1:num_wheel_boxes
             selected_segment(wheel,:) = fullcolormatrix(wheel,:);
         end
     else
-            selected_segment(wheel,:) = Parameters.backgroundcolor - 75;
+            selected_segment(wheel,:) = repmat(255,1,3);
     end
 end
 

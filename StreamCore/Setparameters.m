@@ -12,7 +12,7 @@ function Parameters = Setparameters(Parameters,Userdata)
 % Setparameters is called at the start of the experiment and at the start of each
 % block. Establishes a set of parameter variables needed for the set up and
 % running of Stream. Default values will be set for any value not specified
-% within the blockfile. 
+% within the blockfile.
 %
 % Input
 %    Parameters: Parameter set for this experiment if previously set
@@ -62,8 +62,13 @@ end
 Parameters.skipsynctests = 1;
 Parameters.datafilename = 'ExpSub';    %data file prefix
 % Parameters.whichscreen = max(Screen('Screens'));  %which of the displays do we use?  (only relevant if there are multiple monitors)
-Parameters.whichscreen = 0;  %which of the displays do we use?  (only relevant if there are multiple monitors)
-Parameters.backgroundcolor = [255 255 255];   %what color is the background screen in RGB (0-255)
+if sum(Screen('Screens'))
+    Parameters.whichscreen = 2;
+else
+    Parameters.whichscreen = 0;  %which of the displays do we use?  (only relevant if there are multiple monitors)
+end
+backcolor = 215;
+Parameters.backgroundcolor = repmat(backcolor,1,3);   %what color is the background screen in RGB (0-255)
 Parameters.disableinput = 0;   %turn off all user input
 Parameters.interruptible = 1;   % if set to 1, users can abort the experiment in between trials by pressing escape
 Parameters.slowmotionfactor = 1;  %slow down the whole presentations sequence by the amount indicated  (1.0 = normal speed, 5.0 = 5x slower, .5 = 2x faster)
@@ -117,10 +122,10 @@ Parameters.saveevery = 1;   %save a backup file after every X trials
 %%%% Parameters pertaining to Parallel port
 Parameters.ParallelPort = 0;
 Parameters.MARKERS = struct( ...            %%%%%%%%%%%%%%%%%%%%  DEDICATED MARKERS  DO NOT MODIFY THESE
-    'STARTEXP',	1,...                               %AUTOMATICALLY GENERATED %%             
+    'STARTEXP',	1,...                               %AUTOMATICALLY GENERATED %%
     'BEGINBLOCK',	2, ...
     'BLOCKTYPE',	3, ...
-    'BEGINTRIAL',	13, ...          
+    'BEGINTRIAL',	13, ...
     'FIXATION',	15,...
     'INTRIALVALIDKEYRESPONSE',18,...   %AUTOMATICALLY GENERATED %%used by reactiontime keypress events (action type 2)
     'INTRIALINVALIDKEYRESPONSE',19,...   %AUTOMATICALLY GENERATED %%%used by reactiontime keypress events (action type 2)
@@ -187,11 +192,11 @@ Parameters.MARKERS = struct( ...            %%%%%%%%%%%%%%%%%%%%  DEDICATED MARK
     'fa',103,...
     'Fixation_cross_change',104,...
     'EyesGood',105,...
-    'EyesBad',106,... 
+    'EyesBad',106,...
     'STIMULI',110);
 
 
-    Parameters.MARKERPAUSE = .025;   %pause between triggers in seconds (.025 = 25 msec)
+Parameters.MARKERPAUSE = .025;   %pause between triggers in seconds (.025 = 25 msec)
 Parameters.invalidkeys_ParallelPortmark = 0;
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -206,7 +211,7 @@ Parameters.eyecalibrate = 0;
 Parameters.edffilename = 'DEF';  %EDF filename can only be a total of 8 characters!  So remember that the subject number will be added to this
 Parameters.eyerealtime =1;    %track of the eye position in real time in *addition* to storing the information on the eyetrack computer  (warning, may slow down your experiment)
 Parameters.eyedatastore =1 ;    %store every eye data point (warning,larger data files!)  You MUST have eyerealtime enabled for this to work
-Parameters.eyesamplingrate = 40;   %this is used to calculate how much space is required to store all of the eye data.  This is an estimate of how manu times per second the eyes will move 
+Parameters.eyesamplingrate = 40;   %this is used to calculate how much space is required to store all of the eye data.  This is an estimate of how manu times per second the eyes will move
 Parameters.eyecursor =2;%display a cursor where the eyes are:  1 = always on,  2 = F1 triggered
 Parameters.eyecursorcolor = [255,0,0]; %Set the color of the eye cursor
 Parameters.eyecursorthreshold = 5;  %what is the threshold in pixels above which we redraw the eye cursor?
