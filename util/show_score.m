@@ -6,6 +6,8 @@ if ~add
         clear seg_scorekeeper
     end
     
+    global scorewheelcolor
+    
     persistent seg_scorekeeper firstslotcolor
     
     csvwrite('segment_score',segment_score);
@@ -36,16 +38,18 @@ if ~add
                 if current_row == score_row
                     if seg_scorekeeper(i) == 2
                         scorecolormatrix(i,:) = repmat(win_color_value,1,3);
+                        scorecolormatrix(i,:) = [255 255 0];
                     else
                         scorecolormatrix(i,:) = [240 0 0];
                     end
-                    if score_row == 1 && segment_score(selected_row,2) ==1
+                    if score_row == 1 && segment_score(selected_row,2) == 1
                         scorecolormatrix(360,:) = scorecolormatrix(i,:);
+                        scorecolormatrix(360,:) = repmat(scorewheelcolor,1,3);
+%                         scorecolormatrix(i+1,:) = [255 255 255];
                         firstslotcolor = scorecolormatrix(360,:);
-%                     elseif score_row == 1 && segment_score(selected_row,2) > 1
-%                         scorecolormatrix(i,:) = scorecolormatrix(i,:);
                     else
-                        scorecolormatrix(i+1,:) = scorecolormatrix(i,:);
+%                         scorecolormatrix(i+1,:) = scorecolormatrix(i,:);
+                        scorecolormatrix(i+1,:) = repmat(scorewheelcolor,1,3);
                     end
                 end
             end

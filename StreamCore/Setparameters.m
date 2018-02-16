@@ -67,7 +67,7 @@ if sum(Screen('Screens'))
 else
     Parameters.whichscreen = 0;  %which of the displays do we use?  (only relevant if there are multiple monitors)
 end
-backcolor = 215;
+backcolor = 255;
 Parameters.backgroundcolor = repmat(backcolor,1,3);   %what color is the background screen in RGB (0-255)
 Parameters.disableinput = 0;   %turn off all user input
 Parameters.interruptible = 1;   % if set to 1, users can abort the experiment in between trials by pressing escape

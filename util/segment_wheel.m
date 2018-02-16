@@ -1,6 +1,8 @@
 function [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders)
 %This function creates a 360 degree color wheel, segmented by distinct colors
 
+global scorewheelcolor
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Enter the number of segments you want to create
 if nargin < 1
@@ -47,7 +49,7 @@ if add_wheel_borders
     end
 end
 
-scorewheelcolor = 255;
+scorewheelcolor = 190;
 scorecolormatrix = repmat(scorewheelcolor,num_wheel_boxes,3);
 for add_partition = 1:num_segments
     if add_partition == num_segments

@@ -1,3 +1,5 @@
+global scorewheelcolor
+
 load('wheel360');
 
 [selected_row,w,x]=find(seg_values==segment_response);
@@ -21,7 +23,7 @@ for wheel = 1:num_wheel_boxes
             selected_segment(wheel,:) = fullcolormatrix(wheel,:);
         end
     else
-            selected_segment(wheel,:) = repmat(255,1,3);
+            selected_segment(wheel,:) = repmat(scorewheelcolor,1,3);
     end
 end
 
