@@ -137,15 +137,13 @@ for i = 1:num_wheel_boxes
     buttonlocs{i} = [locationWheelLocations(1,i),locationWheelLocations(2,i),30];
 end
 
-loc_off = -2;
-
 % firstpoint1 = pointsWheelLocations1(:,1);
-firstpoint1(1,1) = mean(round(pointsWheelLocations1(1,1)),round(pointsWheelLocations1(1,2)));
-firstpoint1(2,1) = mean(round(pointsWheelLocations1(2,1)),round(pointsWheelLocations1(2,2)))+loc_off;
+firstpoint1(1,1) = mean(round(pointsWheelLocations1(1,1)),round(pointsWheelLocations1(1,2)))
+firstpoint1(2,1) = mean(round(pointsWheelLocations1(2,1)),round(pointsWheelLocations1(2,2)))
 % firstpoint1(2,:) = firstpoint1(2,:) - .1;
 % firstpoint2 = pointsWheelLocations2(:,1);
-firstpoint2(1,1) = mean(round(pointsWheelLocations2(1,1)),round(pointsWheelLocations2(1,2)));
-firstpoint2(2,1) = mean(round(pointsWheelLocations2(2,1)),round(pointsWheelLocations2(2,2)))+loc_off;
+firstpoint2(1,1) = mean(round(pointsWheelLocations2(1,1)),round(pointsWheelLocations2(,2)))
+firstpoint2(2,1) = mean(round(pointsWheelLocations2(2,1)),round(pointsWheelLocations2(2,2)))
 % firstpoint2(2,:) = firstpoint2(2,:) - .1;
 firstcolor = scorecolormatrix(360,:);
 
