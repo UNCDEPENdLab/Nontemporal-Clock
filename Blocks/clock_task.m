@@ -60,13 +60,15 @@ if type ~= 2
     bot_choices = randperm(num_wheel_boxes);
 else
     try
-    bot_choices = Shuffle(possible_bot_choices);
+        bot_choices = Shuffle(possible_bot_choices);
     catch
-            bot_choices = shuffle(possible_bot_choices);
+        bot_choices = shuffle(possible_bot_choices);
     end
 end
 
 csvwrite('scorecolormatrix.csv',scorecolormatrix);
+scorecolormatrix2 = scorecolormatrix;
+csvwrite('scorecolormatrix2.csv',scorecolormatrix2);
 save('seg_values','seg_values');
 
 %Enables mouse
@@ -96,12 +98,12 @@ pointsWheelRadius1 = colorWheelRadius1 + 40; %radius of color wheel
 pointsWheelLocations1 = [cosd(1:num_wheel_boxes).*pointsWheelRadius1 + Parameters.centerx; ...
     sind(1:num_wheel_boxes).*pointsWheelRadius1 + Parameters.centery];
 
-pointswheel1_endnotch = [cosd(360).*pointsWheelRadius1 + Parameters.centerx; ...
-    sind(360).*pointsWheelRadius1 + Parameters.centery];
+% pointswheel1_endnotch = [cosd(360).*pointsWheelRadius1 + Parameters.centerx; ...
+%     sind(360).*pointsWheelRadius1 + Parameters.centery];
 
 pointsWheelLocations1(2,360) = pointsWheelLocations1(2,360) - 0.1;
 
-%Points Wheel (Outer)
+%Points Wheel 1 (Outer)
 pointsWheelRadius2 = pointsWheelRadius1 + 8; %radius of color wheel
 %Cartesian Conversion
 pointsWheelLocations2 = [cosd(1:num_wheel_boxes).*pointsWheelRadius2 + Parameters.centerx; ...
@@ -111,6 +113,31 @@ pointswheel2_endnotch = [cosd(360).*pointsWheelRadius2 + Parameters.centerx; ...
     sind(360).*pointsWheelRadius2 + Parameters.centery];
 
 pointsWheelLocations2(2,360) = pointsWheelLocations2(2,360) - 0.1;
+
+
+%Points Wheel 2 (Inner)
+pointsWheel2Radius1 = pointsWheelRadius1 - 19; %radius of color wheel
+%Cartesian Conversion
+pointsWheel2Locations1 = [cosd(1:num_wheel_boxes).*pointsWheel2Radius1 + Parameters.centerx; ...
+    sind(1:num_wheel_boxes).*pointsWheel2Radius1 + Parameters.centery];
+
+pointswheel1_endnotch = [cosd(360).*pointsWheelRadius1 + Parameters.centerx; ...
+    sind(360).*pointsWheelRadius1 + Parameters.centery];
+
+pointsWheel2Locations1(2,360) = pointsWheel2Locations1(2,360) - 0.1;
+
+%Points Wheel 1 (Outer)
+pointsWheel2Radius2 = pointsWheel2Radius1 + 8; %radius of color wheel
+%Cartesian Conversion
+pointsWheel2Locations2 = [cosd(1:num_wheel_boxes).*pointsWheel2Radius2 + Parameters.centerx; ...
+    sind(1:num_wheel_boxes).*pointsWheel2Radius2 + Parameters.centery];
+
+pointswheel2_endnotch = [cosd(360).*pointsWheelRadius2 + Parameters.centerx; ...
+    sind(360).*pointsWheelRadius2 + Parameters.centery];
+
+pointsWheel2Locations2(2,360) = pointsWheel2Locations2(2,360) - 0.1;
+
+
 
 %Location Wheel
 locationWheelRadius = 260; %radius of color wheel
@@ -149,8 +176,17 @@ firstpoint2(2,1) = mean(round(pointsWheelLocations2(2,1)),round(pointsWheelLocat
 % firstpoint2(2,:) = firstpoint2(2,:) - .1;
 firstcolor = scorecolormatrix(360,:);
 
+firstpoint3(1,1) = mean(round(pointsWheel2Locations1(1,1)),round(pointsWheel2Locations1(1,2)));
+firstpoint4(2,1) = mean(round(pointsWheel2Locations1(2,1)),round(pointsWheel2Locations1(2,2)))+loc_off;
+% firstpoint1(2,:) = firstpoint1(2,:) - .1;
+% firstpoint2 = pointsWheelLocations2(:,1);
+firstpoint3(1,1) = mean(round(pointsWheel2Locations2(1,1)),round(pointsWheel2Locations2(1,2)));
+firstpoint4(2,1) = mean(round(pointsWheel2Locations2(2,1)),round(pointsWheel2Locations2(2,2)))+loc_off;
+% firstpoint2(2,:) = firstpoint2(2,:) - .1;
+firstcolor2 = scorecolormatrix2(360,:);
+
 save('colorWheelLocations','colorWheelLocations1','colorWheelLocations2','colorWheelLocations3');
-save('pointsWheelLocations','pointsWheelLocations1','pointsWheelLocations2','firstpoint1','firstpoint2','firstcolor');
+save('pointsWheelLocations','pointsWheelLocations1','pointsWheelLocations2','pointsWheel2Locations1','pointsWheel2Locations2','firstpoint1','firstpoint2','firstpoint3','firstpoint4','firstcolor','firstcolor2');
 save('pointswheel_endnotches','pointswheel1_endnotch','pointswheel2_endnotch');
 
 if strcmp(Modeflag,'InitializeBlock')
@@ -442,7 +478,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             score = score + 1;
             scorecolormatrix=csvread('scorecolormatrix.csv');
-            [add] = show_score(segment_score,add,scorecolormatrix,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments);
+            [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments);
             
             %Wheel borders
             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
@@ -476,7 +512,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             scorecolormatrix=csvread('scorecolormatrix.csv');
-            [add] = show_score(segment_score,add,scorecolormatrix,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments);
+            [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments);
             
             %Wheel borders
             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');

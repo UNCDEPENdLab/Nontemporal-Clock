@@ -8,6 +8,13 @@ Events = newevent_command(Events,points_time,command,'clear_no');
 command =   'Screen(''DrawDots'', Parameters.window, pointsWheelLocations2, 10, scorecolormatrix'', [], 1);';
 Events = newevent_command(Events,points_time,command,'clear_no');
 
+command = 'scorecolormatrix2=csvread(''scorecolormatrix2.csv'');';
+Events = newevent_command(Events,points_time,command,'clear_no');
+command =   'Screen(''DrawDots'', Parameters.window, pointsWheel2Locations1, 10, scorecolormatrix2'', [], 1);';
+Events = newevent_command(Events,points_time,command,'clear_no');
+command =   'Screen(''DrawDots'', Parameters.window, pointsWheel2Locations2, 10, scorecolormatrix2'', [], 1);';
+Events = newevent_command(Events,points_time,command,'clear_no');
+
 % command = 'eval(firstpoint1 = pointsWheelLocations1(:,1)';
 % Events = newevent_command(Events,points_time,command,'clear_no');
 % command = 'eval(firstpoint2 = pointsWheelLocations2(:,2)';
@@ -19,3 +26,7 @@ command =   'Screen(''DrawDots'', Parameters.window, firstpoint1, 5.5, firstcolo
 Events = newevent_command(Events,points_time,command,'clear_no');
 command =   'Screen(''DrawDots'', Parameters.window, firstpoint2, 5.5, firstcolor'', [], 1);';
 Events = newevent_command(Events,points_time,command,'clear_no');
+% command =   'Screen(''DrawDots'', Parameters.window, firstpoint3, 5.5, firstcolor2'', [], 1);';
+% Events = newevent_command(Events,points_time,command,'clear_no');
+% command =   'Screen(''DrawDots'', Parameters.window, firstpoint4, 5.5, firstcolor2'', [], 1);';
+% Events = newevent_command(Events,points_time,command,'clear_no');
