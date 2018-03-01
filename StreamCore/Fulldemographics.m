@@ -83,7 +83,6 @@ if(Parameters.disableinput == 0)   %skip the demographics dialog if we're in dis
     end
     
     %Put the answers into the demodata stucture, which is stored in UserData
-    
     Demodata.s_num = s_num;
     Demodata.s_age = s_age;
     Demodata.s_sex = s_sex;

@@ -29,7 +29,7 @@ Parameters.Streamversion = '2.2.21';
 
 if(nargin > 1)
     %Determine the set of blockfiles that will be run in the experiment:
-    Parameters.blocklist = {'colorgauge' 'colormatching'};
+    Parameters.blocklist = {'clock_task'};
 end
 
 
