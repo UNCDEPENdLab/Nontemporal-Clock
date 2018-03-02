@@ -347,7 +347,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %Bot button text
     bot_but_text = 1110; %click here
     stimstruct = CreateStimStruct('text');
-    stimstruct.stimuli = {'Click here','to continue'};
+    stimstruct.stimuli = {'Click the colored','segment to continue'};
     stimstruct.stimsize = 22;
     Stimuli_sets(bot_but_text) = Preparestimuli(Parameters,stimstruct);
     
@@ -394,7 +394,7 @@ if strcmp(Modeflag,'InitializeBlock')
     bot_choice_count = 0;
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
-    
+    Trial
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
     end
@@ -439,7 +439,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         end
     end
     
-    %     bot_choice_count = bot_choice_count + 1;
+    bot_choice_count = bot_choice_count + 1;
     
     if Trial == change_trial2 & s_con == 1
         s_con = 0;
@@ -546,10 +546,15 @@ elseif strcmp(Modeflag,'InitializeTrial')
             end
             
             %Calculate segment score
-            %             [selected_row,w,x]=find(seg_values==segment_response);
+            bot_choice_count2 = bot_choice_count ;
+            if bot_choice_count2 == 0; bot_choice_count2 = 1; end
+            feedback_choice = bot_choice_row(bot_choice_count2)
+            segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count2)),12);                        [selected_row,w,x]=find(seg_values==segment_response);
+            %                                     segment_response = segment_responses(Trial);
             show_selected_segment;
             segment_score(selected_row,1) = segment_score(selected_row,1) + 1;
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
+            csvwrite('segment_score',segment_score);
             score = score + 1;
             scorecolormatrix=csvread('scorecolormatrix.csv');
             [add score_row] = show_score(Events,points_time,segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
@@ -583,11 +588,16 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_show_stimulus(Events,gnb,1,locx,nickel_locy+y_offset+3,reward_time,'screenshot_no','clear_no');
             
         else %Didn't win a nickel :'(
-%                         segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count)),12);
-%                         [selected_row,w,x]=find(seg_values==segment_response);
-%             show_selected_segment;
+            bot_choice_count2 = bot_choice_count ;
+            if bot_choice_count2 == 0; bot_choice_count2 = 1; end
+            feedback_choice = bot_choice_row(bot_choice_count2)
+            segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count2)),12);
+            %                         segment_response = segment_responses(Trial);
+            [selected_row,w,x]=find(seg_values==segment_response);
+            show_selected_segment;
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             scorecolormatrix=csvread('scorecolormatrix.csv');
+            csvwrite('segment_score',segment_score);
             [add score_row] = show_score(Events,points_time,segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
             
             %Wheel borders
@@ -673,12 +683,17 @@ elseif strcmp(Modeflag,'InitializeTrial')
             full_wheel = 0;
         end
         
-        temp = 1;
-        bot_choice_count = bot_choice_count + 1;
+        %         temp = 1;
+        %         bot_choice_count = bot_choice_count + 1;
         
-        segment_response2 = seg_values(seg_rows(bot_choice_row(bot_choice_count)),12);
+        %         bot_choice_count2 = bot_choice_count - 1;
+        %         if bot_choice_count2 == 0; bot_choice_count2 = 1; end
+        bot_choice_count2 = bot_choice_count+1;
+        click_choice = bot_choice_row(bot_choice_count2)
+        segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count2)),12);
         show_selected_segment;
-        temp = 0;
+        segment_responses(Trial) = segment_response;
+        %         temp = 0;
         loadclickablewheel;
         
         if load_points_wheel

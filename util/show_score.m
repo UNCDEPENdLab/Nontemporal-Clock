@@ -2,6 +2,8 @@ function [add score_row] = show_score(Events,points_time,segment_score,add,score
 
 if ~add
     
+    segment_score = csvread('segment_score');
+    
     if Trial == 1
         clear seg_scorekeeper seg_scorekeeper2
     end
@@ -12,33 +14,33 @@ if ~add
     
     persistent seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
     
-    if Trial == change_trial2 + 1
-        clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
-        seg_scorekeeper = zeros(1,60);
-        seg_scorekeeper2 = zeros(1,60);
-%         segment_score = zeros(num_segments,2);
-        num_wheel_boxes = 360;
-        %Create segmented wheel
-        num_segments = 8; %number of segments
-        seg_colors{1} = [0 105 255]; %colors of segments
-        seg_colors{2} = seg_colors{1};
-        add_wheel_borders = 1;
-        [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
-        scorecolormatrix2 = scorecolormatrix;
-        csvwrite('scorecolormatrix',scorecolormatrix);
-        csvwrite('scorecolormatrix2',scorecolormatrix2);
-        loadpointswheel;
-        %         for wheel = 1:360
-        %             if wheel ~= change_spot
-        %             scorecolormatrix(wheel,:) = repmat(scorewheelcolor,1,3);
-        %             else
-        %                 scorecolormatrix(wheel,:) = repmat(0,1,3);
-        %             end
-        %         end
-    end
+%     if Trial == change_trial2 + 1
+%         clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
+%         seg_scorekeeper = zeros(1,60);
+%         seg_scorekeeper2 = zeros(1,60);
+% %         segment_score = zeros(num_segments,2);
+%         num_wheel_boxes = 360;
+%         %Create segmented wheel
+%         num_segments = 8; %number of segments
+%         seg_colors{1} = [0 105 255]; %colors of segments
+%         seg_colors{2} = seg_colors{1};
+%         add_wheel_borders = 1;
+%         [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
+%         scorecolormatrix2 = scorecolormatrix;
+%         csvwrite('scorecolormatrix',scorecolormatrix);
+%         csvwrite('scorecolormatrix2',scorecolormatrix2);
+%         loadpointswheel;
+%         %         for wheel = 1:360
+%         %             if wheel ~= change_spot
+%         %             scorecolormatrix(wheel,:) = repmat(scorewheelcolor,1,3);
+%         %             else
+%         %                 scorecolormatrix(wheel,:) = repmat(0,1,3);
+%         %             end
+%         %         end
+%     end
     
-    csvwrite('segment_score',segment_score);
-    load('seg_values','seg_values');
+%     csvwrite('segment_score',segment_score);
+%     load('seg_values','seg_values');
     [selected_row,w,x]=find(seg_values==segment_response);
     
     seg_score_startingpoint = change_spot(selected_row) - 1;
@@ -55,11 +57,11 @@ if ~add
         seg_score_currentpoint = seg_score_startingpoint +  current_seg_score - num_wheel_boxes/num_segments + current_seg_score - 1;
     end
     
-    if selected_row == 1 && current_seg_score > 1
-        seg_score_currentpoint = seg_score_startingpoint +  current_seg_score - num_wheel_boxes/num_segments + current_seg_score - 2;
-    end
+%     if selected_row == 1 && current_seg_score > 1
+%         seg_score_currentpoint = seg_score_startingpoint +  current_seg_score - num_wheel_boxes/num_segments + current_seg_score - 2;
+%     end
     
-    score_offset = 23;
+    score_offset = 22;
     
     try
         if current_seg_score < score_offset
@@ -105,9 +107,7 @@ if ~add
         %         scorecolormatrix(1,:) = firstslotcolor;
         scorecolormatrix(1,:) = repmat(scorewheelcolor,1,3);
     end
-    
-    csvwrite('scorecolormatrix.csv',scorecolormatrix);
-    
+        
     try
         for i = 1:length(seg_scorekeeper2)
             if seg_scorekeeper2(i) > 0
@@ -135,10 +135,30 @@ if ~add
     catch
         sca;keyboard
     end
+    
     try
         scorecolormatrix2(360,:) = firstslotcolor2;
         scorecolormatrix2(1,:) = repmat(scorewheelcolor2,1,3);
     end
+    
+    for add_partition = 1:num_segments
+        if add_partition == num_segments
+            scorecolormatrix(359,:) = [0 0 0];
+            %         scorecolormatrix(359,:) = repmat(scorewheelcolor,1,3);
+        else
+            scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
+        end
+    end
+    
+    for add_partition = 1:num_segments
+        if add_partition == num_segments
+            scorecolormatrix2(359,:) = [0 0 0];
+            %         scorecolormatrix(359,:) = repmat(scorewheelcolor,1,3);
+        else
+            scorecolormatrix2(change_spot(add_partition)-1,:) = [0 0 0];
+        end
+    end
+        csvwrite('scorecolormatrix.csv',scorecolormatrix);
     
     csvwrite('scorecolormatrix2.csv',scorecolormatrix2);
     
