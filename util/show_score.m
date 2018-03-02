@@ -1,4 +1,4 @@
-function [add] = show_score(Events,points_time,segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial)
+function [add score_row] = show_score(Events,points_time,segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2)
 
 if ~add
     
@@ -12,7 +12,7 @@ if ~add
     
     persistent seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
     
-    if Trial == change_trial + 1
+    if Trial == change_trial2 + 1
         clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
         seg_scorekeeper = zeros(1,60);
         seg_scorekeeper2 = zeros(1,60);
@@ -45,7 +45,7 @@ if ~add
     
     current_seg_score = segment_score(selected_row,2);
     
-    if Trial == change_trial + 1
+    if Trial == change_trial2 + 1
         current_seg_score = 1;
     end
     
@@ -59,7 +59,7 @@ if ~add
         seg_score_currentpoint = seg_score_startingpoint +  current_seg_score - num_wheel_boxes/num_segments + current_seg_score - 2;
     end
     
-    score_offset = 22;
+    score_offset = 23;
     
     try
         if current_seg_score < score_offset

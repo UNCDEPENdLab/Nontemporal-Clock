@@ -51,6 +51,8 @@ end
 
 scorewheelcolor = 190;
 scorecolormatrix = repmat(scorewheelcolor,num_wheel_boxes,3);
+basecolormatrix = repmat(215,num_wheel_boxes,3);
+save('basecolormatrix','basecolormatrix');
 for add_partition = 1:num_segments
     if add_partition == num_segments
         scorecolormatrix(359,:) = [0 0 0];
