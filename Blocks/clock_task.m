@@ -548,7 +548,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             %Calculate segment score
             bot_choice_count2 = bot_choice_count ;
             if bot_choice_count2 == 0; bot_choice_count2 = 1; end
-            feedback_choice = bot_choice_row(bot_choice_count2)
+            %             feedback_choice = bot_choice_row(bot_choice_count2)
             segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count2)),12);                        [selected_row,w,x]=find(seg_values==segment_response);
             %                                     segment_response = segment_responses(Trial);
             show_selected_segment;
@@ -590,7 +590,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         else %Didn't win a nickel :'(
             bot_choice_count2 = bot_choice_count ;
             if bot_choice_count2 == 0; bot_choice_count2 = 1; end
-            feedback_choice = bot_choice_row(bot_choice_count2)
+            %             feedback_choice = bot_choice_row(bot_choice_count2)
             segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count2)),12);
             %                         segment_response = segment_responses(Trial);
             [selected_row,w,x]=find(seg_values==segment_response);
@@ -689,8 +689,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
         %         bot_choice_count2 = bot_choice_count - 1;
         %         if bot_choice_count2 == 0; bot_choice_count2 = 1; end
         bot_choice_count2 = bot_choice_count+1;
-        click_choice = bot_choice_row(bot_choice_count2)
-        segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count2)),12);
+        click_choice = bot_choice_row(bot_choice_count2);
+        %         try
+        %         click_choice = feedback_choice;
+        %         end
+        % feedback_choice = seg_values(seg_rows(click_choice+1),12);
+        segment_response = seg_values(seg_rows(click_choice),12);
         show_selected_segment;
         segment_responses(Trial) = segment_response;
         %         temp = 0;
