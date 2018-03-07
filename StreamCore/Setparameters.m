@@ -63,7 +63,7 @@ Parameters.skipsynctests = 1;
 Parameters.datafilename = 'ExpSub';    %data file prefix
 % Parameters.whichscreen = max(Screen('Screens'));  %which of the displays do we use?  (only relevant if there are multiple monitors)
 if sum(Screen('Screens'))
-    Parameters.whichscreen = 2;
+    Parameters.whichscreen = 1;
 else
     Parameters.whichscreen = 0;  %which of the displays do we use?  (only relevant if there are multiple monitors)
 end

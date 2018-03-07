@@ -2,11 +2,7 @@ global scorewheelcolor
 
 load('wheel360');
 
-if temp == 0
 [selected_row,w,x]=find(seg_values==segment_response);
-else
-[selected_row,w,x]=find(seg_values==segment_response2);
-end
 
 current_row = 1;
 for wheel = 1:num_wheel_boxes

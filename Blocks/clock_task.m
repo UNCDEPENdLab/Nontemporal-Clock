@@ -36,7 +36,7 @@ if strcmp(Modeflag,'InitializeBlock')
     
     %When the instructions will be displayed from the start of the experiment (Trial 1)
     instruction_display_time = 0;
-    reward_time = instruction_display_time;
+    reward_time = instruction_display_time+.01;
     
     %When the segment wheel and color question will appear on pre-surprise trials (after retention)
     seg_wheel_time = instruction_display_time + 2;
@@ -51,7 +51,7 @@ if strcmp(Modeflag,'InitializeBlock')
     
     %Create segments on click wheel
     [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
-    
+    scorecolormatrices{1} = scorecolormatrix;
     rand_seg_rows = randperm(num_segments);
     if s_con == 1
         seg_rows = rand_seg_rows(1:(num_segments/2));
@@ -159,8 +159,6 @@ if strcmp(Modeflag,'InitializeBlock')
         sind(360).*pointsWheelRadius2 + Parameters.centery];
     
     pointsWheel2Locations2(2,360) = pointsWheel2Locations2(2,360) - 0.1;
-    
-    
     
     %Location Wheel
     locationWheelRadius = 260; %radius of color wheel
@@ -378,6 +376,7 @@ if strcmp(Modeflag,'InitializeBlock')
         probs = [0.4 0.4 0.4 0.75];
     end
     
+    probs=[1 1 1 1]; %%%
     probs = Shuffle(probs);
     prob_count = 1;
     
@@ -390,11 +389,13 @@ if strcmp(Modeflag,'InitializeBlock')
     
     score = 0;
     
-    bot_mode = 1;
+    bot_mode = 1
     bot_choice_count = 0;
+    ready_for_score = 0;
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
     Trial
+    
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
     end
@@ -410,7 +411,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     change_trial = 33; change_trial2 = 64; change_trial3 = 95;
     if Trial == change_trial || Trial == change_trial3 || turn_bot_off
         bot_choice_count = 0;
-        bot_mode = 0;
+        bot_mode = 0
         if s_con==1;crows=8;num_choices=4;else crows=4;num_choices=8;end
         bot_choice_row = 0;
         for crow = 1:crows
@@ -420,14 +421,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 bot_choice_row(end+1:end+num_choices) = randperm(num_choices);
             end
         end
-        %     else
-        %         bot_mode = 1;
     end
     
-    %     if Trial < change_trial || (Trial > change_trial && Trial < change_trial2) || (Trial > change_trial2 && Trial < change_trial3)
     if Trial == change_trial2 && ~turn_bot_off
         bot_choice_count = 0;
-        bot_mode = 1;
+        bot_mode = 1
         if s_con==1;crows=8;num_choices=4;else crows=4;num_choices=8;end
         bot_choice_row = 0;
         for crow = 1:crows
@@ -439,7 +437,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
         end
     end
     
+    %Find bot's current choice
     bot_choice_count = bot_choice_count + 1;
+    click_choice = bot_choice_row(bot_choice_count);
+    segment_response = seg_values(seg_rows(click_choice),12);
     
     if Trial == change_trial2 & s_con == 1
         s_con = 0;
@@ -470,6 +471,83 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     temp = 0;
     
+    %%
+    if Trial <= Numtrials
+        seg_wheel_time = instruction_display_time;
+        if bot_mode
+            %Show cursor
+            Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,0);
+            %Mouse Parameters
+            bot_response = CreateResponseStruct;
+            %Text
+            Events = newevent_show_stimulus(Events,whose_turn,1,locx,locy-400,instruction_display_time,'screenshot_no','clear_no');
+            if toggle_botbutton
+                %Bot Button
+                Events = newevent_show_stimulus(Events,bot_but,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+                Events = newevent_show_stimulus(Events,bot_but_frame,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+                %Bot Button Text
+                Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,instruction_display_time,'screenshot_no','clear_no');
+                Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,instruction_display_time,'screenshot_no','clear_no');
+                %Mouse Click Windows
+                bot_buttonlocs{1}=[locx,locy,200];
+                bot_response.spatialwindows = bot_buttonlocs;
+                if ~test_mode
+                    %                     [Events bot_button_click] = newevent_mouse(Events,instruction_display_time,bot_response);
+                end
+            else
+                %Bot Instructions
+                Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,instruction_display_time,'screenshot_no','clear_no');
+                Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,instruction_display_time,'screenshot_no','clear_no');
+            end
+            clear_screen = 'clear_no';
+        else
+            clear_screen = 'clear_yes';
+        end
+        
+        %Mouse appears
+        Events = newevent_mouse_cursor(Events,instruction_display_time,locx,locy,Parameters.mouse.cursorsize);
+        
+        %Wheel borders
+        Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no',clear_screen);
+        Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+        
+        %Loads segmented wheel
+        clickwheeltime = instruction_display_time;
+        
+        if ~bot_mode
+            full_wheel = 1;
+        else
+            full_wheel = 0;
+        end
+        
+        loadclickablewheel;
+        
+        if load_points_wheel
+            points_time = instruction_display_time;
+            sprintf('click time!')
+            loadpointswheel;
+        end
+        
+        if ~bot_mode || ~toggle_botbutton
+            %Mouse Click Windows
+            mouseresponse_seg.variableInputName='ReportedColor';
+            mouseresponse_seg.variableInputMapping=[1:360;1:360]';
+            mouseresponse_seg.spatialwindows = buttonlocs;
+            command = 'ready_for_score = 0;';
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+            [Events,segment_response] = newevent_mouse(Events,instruction_display_time,mouseresponse_seg);
+            if ~bot_mode
+                Events = newevent_show_stimulus(Events,whose_turn,2,locx,locy-400,instruction_display_time,'screenshot_no','clear_no'); %your turn!
+            end
+        end
+        
+    end    
+    
+    
     %% Instruction Display (before practice trials) %%
     if Trial == 1
         
@@ -483,9 +561,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
         end
         segment_score = zeros(num_segments,2);
         
-    else
+    end
+    if (Trial >= 1 && ~bot_mode) || bot_mode
         try
-            %             segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count)),12);
+            segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count)),12);
         catch
             sca;keyboard
         end
@@ -516,9 +595,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         selected_prob = wheel_probs(segment_response);
         
         %Find selected segment of the wheel
-        if ~bot_mode
-            show_selected_segment;
-        end
+        show_selected_segment;
         
         win = 0; add = 0;
         
@@ -526,38 +603,31 @@ elseif strcmp(Modeflag,'InitializeTrial')
         if chance <= selected_prob
             win = 1;
             
-            %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_yes');
-            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            
-            %Loads segmented wheel
-            clickwheeltime = instruction_display_time;
-            full_wheel = 0;
-            loadclickablewheel;
-            
-            %Loads points wheel
-            if load_points_wheel
-                points_time = instruction_display_time;
-                loadpointswheel
-            end
+%             %Loads segmented wheel
+%             clickwheeltime = reward_time;
+%             full_wheel = 0;
+%             loadclickablewheel;
+%             
+%             %Loads points wheel
+%             if load_points_wheel
+%                 points_time = reward_time;
+%                 loadpointswheel
+%             end
             
             %Calculate segment score
-            bot_choice_count2 = bot_choice_count ;
-            if bot_choice_count2 == 0; bot_choice_count2 = 1; end
-            %             feedback_choice = bot_choice_row(bot_choice_count2)
-            segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count2)),12);                        [selected_row,w,x]=find(seg_values==segment_response);
-            %                                     segment_response = segment_responses(Trial);
-            show_selected_segment;
             segment_score(selected_row,1) = segment_score(selected_row,1) + 1;
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
-            csvwrite('segment_score',segment_score);
             score = score + 1;
-            scorecolormatrix=csvread('scorecolormatrix.csv');
-            [add score_row] = show_score(Events,points_time,segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
+%             command = 'ready_for_score = 1;';
+%             Events = newevent_command(Events,reward_time,command,'clear_no');
+%             try
+%                 if ready_for_score
+%                     scorecolormatrix=csvread('scorecolormatrix.csv');
+%                     sprintf('scorecolormatrix saved!')
+%                     [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments);
+%                     scorecolormatrices{Trial} = scorecolormatrix;
+%                 end
+%             end
             
             %Wheel borders
             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
@@ -566,6 +636,16 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
+            
+            command = 'ready_for_score = 1;';
+            Events = newevent_command(Events,instruction_display_time,command,'clear_no');
+            
+            if ready_for_score
+                scorecolormatrix=csvread('scorecolormatrix.csv');
+                sprintf('scorecolormatrix saved!')
+                [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments);
+                scorecolormatrices{Trial} = scorecolormatrix;
+            end
             
             %Loads segmented wheel
             clickwheeltime = reward_time;
@@ -588,17 +668,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_show_stimulus(Events,gnb,1,locx,nickel_locy+y_offset+3,reward_time,'screenshot_no','clear_no');
             
         else %Didn't win a nickel :'(
-            bot_choice_count2 = bot_choice_count ;
-            if bot_choice_count2 == 0; bot_choice_count2 = 1; end
-            %             feedback_choice = bot_choice_row(bot_choice_count2)
-            segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count2)),12);
-            %                         segment_response = segment_responses(Trial);
-            [selected_row,w,x]=find(seg_values==segment_response);
-            show_selected_segment;
+            
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             scorecolormatrix=csvread('scorecolormatrix.csv');
-            csvwrite('segment_score',segment_score);
-            [add score_row] = show_score(Events,points_time,segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
+            [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments);
             
             %Wheel borders
             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
@@ -633,98 +706,42 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     if Trial <= Numtrials
         
-        if bot_mode
-            %Show cursor
-            Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,0);
-            %Mouse Parameters
-            bot_response = CreateResponseStruct;
-            %Text
-            Events = newevent_show_stimulus(Events,whose_turn,1,locx,locy-400,seg_wheel_time,'screenshot_no','clear_yes');
-            if toggle_botbutton
-                %Bot Button
-                Events = newevent_show_stimulus(Events,bot_but,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-                Events = newevent_show_stimulus(Events,bot_but_frame,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-                %Bot Button Text
-                Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,seg_wheel_time,'screenshot_no','clear_no');
-                Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,seg_wheel_time,'screenshot_no','clear_no');
-                %Mouse Click Windows
-                bot_buttonlocs{1}=[locx,locy,200];
-                bot_response.spatialwindows = bot_buttonlocs;
-                if ~test_mode
-                    [Events bot_button_click] = newevent_mouse(Events,seg_wheel_time,bot_response);
-                end
-            else
-                %Bot Instructions
-                Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,seg_wheel_time,'screenshot_no','clear_no');
-                Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,seg_wheel_time,'screenshot_no','clear_no');
-            end
-            clear_screen = 'clear_no';
-        else
-            clear_screen = 'clear_yes';
-        end
-        
-        %Mouse appears
-        Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,Parameters.mouse.cursorsize);
-        
-        %Wheel borders
-        Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,seg_wheel_time,'screenshot_no',clear_screen);
-        Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-        
-        %Loads segmented wheel
-        clickwheeltime = seg_wheel_time;
-        
         if ~bot_mode
+            %Mouse appears
+            Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,Parameters.mouse.cursorsize);
+            
+            %Wheel borders
+            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,seg_wheel_time,'screenshot_no',clear_screen);
+            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            
+            %Loads segmented wheel
+            clickwheeltime = seg_wheel_time;
+            
             full_wheel = 1;
-        else
-            full_wheel = 0;
-        end
-        
-        %         temp = 1;
-        %         bot_choice_count = bot_choice_count + 1;
-        
-        %         bot_choice_count2 = bot_choice_count - 1;
-        %         if bot_choice_count2 == 0; bot_choice_count2 = 1; end
-        bot_choice_count2 = bot_choice_count+1;
-        click_choice = bot_choice_row(bot_choice_count2);
-        %         try
-        %         click_choice = feedback_choice;
-        %         end
-        % feedback_choice = seg_values(seg_rows(click_choice+1),12);
-        segment_response = seg_values(seg_rows(click_choice),12);
-        show_selected_segment;
-        segment_responses(Trial) = segment_response;
-        %         temp = 0;
-        loadclickablewheel;
-        
-        if load_points_wheel
-            points_time = seg_wheel_time;
-            loadpointswheel;
-        end
-        
-        if ~bot_mode || ~toggle_botbutton
-            %             | (bot_mode & s_con == 0)
-            %Mouse Click Windows
-            mouseresponse_seg.variableInputName='ReportedColor';
-            mouseresponse_seg.variableInputMapping=[1:360;1:360]';
-            mouseresponse_seg.spatialwindows = buttonlocs;
-            [Events,segment_response] = newevent_mouse(Events,seg_wheel_time,mouseresponse_seg);
-            if ~bot_mode
+            
+            loadclickablewheel;
+            
+            if load_points_wheel
+                points_time = seg_wheel_time;
+                loadpointswheel;
+            end
+            
+            if ~toggle_botbutton
+                %Mouse Click Windows
+                mouseresponse_seg.variableInputName='ReportedColor';
+                mouseresponse_seg.variableInputMapping=[1:360;1:360]';
+                mouseresponse_seg.spatialwindows = buttonlocs;
+                [Events,segment_response] = newevent_mouse(Events,seg_wheel_time,mouseresponse_seg);
                 Events = newevent_show_stimulus(Events,whose_turn,2,locx,locy-400,seg_wheel_time,'screenshot_no','clear_no'); %your turn!
             end
-            %         elseif bot_mode & s_con == 1
-            %             for j = 1:4
-            %                 for i = 1:length(seg_values(1,:))
-            %                     buttonlocs = [locationWheelLocations(1,seg_values(seg_rows(j),i)),locationWheelLocations(2,seg_values(seg_rows(j),i)),30];
-            %                 end
-            %             end
-            %             mouseresponse_seg.spatialwindows = buttonlocs;
-            %             [Events,segment_response] = newevent_mouse(Events,seg_wheel_time,mouseresponse_seg);
         end
-        trial_end_time = seg_wheel_time + .01; %when the trial ends
+        
+        trial_end_time = reward_time + 1; %when the trial ends
+        
     else
         trial_end_time = total_feedback_time;
     end
@@ -739,15 +756,11 @@ elseif strcmp(Modeflag,'EndTrial')
         
         if ~bot_mode
             segment_response = (Events.windowclicked{segment_response});
-        else
-            segment_response = seg_values(seg_rows(bot_choice_row(bot_choice_count)),12);
         end
-        
         Trial_Export.bot_mode = bot_mode;
         Trial_Export.condition = s_con;
         if Trial > 1
-            selected_row = score_row;
-            Trial_Export.selected_seg = score_row;
+            Trial_Export.selected_seg = selected_row;
             Trial_Export.selected_prob = selected_prob;
         end
         Trial_Export.seg_probs = probs;
