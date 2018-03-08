@@ -27,7 +27,7 @@ if strcmp(Modeflag,'InitializeBlock')
     toggle_botbutton = 0; %0 = click wheel during bot mode, 1 = click button
     
     if test_mode
-        Numtrials = 30;
+        Numtrials = 18;
     end
     
     %Create segmented wheel
@@ -52,9 +52,10 @@ if strcmp(Modeflag,'InitializeBlock')
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Set up Stimuli
-    s_con = s_con(1)
+    
     %Create segments on click wheel
     [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
+    scorecolormatrices{1} = scorecolormatrix;
     rand_seg_rows = randperm(num_segments);
     if s_con == 1
         seg_rows = rand_seg_rows(1:(num_segments/2));
@@ -62,7 +63,6 @@ if strcmp(Modeflag,'InitializeBlock')
         seg_rows = rand_seg_rows;
     end
     csvwrite('seg_rows.csv',seg_rows);
-    csvwrite('blankcolormatrix.csv',scorecolormatrix);
     
     add_choice = 0;
     for add_seg_row = 1:(num_segments/2)
@@ -124,6 +124,10 @@ if strcmp(Modeflag,'InitializeBlock')
     %Cartesian Conversion
     pointsWheelLocations1 = [cosd(1:num_wheel_boxes).*pointsWheelRadius1 + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*pointsWheelRadius1 + Parameters.centery];
+    
+    % pointswheel1_endnotch = [cosd(360).*pointsWheelRadius1 + Parameters.centerx; ...
+    %     sind(360).*pointsWheelRadius1 + Parameters.centery];
+    
     pointsWheelLocations1(2,360) = pointsWheelLocations1(2,360) - 0.1;
     
     %Points Wheel 1 (Outer)
@@ -187,16 +191,23 @@ if strcmp(Modeflag,'InitializeBlock')
     
     loc_off = -2;
     
+    % firstpoint1 = pointsWheelLocations1(:,1);
     firstpoint1(1,1) = mean(round(pointsWheelLocations1(1,1)),round(pointsWheelLocations1(1,2)));
     firstpoint1(2,1) = mean(round(pointsWheelLocations1(2,1)),round(pointsWheelLocations1(2,2)))+loc_off;
+    % firstpoint1(2,:) = firstpoint1(2,:) - .1;
+    % firstpoint2 = pointsWheelLocations2(:,1);
     firstpoint2(1,1) = mean(round(pointsWheelLocations2(1,1)),round(pointsWheelLocations2(1,2)));
     firstpoint2(2,1) = mean(round(pointsWheelLocations2(2,1)),round(pointsWheelLocations2(2,2)))+loc_off;
+    % firstpoint2(2,:) = firstpoint2(2,:) - .1;
     firstcolor = scorecolormatrix(360,:);
     
     firstpoint3(1,1) = mean(round(pointsWheel2Locations1(1,1)),round(pointsWheel2Locations1(1,2)));
     firstpoint4(2,1) = mean(round(pointsWheel2Locations1(2,1)),round(pointsWheel2Locations1(2,2)))+loc_off;
+    % firstpoint1(2,:) = firstpoint1(2,:) - .1;
+    % firstpoint2 = pointsWheelLocations2(:,1);
     firstpoint3(1,1) = mean(round(pointsWheel2Locations2(1,1)),round(pointsWheel2Locations2(1,2)));
     firstpoint4(2,1) = mean(round(pointsWheel2Locations2(2,1)),round(pointsWheel2Locations2(2,2)))+loc_off;
+    % firstpoint2(2,:) = firstpoint2(2,:) - .1;
     firstcolor2 = scorecolormatrix2(360,:);
     
     save('colorWheelLocations','colorWheelLocations1','colorWheelLocations2','colorWheelLocations3');
@@ -338,19 +349,12 @@ if strcmp(Modeflag,'InitializeBlock')
     %Bot button text
     bot_but_text = 1110; %click here
     stimstruct = CreateStimStruct('text');
-    stimstruct.stimuli = {'Click the blue','segment to continue'};
+    stimstruct.stimuli = {'Click the colored','segment to continue'};
     stimstruct.stimsize = 22;
     Stimuli_sets(bot_but_text) = Preparestimuli(Parameters,stimstruct);
     
-    %Click instructions
-    sub_but_text = 1111;
-    stimstruct = CreateStimStruct('text');
-    stimstruct.stimuli = {'Click any blue','segment to see if you win'};
-    stimstruct.stimsize = 22;
-    Stimuli_sets(sub_but_text) = Preparestimuli(Parameters,stimstruct);
-    
     %Whose turn
-    whose_turn = 1112; %turn
+    whose_turn = 1111; %turn
     stimstruct = CreateStimStruct('text');
     stimstruct.stimuli = {'Computer''s turn!','Your Turn!'};
     stimstruct.stimsize = 52;
@@ -406,25 +410,13 @@ elseif strcmp(Modeflag,'InitializeTrial')
     else
         string_trial = num2str(Trial);
     end
-        
+    
     %1-32=bot,33-64=fc,65-94=bot,95=fc
-    if test_mode;change_trial = 8; change_trial2 = 16; change_trial3 = 23;end
-    
-    if Trial == change_trial2
-        if s_con == 1
-            seg_rows = rand_seg_rows;
-            s_con = 0;
-        else
-            s_con = 1;
-            seg_rows = rand_seg_rows(1:(num_segments/2));
-        end
-        csvwrite('seg_rows.csv',seg_rows);
-    end
-    
-    if Trial == change_trial || Trial == change_trial3
+    if test_mode;change_trial = 8; change_trial2 = 10; change_trial3 = 14;end
+    if Trial == change_trial || Trial == change_trial3 || turn_bot_off
         bot_choice_count = 0;
         bot_mode = 0
-        if s_con(1)==1;crows=8;num_choices=4;else crows=4;num_choices=8;end
+        if s_con==1;crows=8;num_choices=4;else crows=4;num_choices=8;end
         bot_choice_row = 0;
         for crow = 1:crows
             if crow == 1
@@ -436,12 +428,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     if Trial == change_trial2 && ~turn_bot_off
-        segment_score = zeros(num_segments,2);
-        csvwrite('segment_score',segment_score);
-        [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
         bot_choice_count = 0;
         bot_mode = 1
-        if s_con(1)==1;crows=8;num_choices=4;else crows=4;num_choices=8;end
+        if s_con==1;crows=8;num_choices=4;else crows=4;num_choices=8;end
         bot_choice_row = 0;
         for crow = 1:crows
             if crow == 1
@@ -452,13 +441,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
         end
     end
     
-    if turn_bot_off
-        bot_mode = 0
-    end
-    
     if bot_mode
-        bot_choice_row
-        possible_bot_segment_choices = num_choices
+        possible_bot_segment_choices = crows
     end
     
     %Find bot's current choice
@@ -467,6 +451,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     if bot_mode && ~turn_bot_off
         segment_response = seg_values(seg_rows(click_choice),12);
+    end
+    
+    if Trial == change_trial2 & s_con == 1
+        s_con = 0;
+    elseif Trial == change_trial2 & s_con == 0
+        s_con = 1;
     end
     
     %Center coordinates
@@ -503,32 +493,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %Loads segmented wheel
     loadclickablewheel;
     
-    if Trial == change_trial2
-        scorecolormatrix = repmat(scorewheelcolor,num_wheel_boxes,3);
-        for add_partition = 1:num_segments
-            if add_partition == num_segments
-                scorecolormatrix(359,:) = [0 0 0];
-            else
-                scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
-            end
-        end
-        csvwrite('scorecolormatrix',scorecolormatrix);
-        scorecolormatrix2 = scorecolormatrix;
-        scorecolormatrix3 = scorecolormatrix;
-        scorecolormatrix4 = scorecolormatrix;
-        csvwrite('scorecolormatrix2',scorecolormatrix2);
-        csvwrite('scorecolormatrix3',scorecolormatrix3);
-        csvwrite('scorecolormatrix4',scorecolormatrix4);
-    end
-    
     %Loads points wheel
     if load_points_wheel
         points_time = instruction_display_time;
-        if Trial ~= change_trial2
         loadpointswheel2;
-        else
-            loadblankwheel;
-        end
     end
     
     %% If bot mode, wait for segment click before continuing
@@ -617,7 +585,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             segment_score(selected_row,1) = segment_score(selected_row,1) + 1;
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             score = score + 1;
-            [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
+            [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments);
             
             %Wheel borders
             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
@@ -653,7 +621,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             %Calculate segment score
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             scorecolormatrix=csvread('scorecolormatrix.csv');
-            [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
+            [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments);
             
             %Wheel borders
             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
@@ -708,24 +676,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
             
             loadclickablewheel;
             
-            if Trial == change_trial2
-                scorecolormatrix = repmat(scorewheelcolor,num_wheel_boxes,3);
-                for add_partition = 1:num_segments
-                    if add_partition == num_segments
-                        scorecolormatrix(359,:) = [0 0 0];
-                    else
-                        scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
-                    end
-                end
-                csvwrite('scorecolormatrix',scorecolormatrix);
-                scorecolormatrix2 = scorecolormatrix;
-                scorecolormatrix3 = scorecolormatrix;
-                scorecolormatrix4 = scorecolormatrix;
-                csvwrite('scorecolormatrix2',scorecolormatrix2);
-                csvwrite('scorecolormatrix3',scorecolormatrix3);
-                csvwrite('scorecolormatrix4',scorecolormatrix4);
-            end
-            
             if load_points_wheel
                 points_time = seg_wheel_time;
                 loadpointswheel;
@@ -736,9 +686,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 mouseresponse_seg.spatialwindows = buttonlocs;
                 [Events,segment_response] = newevent_mouse(Events,seg_wheel_time,mouseresponse_seg);
                 Events = newevent_show_stimulus(Events,whose_turn,2,locx,locy-400,seg_wheel_time,'screenshot_no','clear_no'); %your turn!
-                %Click Instructions
-                Events = newevent_show_stimulus(Events,sub_but_text,1,locx,locy-25,seg_wheel_time,'screenshot_no','clear_no');
-                Events = newevent_show_stimulus(Events,sub_but_text,2,locx,locy+25,seg_wheel_time,'screenshot_no','clear_no');
             end
             trial_end_time = seg_wheel_time + .001; %when the trial ends
         else
@@ -770,7 +717,7 @@ elseif strcmp(Modeflag,'EndTrial')
         end
         Trial_Export.seg_probs = probs;
         if bot_mode
-            Trial_Export.pos_bot_choices = num_choices;
+            Trial_Export.pos_bot_choices = crows;
         end
     else
         Trial_Export.selected_row = 'feedback trial';
