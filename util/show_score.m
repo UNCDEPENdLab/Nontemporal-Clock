@@ -6,7 +6,7 @@ if ~add
         clear seg_scorekeeper seg_scorekeeper2
     end
     
-    global scorewheelcolor scorewheelcolor2
+    global scorewheelcolor
     
     persistent seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
     
@@ -96,7 +96,7 @@ if ~add
                         firstslotcolor2 = scorecolormatrix2(i,:);
                     else
                         %                         scorecolormatrix(i+1,:) = scorecolormatrix(i,:);
-                        scorecolormatrix2(i+1,:) = repmat(scorewheelcolor2,1,3);
+                        scorecolormatrix2(i+1,:) = repmat(scorewheelcolor,1,3);
                     end
                 end
             end
@@ -109,7 +109,7 @@ if ~add
         scorecolormatrix2(360,:) = firstslotcolor2;
         %         repmat(scorewheelcolor,1,3);
         %         scorecolormatrix(1,:) = firstslotcolor;
-        scorecolormatrix2(1,:) = repmat(scorewheelcolor2,1,3);
+        scorecolormatrix2(1,:) = repmat(scorewheelcolor,1,3);
     end
     
     csvwrite('scorecolormatrix2.csv',scorecolormatrix2);    
