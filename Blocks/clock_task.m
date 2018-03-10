@@ -469,6 +469,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
         segment_response = seg_values(seg_rows(click_choice),12);
     end
     
+    bot_click_zone = seg_values(seg_rows(click_choice),:);
+    
     %Center coordinates
     locx = Parameters.centerx;
     locy = Parameters.centery;
@@ -565,8 +567,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
         Events = newevent_mouse_cursor(Events,instruction_display_time,locx,locy,Parameters.mouse.cursorsize);
         
         %Mouse Click Windows
-        mouseresponse_seg.variableInputMapping=[1:360;1:360]';
-        mouseresponse_seg.spatialwindows = buttonlocs;
+        %         mouseresponse_seg.variableInputMapping=[1:360;1:360]';
+        %         mouseresponse_seg.variableInputMapping=[bot_click_zone;bot_click_zone]';
+        for i = 1:length(bot_click_zone)
+            pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),30];
+        end
+        mouseresponse_seg.spatialwindows = pos_buttonlocs;
         [Events] = newevent_mouse(Events,instruction_display_time,mouseresponse_seg);
         
     end
