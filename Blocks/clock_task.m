@@ -18,9 +18,9 @@ if strcmp(Modeflag,'InitializeBlock')
     s_con = mod(Demodata.s_num,2);
     
     %Total number of trials
-    Numtrials = 128 + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
+    Numtrials = 256 + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
     
-    test_mode = 1; %test mode deactivates instructions atm
+    test_mode = 0; %test mode deactivates instructions atm
     load_points_wheel = 1; %load the points wheel?
     type = 2; %paradigm type: 1 = probabilities average(40-60%), 2 = uneven, 3 = gold mine(one:75%,rest:40%)
     turn_bot_off = 0; %turn off bot mode?
@@ -408,7 +408,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
         
     %1-32=bot,33-64=fc,65-94=bot,95=fc
-    if test_mode;change_trial = 8; change_trial2 = 16; change_trial3 = 23;end
+    if test_mode;change_trial = 8; change_trial2 = 16; change_trial3 = 23;
+    else change_trial = 64; change_trial2 = 128; change_trial3 = 191; end
     
     if Trial == change_trial2
         if s_con == 1
@@ -580,14 +581,14 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %% Instruction Display (before practice trials) %%
     if Trial == 1
         
-        if ~test_mode
-            Events = newevent_mouse_cursor(Events,0,locx,locy,0);
-            Events = newevent_show_stimulus(Events,31,1,locx,locy-100,instruction_display_time,'screenshot_no','clear_yes');
-            Events = newevent_show_stimulus(Events,31,2,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,31,3,locx,locy+100,instruction_display_time,'screenshot_no','clear_no');
-            responsestruct.allowedchars = 0;
-            Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
-        end
+%         if ~test_mode
+%             Events = newevent_mouse_cursor(Events,0,locx,locy,0);
+%             Events = newevent_show_stimulus(Events,31,1,locx,locy-100,instruction_display_time,'screenshot_no','clear_yes');
+%             Events = newevent_show_stimulus(Events,31,2,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+%             Events = newevent_show_stimulus(Events,31,3,locx,locy+100,instruction_display_time,'screenshot_no','clear_no');
+%             responsestruct.allowedchars = 0;
+%             Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
+%         end
         segment_score = zeros(num_segments,2);
         
     end
