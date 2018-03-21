@@ -2,7 +2,7 @@ function [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2
 
 if ~add
     
-    global scorewheelcolor    
+    global scorewheelcolor
     
     persistent seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
     
@@ -14,6 +14,13 @@ if ~add
                 scorecolormatrix(359,:) = [0 0 0];
             else
                 scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
+            end
+        end
+        for add_partition = 1:num_segments
+            if add_partition == num_segments
+                scorecolormatrix2(359,:) = [0 0 0];
+            else
+                scorecolormatrix2(change_spot(add_partition)-1,:) = [0 0 0];
             end
         end
         csvwrite('scorecolormatrix',scorecolormatrix);
@@ -43,11 +50,25 @@ if ~add
     end
     
     score_offset = 22;
-    if seg_score_currentpoint < 1; seg_score_currentpoint = 1;end
-    if current_seg_score < score_offset
-        seg_scorekeeper(seg_score_currentpoint) = win + 1;
-    else
-        seg_scorekeeper2(seg_score_currentpoint-(score_offset*2-2)) = win+1;
+    try
+        if seg_score_currentpoint < 1; seg_score_currentpoint = 1;end
+        if selected_row == 1
+        if current_seg_score <= score_offset+1
+            seg_scorekeeper(seg_score_currentpoint) = win + 1;
+        elseif current_seg_score == score_offset+2
+            seg_scorekeeper2(seg_score_currentpoint-(score_offset*2)-1) = win+1;
+        else
+            seg_scorekeeper2(seg_score_currentpoint-(score_offset*2)-2) = win+1;
+        end
+        else
+            if current_seg_score <= score_offset
+                seg_scorekeeper(seg_score_currentpoint) = win + 1;
+            else
+                seg_scorekeeper2(seg_score_currentpoint-(score_offset*2)) = win+1;
+            end
+        end
+    catch
+        sca;keyboard
     end
     
     win_color_value = 145;
@@ -73,6 +94,14 @@ if ~add
         end
     end
     
+    for add_partition = 1:num_segments
+        if add_partition == num_segments
+            scorecolormatrix(359,:) = [0 0 0];
+        else
+            scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
+        end
+    end
+    
     try
         scorecolormatrix(360,:) = firstslotcolor;
         scorecolormatrix(1,:) = repmat(scorewheelcolor,1,3);
@@ -92,7 +121,7 @@ if ~add
                         else
                             scorecolormatrix2(i,:) = [240 0 0];
                         end
-                        if score_row == 1 && segment_score(selected_row,2) == 1
+                        if score_row == 1 && segment_score(selected_row,2) == score_offset+2
                             firstslotcolor2 = scorecolormatrix2(i,:);
                         else
                             scorecolormatrix2(i+1,:) = repmat(scorewheelcolor,1,3);
@@ -100,6 +129,14 @@ if ~add
                     end
                 end
             end
+        end
+    end
+    
+    for add_partition = 1:num_segments
+        if add_partition == num_segments
+            scorecolormatrix2(359,:) = [0 0 0];
+        else
+            scorecolormatrix2(change_spot(add_partition)-1,:) = [0 0 0];
         end
     end
     
