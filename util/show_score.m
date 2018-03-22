@@ -6,7 +6,7 @@ if ~add
     
     persistent seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
     
-    if Trial == change_trial2
+    if Trial == 1
         clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
         scorecolormatrix = repmat(scorewheelcolor,num_wheel_boxes,3);
         for add_partition = 1:num_segments
@@ -48,8 +48,11 @@ if ~add
     if selected_row == 1 && current_seg_score > 1
         seg_score_currentpoint = seg_score_startingpoint +  current_seg_score - num_wheel_boxes/num_segments + current_seg_score - 2;
     end
-    
-    score_offset = 22;
+    if num_segments == 8
+        score_offset = 22;
+    else
+        score_offset = 44;
+    end
     try
         if seg_score_currentpoint < 1; seg_score_currentpoint = 1;end
         if selected_row == 1

@@ -120,8 +120,7 @@ try
         if(trial/Parameters.saveevery) == ceil(trial/Parameters.saveevery);
             fname = sprintf('%s%s%s_backup',Parameters.datadir,Parameters.datafilename,FullUserdata.Demodata.s_num);
             save(fname,'FullUserdata');
-            WriteDataFiles(FullUserdata);
-            
+            WriteDataFiles(FullUserdata);            
         end
         
         if(Parameters.trialrestart);

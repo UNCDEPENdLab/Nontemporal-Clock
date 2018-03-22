@@ -59,7 +59,6 @@ if(Parameters.disableinput == 0)   %skip the demographics dialog if we're in dis
             
         end
         
-        
         %If any of these answers should be converted into a numeric
         %value, do that here with eval
         %if any of these fail to work, catch the error and try again
@@ -76,10 +75,6 @@ if(Parameters.disableinput == 0)   %skip the demographics dialog if we're in dis
             validinput = 0;
         end
         
-        
-        
-        
-        
     end
     
     %Put the answers into the demodata stucture, which is stored in UserData
@@ -89,7 +84,8 @@ if(Parameters.disableinput == 0)   %skip the demographics dialog if we're in dis
     Demodata.s_hand= s_hand;
     Demodata.s_computer = s_computer;
     Demodata.s_games = s_games;
-    Demodata.filename = Parameters.datafilename;
+    Demodata.filename = Parameters.datafilename;    
+    Demodata.condition_struct = randperm(4);
     
 else
     Demodata.s_num = '999';
