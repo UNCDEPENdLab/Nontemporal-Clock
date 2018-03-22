@@ -52,21 +52,6 @@ if strcmp(Modeflag,'InitializeBlock')
     
     test_mode = 0; %test mode deactivates instructions atm
     speed_test = 0; %disables mouse
-    %
-    %     %Show points on the points wheel?
-    %     if mod(s_con,2)
-    %         show_points = 1;
-    %     else
-    %         show_points = 0;
-    %     end
-    
-    %paradigm type: 1 = counterbalanced probabilities, 2 = uneven choices across prob gradient, 3 = gold mine(one:75%,rest:40%)
-    %     if s_con < 5
-    %         even_uneven = 1;
-    %     else
-    %         even_uneven = 2;
-    %     end
-    
     turn_bot_off = 0; %turn off bot mode?
     toggle_botbutton = 0; %0 = click wheel during bot mode, 1 = click button
     
@@ -112,23 +97,6 @@ if strcmp(Modeflag,'InitializeBlock')
             possible_bot_choices(add_choice) = seg_values(seg_rows(add_seg_row),add_seg_val);
         end
     end
-    
-    %Set up the bot's segment choices
-    %     section_tcount = (Numtrials/4)-1;
-    %     num_choices = num_segments;
-    %     c_rows = section_tcount/num_choices;
-    %     if even_uneven == 1
-    %         bot_choices = 0;
-    %         for crow = 1:c_rows
-    %             if crow == 1
-    %                 bot_choices(end:end+num_choices-1) = randperm(num_choices);
-    %             else
-    %                 bot_choices(end+1:end+num_choices) = randperm(num_choices);
-    %             end
-    %         end
-    %     elseif even_uneven == 2
-    %         bot_choices = randperm(num_wheel_boxes);
-    %     end
     
     csvwrite('scorecolormatrix.csv',scorecolormatrix);
     scorecolormatrix2 = scorecolormatrix;
@@ -416,7 +384,6 @@ if strcmp(Modeflag,'InitializeBlock')
     
     if even_uneven == 1 || 2
         probs = [min_prob:((max_prob-min_prob)/(num_segments-1)):max_prob];
-        %         probs = [0.4 0.47 0.54 0.6]; %non-gold mine
     elseif even_uneven == 3 %gold mine
         probs = [0.4 0.4 0.4 0.75];
     end
@@ -458,23 +425,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
         string_trial = num2str(Trial);
     end
     
-    %1-32=bot,33-64=fc,65-94=bot,95=fc
-    %     if test_mode, change_trial = 8; change_trial2 = 16; change_trial3 = 24 - 1;
-    % else
     change_trial = num_segments+1;
     change_trial2 = 126; change_trial3 = 188 - 1;
-    % end
-    
-    %     if Trial == change_trial2
-    %         if s_cb == 1
-    %             seg_rows = rand_seg_rows;
-    %             s_cb = 0;
-    %         else
-    %             s_cb = 1;
-    %             seg_rows = rand_seg_rows(1:(num_segments/2));
-    %         end
-    %         csvwrite('seg_rows.csv',seg_rows);
-    %     end
     
     if Trial == change_trial
         bot_mode = 0
@@ -485,9 +437,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
     else
         section_tcount = 30;
     end
+    
     num_choices = num_segments;
     c_rows = round(section_tcount+1/num_choices);
-    %     if even_uneven == 1
     bot_choices = 0;
     for crow = 1:c_rows
         if crow == 1
@@ -496,14 +448,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
             bot_choices(end+1:end+num_choices) = randperm(num_choices);
         end
     end
-    %     elseif even_uneven == 2
-    %         bot_choices = randperm(num_wheel_boxes);
-    %     end
     
     if Trial == change_trial || Trial == change_trial3
         bot_choice_count = 0;
         bot_choices = 0;
-        %         if even_uneven == 1
         bot_choices = 0;
         for crow = 1:c_rows
             if crow == 1
@@ -512,31 +460,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 bot_choices(end+1:end+num_choices) = randperm(num_choices);
             end
         end
-        %         elseif even_uneven == 2
-        %             bot_choices = randperm(360);
-        %         end
     end
-    %
-    %     if Trial == change_trial2 && ~turn_bot_off
-    %         segment_score = zeros(num_segments,2);
-    %         csvwrite('segment_score',segment_score);
-    %         [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
-    %         bot_choice_count = 0;
-    %         bot_mode = 1
-    %         bot_choices = 0;
-    %         if even_uneven == 1
-    %             bot_choices = 0;
-    %             for crow = 1:c_rows
-    %                 if crow == 1
-    %                     bot_choices(end:end+num_choices-1) = randperm(num_choices);
-    %                 else
-    %                     bot_choices(end+1:end+num_choices) = randperm(num_choices);
-    %                 end
-    %             end
-    %         elseif even_uneven == 2
-    %             bot_choices = randperm(num_wheel_boxes);
-    %         end
-    %     end
     
     if turn_bot_off
         bot_mode = 0
@@ -553,7 +477,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
     if bot_mode && ~turn_bot_off
         segment_response = seg_values(seg_rows(click_choice),12);
         selected_prob = click_choice;
-        %         selected_prob = wheel_probs(segment_response);
     end
     
     bot_click_zone = seg_values(seg_rows(click_choice),:);
@@ -856,7 +779,6 @@ elseif strcmp(Modeflag,'EndTrial')
     %% Record output data in structure & save in .MAT file
     seg_rows=csvread('seg_rows.csv');
     money_now_won = sum(segment_score(:,1))*0.05;
-    %         money_won = num2str(money_won);
     if Blocknum > 1
         money_already_won = csvread('money_count.csv');
     else
@@ -866,25 +788,17 @@ elseif strcmp(Modeflag,'EndTrial')
     csvwrite('money_count.csv',money_count);
     if Trial < Numtrials
         if ~bot_mode || turn_bot_off
-            %             if Trial ~= change_trial2-1
             if speed_test
                 segment_response = randi(360)
             else
                 segment_response = (Events.windowclicked{segment_response});
             end
-            %             end
         end
         Trial_Export.bot_mode = bot_mode;
         Trial_Export.condition = con_num;
         Trial_Export.show_points = show_points;
-        %         Trial_Export.counterbalance_value = s_cb;
-        %         if ~bot_mode
         [selected_row,w,x]=find(seg_values==segment_response);
         Trial_Export.selected_seg = selected_row;
-        %         else
-        %             Trial_Export.selected_seg = probs(probs==click_choice);
-        %         end
-        %         Trial_Export.selected_prob = selected_prob(selected_prob==probs);
         selected_prob = wheel_probs(segment_response);
         Trial_Export.selected_prob = selected_prob;
         Trial_Export.seg_probs = probs;
@@ -900,29 +814,20 @@ elseif strcmp(Modeflag,'EndTrial')
             sprintf('The subject won $%d.',money_count)
         end
     end
-    %     expstruct{Blocknum}{Trial,'segment_response'} = segment_response;
-    try
-        if Trial < Numtrials
-            expstruct{Blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
-            expstruct{Blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
-            expstruct{Blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
-            expstruct{Blocknum}{Trial,'win'} = win;
-        end
-    catch
-        sca
-        keyboard
+    
+    %Insert variables into output table
+    if Trial < Numtrials
+        expstruct{Blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
+        expstruct{Blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
+        expstruct{Blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
+        expstruct{Blocknum}{Trial,'win'} = win;
     end
-    try
-        writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
-    catch
-        sca;keyboard
-    end
+    
+    %Concatenate output table across blocks
+    writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
+    
 elseif strcmp(Modeflag,'EndBlock')
-    try
-        writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
-    catch
-        sca;keyboard
-    end
+    writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
 else
     %Something went wrong in Runblock (You should never see this error)
     error('Invalid modeflag');
