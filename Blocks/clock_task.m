@@ -16,17 +16,34 @@ if strcmp(Modeflag,'InitializeBlock')
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Parameters.blocklist
     Blocknum
+    con_num = Demodata.condition_struct(Blocknum);
+    num_blocks = length(Parameters.blocklist);
     s_cb = mod(Demodata.s_num,2);
     s_cb = s_cb(1);
-    try
-        s_con = Demodata.condition_struct(Blocknum)
-    catch
-        s_cons = randperm(4);
-        s_con = s_cons(Blocknum)
+    
+    if con_num == 1
+        show_points = 1; even_uneven = 1; num_segments = 4;
+    elseif con_num == 2
+        show_points = 1; even_uneven = 1; num_segments = 8;
+    elseif con_num == 3
+        show_points = 1; even_uneven = 0; num_segments = 4;
+    elseif con_num == 4
+        show_points = 1; even_uneven = 0; num_segments = 8;
+    elseif con_num == 5
+        show_points = 0; even_uneven = 1; num_segments = 4;
+    elseif con_num == 6
+        show_points = 0; even_uneven = 1; num_segments = 8;
+    elseif con_num == 7
+        show_points = 0; even_uneven = 0; num_segments = 4;
+    else
+        show_points = 0; even_uneven = 0; num_segments = 8;
     end
     
     %Total number of trials
-    Numtrials = 64 + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
+    Numtrials = 30 + num_segments + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
+    
+    expstruct{Blocknum} = table(repmat(Blocknum,Numtrials,1),repmat(con_num,Numtrials,1),(1:Numtrials)',zeros(Numtrials,1),repmat(show_points,Numtrials,1),repmat(even_uneven,Numtrials,1),repmat(num_segments,Numtrials,1), ...
+        zeros(Numtrials,1),zeros(Numtrials,1),zeros(Numtrials,1),'VariableNames',{'block_num','con_num','trial','free_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
     
     %Set the min & max win probability of the best & worst segment (random).
     %The rest of the segments are given probabilites on a gradient between these.
@@ -34,40 +51,27 @@ if strcmp(Modeflag,'InitializeBlock')
     max_prob = 0.6; %max segmenet probability
     
     test_mode = 0; %test mode deactivates instructions atm
-    speed_test = 1; %disables mouse
-    
-    %Show points on the points wheel?
-    if mod(s_con,2)
-        show_points = 1;
-    else
-        show_points = 0;
-    end
+    speed_test = 0; %disables mouse
+    %
+    %     %Show points on the points wheel?
+    %     if mod(s_con,2)
+    %         show_points = 1;
+    %     else
+    %         show_points = 0;
+    %     end
     
     %paradigm type: 1 = counterbalanced probabilities, 2 = uneven choices across prob gradient, 3 = gold mine(one:75%,rest:40%)
-    if s_con < 3
-        prob_type = 1;
-    else
-        prob_type = 2;
-    end
+    %     if s_con < 5
+    %         even_uneven = 1;
+    %     else
+    %         even_uneven = 2;
+    %     end
     
     turn_bot_off = 0; %turn off bot mode?
     toggle_botbutton = 0; %0 = click wheel during bot mode, 1 = click button
     
     if test_mode
         Numtrials = 30;
-    end
-    
-    %Create segmented wheel
-    if s_cb == 1 & s_con <= 2
-        num_segments = 8 %number of segments
-        %     elseif s_type == 1 && Blocknum > 4
-        %         num_segments = 4;
-    elseif s_cb == 2 & s_con > 2
-        num_segments = 8
-        %     else
-        %         num_segments = 8;
-    else
-        num_segments = 4
     end
     
     seg_colors{1} = [0 105 255]; %colors of segments
@@ -113,7 +117,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %     section_tcount = (Numtrials/4)-1;
     %     num_choices = num_segments;
     %     c_rows = section_tcount/num_choices;
-    %     if prob_type == 1
+    %     if even_uneven == 1
     %         bot_choices = 0;
     %         for crow = 1:c_rows
     %             if crow == 1
@@ -122,7 +126,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %                 bot_choices(end+1:end+num_choices) = randperm(num_choices);
     %             end
     %         end
-    %     elseif prob_type == 2
+    %     elseif even_uneven == 2
     %         bot_choices = randperm(num_wheel_boxes);
     %     end
     
@@ -410,10 +414,10 @@ if strcmp(Modeflag,'InitializeBlock')
     %Base blocks of the wheel
     setupwheelblocks;
     
-    if prob_type == 1 || 2
-        probs = [min_prob:((max_prob-min_prob)/num_segments):max_prob];
+    if even_uneven == 1 || 2
+        probs = [min_prob:((max_prob-min_prob)/(num_segments-1)):max_prob];
         %         probs = [0.4 0.47 0.54 0.6]; %non-gold mine
-    elseif prob_type == 3 %gold mine
+    elseif even_uneven == 3 %gold mine
         probs = [0.4 0.4 0.4 0.75];
     end
     
@@ -424,13 +428,13 @@ if strcmp(Modeflag,'InitializeBlock')
     end
     
     try
-    prob_count = 1;
-    for i = 1:360
-        if ~mod(i,90) && i < 360
-            prob_count = prob_count + 1;
+        prob_count = 1;
+        for i = 1:360
+            if ~mod(i,(360/length(probs))) && i < 360
+                prob_count = prob_count + 1;
+            end
+            wheel_probs(i) = probs(prob_count);
         end
-        wheel_probs(i) = probs(prob_count);
-    end
     catch
         sca;keyboard
     end
@@ -455,8 +459,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     %1-32=bot,33-64=fc,65-94=bot,95=fc
-    if test_mode, change_trial = 8; change_trial2 = 16; change_trial3 = 24 - 1;
-    else change_trial = 31; change_trial2 = 126; change_trial3 = 188 - 1; end
+    %     if test_mode, change_trial = 8; change_trial2 = 16; change_trial3 = 24 - 1;
+    % else
+    change_trial = num_segments+1;
+    change_trial2 = 126; change_trial3 = 188 - 1;
+    % end
     
     %     if Trial == change_trial2
     %         if s_cb == 1
@@ -474,13 +481,29 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     if bot_mode
-        section_tcount = 30;
+        section_tcount = num_segments;
     else
-        section_tcount = 34;
+        section_tcount = 30;
     end
     num_choices = num_segments;
     c_rows = round(section_tcount+1/num_choices);
-%     if prob_type == 1
+    %     if even_uneven == 1
+    bot_choices = 0;
+    for crow = 1:c_rows
+        if crow == 1
+            bot_choices(end:end+num_choices-1) = randperm(num_choices);
+        else
+            bot_choices(end+1:end+num_choices) = randperm(num_choices);
+        end
+    end
+    %     elseif even_uneven == 2
+    %         bot_choices = randperm(num_wheel_boxes);
+    %     end
+    
+    if Trial == change_trial || Trial == change_trial3
+        bot_choice_count = 0;
+        bot_choices = 0;
+        %         if even_uneven == 1
         bot_choices = 0;
         for crow = 1:c_rows
             if crow == 1
@@ -489,25 +512,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 bot_choices(end+1:end+num_choices) = randperm(num_choices);
             end
         end
-%     elseif prob_type == 2
-%         bot_choices = randperm(num_wheel_boxes);
-%     end
-    
-    if Trial == change_trial || Trial == change_trial3
-        bot_choice_count = 0;
-        bot_choices = 0;
-%         if prob_type == 1
-            bot_choices = 0;
-            for crow = 1:c_rows
-                if crow == 1
-                    bot_choices(end:end+num_choices-1) = randperm(num_choices);
-                else
-                    bot_choices(end+1:end+num_choices) = randperm(num_choices);
-                end
-            end
-%         elseif prob_type == 2
-%             bot_choices = randperm(360);
-%         end
+        %         elseif even_uneven == 2
+        %             bot_choices = randperm(360);
+        %         end
     end
     %
     %     if Trial == change_trial2 && ~turn_bot_off
@@ -517,7 +524,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %         bot_choice_count = 0;
     %         bot_mode = 1
     %         bot_choices = 0;
-    %         if prob_type == 1
+    %         if even_uneven == 1
     %             bot_choices = 0;
     %             for crow = 1:c_rows
     %                 if crow == 1
@@ -526,7 +533,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %                     bot_choices(end+1:end+num_choices) = randperm(num_choices);
     %                 end
     %             end
-    %         elseif prob_type == 2
+    %         elseif even_uneven == 2
     %             bot_choices = randperm(num_wheel_boxes);
     %         end
     %     end
@@ -544,8 +551,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
     click_choice = bot_choices(bot_choice_count);
     
     if bot_mode && ~turn_bot_off
-            segment_response = seg_values(seg_rows(click_choice),12);
-                    selected_prob = wheel_probs(segment_response);
+        segment_response = seg_values(seg_rows(click_choice),12);
+        selected_prob = click_choice;
+        %         selected_prob = wheel_probs(segment_response);
     end
     
     bot_click_zone = seg_values(seg_rows(click_choice),:);
@@ -603,12 +611,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     %Loads points wheel
-        points_time = instruction_display_time;
-        if Trial ~= change_trial2
-            loadpointswheel2;
-        else
-            loadblankwheel;
-        end
+    points_time = instruction_display_time;
+    if Trial ~= change_trial2
+        loadpointswheel2;
+    else
+        loadblankwheel;
+    end
     
     %% If bot mode, wait for segment click before continuing
     if bot_mode && ~turn_bot_off
@@ -704,7 +712,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             score = score + 1;
             if show_points
-            [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
+                [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
             end
             
             %Wheel borders
@@ -727,8 +735,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
             end
             
             %Loads points wheel
-                points_time = reward_time;
-                loadpointswheel;
+            points_time = reward_time;
+            loadpointswheel;
             
             %Nickel
             Events = newevent_show_stimulus(Events,nickel,1,locx,nickel_locy+y_offset,reward_time,'screenshot_no','clear_no');
@@ -740,7 +748,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
             scorecolormatrix=csvread('scorecolormatrix.csv');
             if show_points
-            [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
+                [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
             end
             
             %Wheel borders
@@ -757,8 +765,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
             loadclickablewheel;
             
             %Loads points wheel
-                points_time = reward_time;
-                loadpointswheel
+            points_time = reward_time;
+            loadpointswheel
             
             %"No reward" test
             Events = newevent_show_stimulus(Events,reward,2,locx,rewardtext_locy+y_offset-100,reward_time,'screenshot_no','clear_no');
@@ -812,8 +820,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 csvwrite('scorecolormatrix4',scorecolormatrix4);
             end
             
-                points_time = seg_wheel_time;
-                loadpointswheel;
+            points_time = seg_wheel_time;
+            loadpointswheel;
             
             if ~toggle_botbutton && Trial ~= change_trial2-1
                 %Mouse Click Windows
@@ -830,14 +838,13 @@ elseif strcmp(Modeflag,'InitializeTrial')
         else
             trial_end_time = reward_time + total_feedback_time; %when the trial ends
         end
-        
-    elseif Trial == Numtrials && Blocknum < 4
+    elseif Trial == Numtrials && Blocknum < num_blocks
         trial_end_time = total_feedback_time;
     else
         token_win_time = total_feedback_time + .01;
-        command = 'money_won = csvread(''money_won.csv'');';
+        command = 'money_count = csvread(''money_count.csv'');';
         Events = newevent_command(Events,token_win_time,command,'clear_no');
-        command = 'DrawFormattedText(Parameters.window,sprintf(''You won $%s from this experiment! Congrats!'',num2str(money_won)),''center'',''center'',[0 0 0]);';
+        command = 'DrawFormattedText(Parameters.window,sprintf(''You won $%s from this experiment! Congrats!'',num2str(round(money_count*.1,2))),''center'',''center'',[0 0 0]);';
         Events = newevent_command(Events,token_win_time,command,'clear_yes');
         trial_end_time = token_win_time + 3;
     end
@@ -848,41 +855,74 @@ elseif strcmp(Modeflag,'InitializeTrial')
 elseif strcmp(Modeflag,'EndTrial')
     %% Record output data in structure & save in .MAT file
     seg_rows=csvread('seg_rows.csv');
-        money_won = sum(segment_score(:,1))*0.05;
-%         money_won = num2str(money_won);
-    csvwrite('money_won.csv',money_won);
+    money_now_won = sum(segment_score(:,1))*0.05;
+    %         money_won = num2str(money_won);
+    if Blocknum > 1
+        money_already_won = csvread('money_count.csv');
+    else
+        money_already_won = 0;
+    end
+    money_count = money_now_won + money_already_won;
+    csvwrite('money_count.csv',money_count);
     if Trial < Numtrials
         if ~bot_mode || turn_bot_off
-            if Trial ~= change_trial2-1
-                if speed_test
-                    segment_response = randi(num_segments);
-                else
-                    segment_response = (Events.windowclicked{segment_response});
-                end
+            %             if Trial ~= change_trial2-1
+            if speed_test
+                segment_response = randi(360)
+            else
+                segment_response = (Events.windowclicked{segment_response});
             end
+            %             end
         end
         Trial_Export.bot_mode = bot_mode;
-        Trial_Export.condition = s_con;
+        Trial_Export.condition = con_num;
         Trial_Export.show_points = show_points;
-        Trial_Export.type = s_cb;
-        if ~bot_mode
-            Trial_Export.selected_seg = selected_row;
-        else
-           Trial_Export.selected_seg = click_choice; 
-        end
-            Trial_Export.selected_prob = selected_prob;
-        Trial_Export.seg_probs = probs(1:num_segments);
+        %         Trial_Export.counterbalance_value = s_cb;
+        %         if ~bot_mode
+        [selected_row,w,x]=find(seg_values==segment_response);
+        Trial_Export.selected_seg = selected_row;
+        %         else
+        %             Trial_Export.selected_seg = probs(probs==click_choice);
+        %         end
+        %         Trial_Export.selected_prob = selected_prob(selected_prob==probs);
+        selected_prob = wheel_probs(segment_response);
+        Trial_Export.selected_prob = selected_prob;
+        Trial_Export.seg_probs = probs;
         if bot_mode
             Trial_Export.num_bot_choices = num_choices;
         else
             Trial_Export.num_bot_choices = 0;
         end
-        Trial_Export.even_or_uneven = prob_type;
+        Trial_Export.even_or_uneven = even_uneven;
     else
         Trial_Export.selected_row = 'feedback trial';
-        sprintf('The subject won $%d.',money_won)
+        if Blocknum == num_blocks
+            sprintf('The subject won $%d.',money_count)
+        end
+    end
+    %     expstruct{Blocknum}{Trial,'segment_response'} = segment_response;
+    try
+        if Trial < Numtrials
+            expstruct{Blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
+            expstruct{Blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
+            expstruct{Blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
+            expstruct{Blocknum}{Trial,'win'} = win;
+        end
+    catch
+        sca
+        keyboard
+    end
+    try
+        writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
+    catch
+        sca;keyboard
     end
 elseif strcmp(Modeflag,'EndBlock')
+    try
+        writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
+    catch
+        sca;keyboard
+    end
 else
     %Something went wrong in Runblock (You should never see this error)
     error('Invalid modeflag');

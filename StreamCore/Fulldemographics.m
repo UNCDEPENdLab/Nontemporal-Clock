@@ -85,7 +85,7 @@ if(Parameters.disableinput == 0)   %skip the demographics dialog if we're in dis
     Demodata.s_computer = s_computer;
     Demodata.s_games = s_games;
     Demodata.filename = Parameters.datafilename;    
-    Demodata.condition_struct = randperm(4);
+    Demodata.condition_struct = randperm(8);
     
 else
     Demodata.s_num = '999';
