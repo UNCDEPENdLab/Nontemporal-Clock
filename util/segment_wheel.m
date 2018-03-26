@@ -42,7 +42,6 @@ if add_wheel_borders
     for add_partition = 1:num_segments
         if add_partition == num_segments
             fullcolormatrix(359,:) = [0 0 0];
-%             fullcolormatrix(359,:) = seg_colors{1};
         else
             fullcolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
         end
@@ -56,7 +55,6 @@ save('basecolormatrix','basecolormatrix');
 for add_partition = 1:num_segments
     if add_partition == num_segments
         scorecolormatrix(359,:) = [0 0 0];
-%         scorecolormatrix(359,:) = repmat(scorewheelcolor,1,3);
     else
         scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
     end

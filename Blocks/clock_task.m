@@ -198,12 +198,14 @@ if strcmp(Modeflag,'InitializeBlock')
     locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3];
     
     but_count = 0;
-    
     %Used for mouse clicks on color wheel
     for i = 1:num_wheel_boxes
-        if ~any(change_spot==i)
-            but_count = but_count + 1;
-            buttonlocs2{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),25];
+        %         if ~any(change_spot-1==i)
+        but_count = but_count + 1;
+        if i < num_wheel_boxes
+            buttonlocs2{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),15];
+        else
+            buttonlocs2{but_count} = [0.1,0.1,1];
         end
     end
     %
@@ -445,7 +447,7 @@ if strcmp(Modeflag,'InitializeBlock')
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
     Trial
-
+    
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
     end
@@ -838,14 +840,17 @@ elseif strcmp(Modeflag,'EndTrial')
             if speed_test
                 segment_response = randi(360)
             else
-                segment_response = (Events.windowclicked{segment_response});
+                segment_response = (Events.windowclicked{segment_response})
+                if segment_response > 358
+                    segment_response = 1;
+                end
             end
         end
         Trial_Export.bot_mode = bot_mode;
         Trial_Export.condition = con_num;
         Trial_Export.show_points = show_points;
         [selected_row,w,x]=find(seg_values==segment_response);
-        Trial_Export.selected_seg = selected_row;
+        Trial_Export.selected_seg = selected_row
         selected_prob = wheel_probs(segment_response);
         Trial_Export.selected_prob = selected_prob;
         Trial_Export.seg_probs = probs;
