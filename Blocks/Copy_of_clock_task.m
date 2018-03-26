@@ -17,10 +17,10 @@ if strcmp(Modeflag,'InitializeBlock')
     Parameters.blocklist
     Blocknum
     try
-    con_num = Demodata.condition_struct(Blocknum);
+        con_num = Demodata.condition_struct(Blocknum);
     catch
         con_num = 1;
-%         randi(8);
+        %         randi(8);
     end
     
     num_blocks = length(Parameters.blocklist);
@@ -198,28 +198,16 @@ if strcmp(Modeflag,'InitializeBlock')
     locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3];
     
     but_count = 0;
-    
     %Used for mouse clicks on color wheel
     for i = 1:num_wheel_boxes
-        if ~any(change_spot==i)
-            but_count = but_count + 1;
-        buttonlocs2{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),25];
+        but_count = but_count + 1;
+        if i < num_wheel_boxes
+            buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),22];
+        else
+            buttonlocs{but_count} = [0.1,0.1,1];
         end
     end
     
-    for cl = 1:length(change_spot)
-        for cl2 = [-5 -4 -3 -2 -1 1 2 3 4 5]
-            if change_spot(cl)+cl2 < 361
-        buttonlocs2{change_spot(cl)+cl2} = [];
-            end
-        end
-    end
-    
-    for j = 1:num_wheel_boxes
-        try
-            buttonlocs2{1}(1) + 1;
-    
-    sca;keyboard
     loc_off = -2;
     
     firstpoint1(1,1) = mean(round(pointsWheelLocations1(1,1)),round(pointsWheelLocations1(1,2)));
@@ -438,7 +426,7 @@ if strcmp(Modeflag,'InitializeBlock')
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
     Trial
-    ShowCursor(0)
+    
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
     end
@@ -498,12 +486,24 @@ elseif strcmp(Modeflag,'InitializeTrial')
     bot_choice_count = bot_choice_count + 1;
     click_choice = bot_choices(bot_choice_count);
     
-    if bot_mode && ~turn_bot_off
-        segment_response = seg_values(seg_rows(click_choice),12);
-        selected_prob = click_choice;
+    bot_click_zone = seg_values(seg_rows(click_choice),:);
+    med_zone = round(median(bot_click_zone));
+    if num_segments == 4
+        med_off = 40;
+    else
+        med_off = 18;
     end
     
-    bot_click_zone = seg_values(seg_rows(click_choice),:);
+    try
+        bot_click_zone = med_zone-med_off:med_zone+med_off;
+    catch
+        sca;keyboard
+    end
+    
+    if bot_mode && ~turn_bot_off
+        segment_response = seg_values(seg_rows(click_choice),45);
+        selected_prob = click_choice;
+    end
     
     %Center coordinates
     locx = Parameters.centerx;
@@ -600,7 +600,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
         
         %Mouse Click Windows
         for i = 1:length(bot_click_zone)
-            pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),30];
+            try
+                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),25];
+            catch
+                sca;keyboard
+            end
         end
         mouseresponse_seg.spatialwindows = pos_buttonlocs;
         if ~speed_test
@@ -815,14 +819,17 @@ elseif strcmp(Modeflag,'EndTrial')
             if speed_test
                 segment_response = randi(360)
             else
-                segment_response = (Events.windowclicked{segment_response});
+                segment_response = (Events.windowclicked{segment_response})
+                if segment_response > 358
+                    segment_response = 1;
+                end
             end
         end
         Trial_Export.bot_mode = bot_mode;
         Trial_Export.condition = con_num;
         Trial_Export.show_points = show_points;
         [selected_row,w,x]=find(seg_values==segment_response);
-        Trial_Export.selected_seg = selected_row;
+        Trial_Export.selected_seg = selected_row
         selected_prob = wheel_probs(segment_response);
         Trial_Export.selected_prob = selected_prob;
         Trial_Export.seg_probs = probs;

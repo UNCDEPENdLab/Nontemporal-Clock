@@ -15,42 +15,39 @@ if strcmp(Modeflag,'InitializeBlock')
     %% Trial Parameters% (Not all. For the rest, scroll down to "The Experiment Display" section.)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Parameters.blocklist
-    Blocknum
-    try
-        con_num = Demodata.condition_struct(Blocknum);
-    catch
-        con_num = 1;
-        %         randi(8);
+    Blocknum = Blocknum - 1;
+    if Blocknum > 0
+    con_num = Demodata.condition_struct(Blocknum);
     end
-    
     num_blocks = length(Parameters.blocklist);
     s_cb = mod(Demodata.s_num,2);
     s_cb = s_cb(1);
-    
-    if con_num == 1
-        show_points = 1; even_uneven = 1; num_segments = 4;
-    elseif con_num == 2
-        show_points = 1; even_uneven = 1; num_segments = 8;
-    elseif con_num == 3
-        show_points = 1; even_uneven = 0; num_segments = 4;
-    elseif con_num == 4
-        show_points = 1; even_uneven = 0; num_segments = 8;
-    elseif con_num == 5
-        show_points = 0; even_uneven = 1; num_segments = 4;
-    elseif con_num == 6
-        show_points = 0; even_uneven = 1; num_segments = 8;
-    elseif con_num == 7
-        show_points = 0; even_uneven = 0; num_segments = 4;
-    else
-        show_points = 0; even_uneven = 0; num_segments = 8;
-    end
+%     
+%     if con_num == 1
+%         show_points = 1; even_uneven = 1; num_segments = 4;
+%     elseif con_num == 2
+%         show_points = 1; even_uneven = 1; num_segments = 8;
+%     elseif con_num == 3
+%         show_points = 1; even_uneven = 0; num_segments = 4;
+%     elseif con_num == 4
+%         show_points = 1; even_uneven = 0; num_segments = 8;
+%     elseif con_num == 5
+%         show_points = 0; even_uneven = 1; num_segments = 4;
+%     elseif con_num == 6
+%         show_points = 0; even_uneven = 1; num_segments = 8;
+%     elseif con_num == 7
+%         show_points = 0; even_uneven = 0; num_segments = 4;
+%     elseif con_num == 8
+%         show_points = 0; even_uneven = 0; num_segments = 8;
+%     end
     
     %Total number of trials
-    Numtrials = 30 + num_segments + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
-    
-    expstruct{Blocknum} = table(repmat(Blocknum,Numtrials,1),repmat(con_num,Numtrials,1),(1:Numtrials)',zeros(Numtrials,1),repmat(show_points,Numtrials,1),repmat(even_uneven,Numtrials,1),repmat(num_segments,Numtrials,1), ...
-        zeros(Numtrials,1),zeros(Numtrials,1),zeros(Numtrials,1),'VariableNames',{'block_num','con_num','trial','free_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
-    
+    Numtrials = 32;
+%     + num_segments + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
+%     
+%     expstruct{Blocknum} = table(repmat(Blocknum,Numtrials,1),repmat(con_num,Numtrials,1),(1:Numtrials)',zeros(Numtrials,1),repmat(show_points,Numtrials,1),repmat(even_uneven,Numtrials,1),repmat(num_segments,Numtrials,1), ...
+%         zeros(Numtrials,1),zeros(Numtrials,1),zeros(Numtrials,1),'VariableNames',{'block_num','con_num','trial','free_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
+%     
     %Set the min & max win probability of the best & worst segment (random).
     %The rest of the segments are given probabilites on a gradient between these.
     min_prob = 0.4; %min segment probability
@@ -88,7 +85,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Set up Stimuli
-    
+    num_segments = 8; even_uneven = 2;
     %Create segments on click wheel
     [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
     seg_rows = randperm(num_segments);
@@ -178,34 +175,28 @@ if strcmp(Modeflag,'InitializeBlock')
     pointsWheel2Locations2(2,360) = pointsWheel2Locations2(2,360) - 0.1;
     
     %Location Wheel
-    locationWheelRadius = colorWheelRadius1; %radius of color wheel
+    locationWheelRadius = 260; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations1 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     %Location Wheel
-    locationWheelRadius = colorWheelRadius2; %radius of color wheel
+    locationWheelRadius = 252; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations2 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     %Location Wheel
-    locationWheelRadius = colorWheelRadius3; %radius of color wheel
+    locationWheelRadius = 246; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations3 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3];
     
-    but_count = 0;
     %Used for mouse clicks on color wheel
     for i = 1:num_wheel_boxes
-        but_count = but_count + 1;
-        if i < num_wheel_boxes
-            buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),22];
-        else
-            buttonlocs{but_count} = [0.1,0.1,1];
-        end
+        buttonlocs{i} = [locationWheelLocations(1,i),locationWheelLocations(2,i),30];
     end
     
     loc_off = -2;
@@ -429,6 +420,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
+        num_segments = 8;
+        show_points = 1;
     end
     
     if Trial > 3
@@ -438,17 +431,23 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     change_trial = num_segments+1;
-    change_trial2 = 126; change_trial3 = 188 - 1;
+    change_trial2 = 16; change_trial3 = 31;
     
     if Trial == change_trial
         bot_mode = 0
+    elseif Trial == change_trial2
+        bot_mode = 1
+        num_segments = 4;
+        show_points = 0;
+    elseif Trial == change_trial3
+        bot_mode = 0
     end
     
-    if bot_mode
+%     if bot_mode
         section_tcount = num_segments;
-    else
-        section_tcount = 30;
-    end
+%     else
+%         section_tcount = 30;
+%     end
     
     num_choices = num_segments;
     c_rows = round(section_tcount+1/num_choices);
@@ -486,24 +485,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
     bot_choice_count = bot_choice_count + 1;
     click_choice = bot_choices(bot_choice_count);
     
-    bot_click_zone = seg_values(seg_rows(click_choice),:);
-    med_zone = round(median(bot_click_zone));
-    if num_segments == 4
-        med_off = 40;
-    else
-        med_off = 18;
-    end
-    
-    try
-        bot_click_zone = med_zone-med_off:med_zone+med_off;
-    catch
-        sca;keyboard
-    end
-    
     if bot_mode && ~turn_bot_off
-        segment_response = seg_values(seg_rows(click_choice),45);
+        segment_response = seg_values(seg_rows(click_choice),12);
         selected_prob = click_choice;
     end
+    
+    bot_click_zone = seg_values(seg_rows(click_choice),:);
     
     %Center coordinates
     locx = Parameters.centerx;
@@ -530,11 +517,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     clickwheeltime = instruction_display_time;
     
-    if ~bot_mode & Trial ~= change_trial2-1
+%     if ~bot_mode & Trial ~= change_trial2-1
         full_wheel = 1;
-    else
-        full_wheel = 0;
-    end
+%     else
+%         full_wheel = 0;
+%     end
     
     %Loads segmented wheel
     loadclickablewheel;
@@ -568,7 +555,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %% If bot mode, wait for segment click before continuing
     if bot_mode && ~turn_bot_off
         seg_wheel_time = instruction_display_time;
-        if bot_mode
             %Show cursor
             Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,0);
             %Mouse Parameters
@@ -593,18 +579,13 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,instruction_display_time,'screenshot_no','clear_no');
                 Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,instruction_display_time,'screenshot_no','clear_no');
             end
-        end
         
         %Mouse appears
         Events = newevent_mouse_cursor(Events,instruction_display_time,locx,locy,Parameters.mouse.cursorsize);
         
         %Mouse Click Windows
         for i = 1:length(bot_click_zone)
-            try
-                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),25];
-            catch
-                sca;keyboard
-            end
+            pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),30];
         end
         mouseresponse_seg.spatialwindows = pos_buttonlocs;
         if ~speed_test
@@ -628,8 +609,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     %% Feedback %%
-    if (Trial > 1 && Trial ~= change_trial && Trial ~= change_trial3) || bot_mode
-        HideCursor;
+    if (Trial > 1 && Trial ~= change_trial) || bot_mode
+        
         if Trial == 1
             seg_wheel_time = reward_time + 2;
         elseif Trial == 2
@@ -774,7 +755,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             points_time = seg_wheel_time;
             loadpointswheel;
             
-            if ~toggle_botbutton && Trial ~= change_trial2-1
+            if ~toggle_botbutton && Trial ~= change_trial
                 %Mouse Click Windows
                 mouseresponse_seg.spatialwindows = buttonlocs;
                 if ~speed_test
@@ -789,76 +770,74 @@ elseif strcmp(Modeflag,'InitializeTrial')
         else
             trial_end_time = reward_time + total_feedback_time; %when the trial ends
         end
-    elseif Trial == Numtrials && Blocknum < num_blocks
-        trial_end_time = total_feedback_time;
-    else
-        token_win_time = total_feedback_time + .01;
-        command = 'money_count = csvread(''money_count.csv'');';
-        Events = newevent_command(Events,token_win_time,command,'clear_no');
-        command = 'DrawFormattedText(Parameters.window,sprintf(''You won $%s from this experiment! Congrats!'',num2str(round(money_count*.1,2))),''center'',''center'',[0 0 0]);';
-        Events = newevent_command(Events,token_win_time,command,'clear_yes');
-        trial_end_time = token_win_time + 3;
+%     elseif Trial == Numtrials && Blocknum < num_blocks
+%         trial_end_time = total_feedback_time;
+%     else
+%         token_win_time = total_feedback_time + .01;
+%         command = 'money_count = csvread(''money_count.csv'');';
+%         Events = newevent_command(Events,token_win_time,command,'clear_no');
+%         command = 'DrawFormattedText(Parameters.window,sprintf(''You won $%s from this experiment! Congrats!'',num2str(round(money_count*.1,2))),''center'',''center'',[0 0 0]);';
+%         Events = newevent_command(Events,token_win_time,command,'clear_yes');
+%         trial_end_time = token_win_time + 3;
     end
     
     %% Ends trial
     Events = newevent_end_trial(Events,trial_end_time);
     
 elseif strcmp(Modeflag,'EndTrial')
-    %% Record output data in structure & save in .MAT file
-    seg_rows=csvread('seg_rows.csv');
-    money_now_won = sum(segment_score(:,1))*0.05;
-    if Blocknum > 1
-        money_already_won = csvread('money_count.csv');
-    else
-        money_already_won = 0;
-    end
-    money_count = money_now_won + money_already_won;
-    csvwrite('money_count.csv',money_count);
-    if Trial < Numtrials
-        if ~bot_mode || turn_bot_off
+%     %% Record output data in structure & save in .MAT file
+%     seg_rows=csvread('seg_rows.csv');
+%     money_now_won = sum(segment_score(:,1))*0.05;
+%     if Blocknum > 1
+%         money_already_won = csvread('money_count.csv');
+%     else
+%         money_already_won = 0;
+%     end
+%     money_count = money_now_won + money_already_won;
+%     csvwrite('money_count.csv',money_count);
+%     if Trial < Numtrials
+        if (~bot_mode || turn_bot_off) 
+%             && Trial ~= change_trial
             if speed_test
                 segment_response = randi(360)
             else
-                segment_response = (Events.windowclicked{segment_response})
-                if segment_response > 358
-                    segment_response = 1;
-                end
+                segment_response = (Events.windowclicked{segment_response});
             end
         end
-        Trial_Export.bot_mode = bot_mode;
-        Trial_Export.condition = con_num;
-        Trial_Export.show_points = show_points;
-        [selected_row,w,x]=find(seg_values==segment_response);
-        Trial_Export.selected_seg = selected_row
-        selected_prob = wheel_probs(segment_response);
-        Trial_Export.selected_prob = selected_prob;
-        Trial_Export.seg_probs = probs;
-        if bot_mode
-            Trial_Export.num_bot_choices = num_choices;
-        else
-            Trial_Export.num_bot_choices = 0;
-        end
-        Trial_Export.even_or_uneven = even_uneven;
-    else
-        Trial_Export.selected_row = 'feedback trial';
-        if Blocknum == num_blocks
-            sprintf('The subject won $%d.',money_count)
-        end
-    end
-    
-    %Insert variables into output table
-    if Trial < Numtrials
-        expstruct{Blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
-        expstruct{Blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
-        expstruct{Blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
-        expstruct{Blocknum}{Trial,'win'} = win;
-    end
-    
-    %Concatenate output table across blocks
-    writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
+%         Trial_Export.bot_mode = bot_mode;
+%         Trial_Export.condition = con_num;
+%         Trial_Export.show_points = show_points;
+%         [selected_row,w,x]=find(seg_values==segment_response);
+%         Trial_Export.selected_seg = selected_row;
+%         selected_prob = wheel_probs(segment_response);
+%         Trial_Export.selected_prob = selected_prob;
+%         Trial_Export.seg_probs = probs;
+%         if bot_mode
+%             Trial_Export.num_bot_choices = num_choices;
+%         else
+%             Trial_Export.num_bot_choices = 0;
+%         end
+%         Trial_Export.even_or_uneven = even_uneven;
+%     else
+%         Trial_Export.selected_row = 'feedback trial';
+%         if Blocknum == num_blocks
+%             sprintf('The subject won $%d.',money_count)
+%         end
+%     end
+%     
+%     %Insert variables into output table
+%     if Trial < Numtrials
+%         expstruct{Blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
+%         expstruct{Blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
+%         expstruct{Blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
+%         expstruct{Blocknum}{Trial,'win'} = win;
+%     end
+%     
+%     %Concatenate output table across blocks
+%     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
     
 elseif strcmp(Modeflag,'EndBlock')
-    writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
+%     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
 else
     %Something went wrong in Runblock (You should never see this error)
     error('Invalid modeflag');

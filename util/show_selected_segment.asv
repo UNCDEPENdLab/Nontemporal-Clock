@@ -1,0 +1,44 @@
+global scorewheelcolor
+
+load('wheel360');
+
+[selected_row,w,x]=find(seg_values==segment_response);
+
+cut_count = 0;
+for wheel = 1:num_wheel_boxes
+    [current_row,w,x]=find(seg_values==wheel);
+    if current_row == selected_row
+        if add_wheel_borders
+            selected_segment(wheel,:) = seg_colors{1};
+            if current_row == size(seg_values,1) && size(seg_values,1) == 4
+                cut_count = cut_count + 1;
+                if cut_count > 88
+                    selected_segment(wheel,:) = repmat(scorewheelcolor,1,3);
+                end
+            end
+            if current_row == 1 && size(seg_values,1) == 4
+                %                 cut_count2 = cut_count2 + 1;
+                %                 if cut_count < 2
+                selected_segment(360,:) = seg_colors{1}
+                %                 end
+            end
+            for add_partition = 1:num_segments
+                if add_partition == num_segments
+                    fullcolormatrix(359,:) = [0 0 0];
+                else
+                    %                     try
+                    fullcolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
+                    %                     end
+                end
+            end
+        else
+            selected_segment(wheel,:) = fullcolormatrix(wheel,:);
+        end
+    else
+        selected_segment(wheel,:) = repmat(scorewheelcolor,1,3);
+    end
+    if current_row == 1 && 
+    selected_segment(wheel,:) = seg_colors{1};
+end
+
+save('selected_segment','selected_segment');
