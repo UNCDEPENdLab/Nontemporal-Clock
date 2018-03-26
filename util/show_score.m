@@ -7,20 +7,20 @@ if ~add
     persistent seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
     
     if Trial == 1
-        clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
+%         clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
         scorecolormatrix = repmat(scorewheelcolor,num_wheel_boxes,3);
         for add_partition = 1:num_segments
             if add_partition == num_segments
                 scorecolormatrix(359,:) = [0 0 0];
-            else
-                scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
+%             else
+%                 scorecolormatrix(change_spot(add_partition)-1,:) = [0 0 0];
             end
         end
         for add_partition = 1:num_segments
             if add_partition == num_segments
                 scorecolormatrix2(359,:) = [0 0 0];
-            else
-                scorecolormatrix2(change_spot(add_partition)-1,:) = [0 0 0];
+%             else
+%                 scorecolormatrix2(change_spot(add_partition)-1,:) = [0 0 0];
             end
         end
         csvwrite('scorecolormatrix',scorecolormatrix);

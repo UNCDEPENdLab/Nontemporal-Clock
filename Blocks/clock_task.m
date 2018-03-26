@@ -16,7 +16,13 @@ if strcmp(Modeflag,'InitializeBlock')
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Parameters.blocklist
     Blocknum
-    con_num = Demodata.condition_struct(Blocknum);
+    try
+        con_num = Demodata.condition_struct(Blocknum);
+    catch
+        con_num = 1;
+        %         randi(8);
+    end
+    
     num_blocks = length(Parameters.blocklist);
     s_cb = mod(Demodata.s_num,2);
     s_cb = s_cb(1);
@@ -172,30 +178,55 @@ if strcmp(Modeflag,'InitializeBlock')
     pointsWheel2Locations2(2,360) = pointsWheel2Locations2(2,360) - 0.1;
     
     %Location Wheel
-    locationWheelRadius = 260; %radius of color wheel
+    locationWheelRadius = colorWheelRadius1; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations1 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     %Location Wheel
-    locationWheelRadius = 252; %radius of color wheel
+    locationWheelRadius = colorWheelRadius2; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations2 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     %Location Wheel
-    locationWheelRadius = 246; %radius of color wheel
+    locationWheelRadius = colorWheelRadius3; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations3 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3];
     
+    but_count = 0;
+    
     %Used for mouse clicks on color wheel
     for i = 1:num_wheel_boxes
-        buttonlocs{i} = [locationWheelLocations(1,i),locationWheelLocations(2,i),30];
+        if ~any(change_spot==i)
+            but_count = but_count + 1;
+            buttonlocs2{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),25];
+        end
     end
+    %
+    %     for cl = 1:length(change_spot)
+    %         for cl2 = -10:10
+    %             if cl2 ~= 0
+    %                 if change_spot(cl)+cl2 < 361
+    %                     buttonlocs2{change_spot(cl)+cl2} = [1 1 1];
+    %                 end
+    %             end
+    %         end
+    %     end
+    buttonlocs=buttonlocs2;
+    %     new_but_count = 0;
+    %     for j = 1:num_wheel_boxes
+    %         try
+    %             num2str(buttonlocs2{j}(1));
+    %             new_but_count = new_but_count + 1;
+    %             buttonlocs{new_but_count} = buttonlocs2{j};
+    %         end
+    %     end
     
+    %     sca;keyboard
     loc_off = -2;
     
     firstpoint1(1,1) = mean(round(pointsWheelLocations1(1,1)),round(pointsWheelLocations1(1,2)));
@@ -414,7 +445,7 @@ if strcmp(Modeflag,'InitializeBlock')
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
     Trial
-    
+
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
     end
@@ -474,12 +505,24 @@ elseif strcmp(Modeflag,'InitializeTrial')
     bot_choice_count = bot_choice_count + 1;
     click_choice = bot_choices(bot_choice_count);
     
-    if bot_mode && ~turn_bot_off
-        segment_response = seg_values(seg_rows(click_choice),12);
-        selected_prob = click_choice;
+    bot_click_zone = seg_values(seg_rows(click_choice),:);
+    med_zone = round(median(bot_click_zone));
+    if num_segments == 4
+        med_off = 40;
+    else
+        med_off = 18;
     end
     
-    bot_click_zone = seg_values(seg_rows(click_choice),:);
+    try
+        bot_click_zone = med_zone-med_off:med_zone+med_off;
+    catch
+        sca;keyboard
+    end
+    
+    if bot_mode && ~turn_bot_off
+        segment_response = seg_values(seg_rows(click_choice),45);
+        selected_prob = click_choice;
+    end
     
     %Center coordinates
     locx = Parameters.centerx;
@@ -576,7 +619,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
         
         %Mouse Click Windows
         for i = 1:length(bot_click_zone)
-            pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),30];
+            try
+                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),25];
+            catch
+                sca;keyboard
+            end
         end
         mouseresponse_seg.spatialwindows = pos_buttonlocs;
         if ~speed_test
@@ -601,7 +648,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     %% Feedback %%
     if (Trial > 1 && Trial ~= change_trial && Trial ~= change_trial3) || bot_mode
-        
+        HideCursor;
         if Trial == 1
             seg_wheel_time = reward_time + 2;
         elseif Trial == 2

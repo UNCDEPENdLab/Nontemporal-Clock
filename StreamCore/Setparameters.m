@@ -61,12 +61,12 @@ end
 %%%% Setup parameters for running Stream
 Parameters.skipsynctests = 1;
 Parameters.datafilename = 'ExpSub';    %data file prefix
-% Parameters.whichscreen = max(Screen('Screens'));  %which of the displays do we use?  (only relevant if there are multiple monitors)
-% if sum(Screen('Screens'))
-%     Parameters.whichscreen = 2;
-% else
+Parameters.whichscreen = max(Screen('Screens'));  %which of the displays do we use?  (only relevant if there are multiple monitors)
+if sum(Screen('Screens')) > 0
+    Parameters.whichscreen = 2;
+else
     Parameters.whichscreen = 0;  %which of the displays do we use?  (only relevant if there are multiple monitors)
-% end
+end
 backcolor = 255;
 Parameters.backgroundcolor = repmat(backcolor,1,3);   %what color is the background screen in RGB (0-255)
 Parameters.disableinput = 0;   %turn off all user input
@@ -102,8 +102,8 @@ Parameters.ScreenResolutionY = 1080;
 %%%% use the mouse?
 Parameters.mouse.enabled = 1;
 Parameters.mouse.datastore = 0;
-Parameters.mouse.cursorsize = 10;
-Parameters.mouse.cursorcolor = [0,0,0];
+Parameters.mouse.cursorsize = 8;
+Parameters.mouse.cursorcolor = [0,205,45];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%prepare stimuli Progress bar

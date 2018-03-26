@@ -16,7 +16,13 @@ if strcmp(Modeflag,'InitializeBlock')
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Parameters.blocklist
     Blocknum
+    try
     con_num = Demodata.condition_struct(Blocknum);
+    catch
+        con_num = 1;
+%         randi(8);
+    end
+    
     num_blocks = length(Parameters.blocklist);
     s_cb = mod(Demodata.s_num,2);
     s_cb = s_cb(1);
@@ -172,30 +178,48 @@ if strcmp(Modeflag,'InitializeBlock')
     pointsWheel2Locations2(2,360) = pointsWheel2Locations2(2,360) - 0.1;
     
     %Location Wheel
-    locationWheelRadius = 260; %radius of color wheel
+    locationWheelRadius = colorWheelRadius1; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations1 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     %Location Wheel
-    locationWheelRadius = 252; %radius of color wheel
+    locationWheelRadius = colorWheelRadius2; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations2 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     %Location Wheel
-    locationWheelRadius = 246; %radius of color wheel
+    locationWheelRadius = colorWheelRadius3; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations3 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3];
     
+    but_count = 0;
+    
     %Used for mouse clicks on color wheel
     for i = 1:num_wheel_boxes
-        buttonlocs{i} = [locationWheelLocations(1,i),locationWheelLocations(2,i),30];
+        if ~any(change_spot==i)
+            but_count = but_count + 1;
+        buttonlocs2{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),25];
+        end
     end
     
+    for cl = 1:length(change_spot)
+        for cl2 = [-5 -4 -3 -2 -1 1 2 3 4 5]
+            if change_spot(cl)+cl2 < 361
+        buttonlocs2{change_spot(cl)+cl2} = [];
+            end
+        end
+    end
+    
+    for j = 1:num_wheel_boxes
+        try
+            buttonlocs2{1}(1) + 1;
+    
+    sca;keyboard
     loc_off = -2;
     
     firstpoint1(1,1) = mean(round(pointsWheelLocations1(1,1)),round(pointsWheelLocations1(1,2)));
@@ -414,7 +438,7 @@ if strcmp(Modeflag,'InitializeBlock')
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
     Trial
-    
+    ShowCursor(0)
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
     end
@@ -601,7 +625,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     %% Feedback %%
     if (Trial > 1 && Trial ~= change_trial && Trial ~= change_trial3) || bot_mode
-        
+        HideCursor;
         if Trial == 1
             seg_wheel_time = reward_time + 2;
         elseif Trial == 2
@@ -779,7 +803,6 @@ elseif strcmp(Modeflag,'EndTrial')
     %% Record output data in structure & save in .MAT file
     seg_rows=csvread('seg_rows.csv');
     money_now_won = sum(segment_score(:,1))*0.05;
-    %         money_won = num2str(money_won);
     if Blocknum > 1
         money_already_won = csvread('money_count.csv');
     else
@@ -789,25 +812,17 @@ elseif strcmp(Modeflag,'EndTrial')
     csvwrite('money_count.csv',money_count);
     if Trial < Numtrials
         if ~bot_mode || turn_bot_off
-            %             if Trial ~= change_trial2-1
             if speed_test
                 segment_response = randi(360)
             else
                 segment_response = (Events.windowclicked{segment_response});
             end
-            %             end
         end
         Trial_Export.bot_mode = bot_mode;
         Trial_Export.condition = con_num;
         Trial_Export.show_points = show_points;
-        %         Trial_Export.counterbalance_value = s_cb;
-        %         if ~bot_mode
         [selected_row,w,x]=find(seg_values==segment_response);
         Trial_Export.selected_seg = selected_row;
-        %         else
-        %             Trial_Export.selected_seg = probs(probs==click_choice);
-        %         end
-        %         Trial_Export.selected_prob = selected_prob(selected_prob==probs);
         selected_prob = wheel_probs(segment_response);
         Trial_Export.selected_prob = selected_prob;
         Trial_Export.seg_probs = probs;
@@ -823,29 +838,20 @@ elseif strcmp(Modeflag,'EndTrial')
             sprintf('The subject won $%d.',money_count)
         end
     end
-    %     expstruct{Blocknum}{Trial,'segment_response'} = segment_response;
-    try
-        if Trial < Numtrials
-            expstruct{Blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
-            expstruct{Blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
-            expstruct{Blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
-            expstruct{Blocknum}{Trial,'win'} = win;
-        end
-    catch
-        sca
-        keyboard
+    
+    %Insert variables into output table
+    if Trial < Numtrials
+        expstruct{Blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
+        expstruct{Blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
+        expstruct{Blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
+        expstruct{Blocknum}{Trial,'win'} = win;
     end
-    try
-        writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
-    catch
-        sca;keyboard
-    end
+    
+    %Concatenate output table across blocks
+    writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
+    
 elseif strcmp(Modeflag,'EndBlock')
-    try
-        writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
-    catch
-        sca;keyboard
-    end
+    writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
 else
     %Something went wrong in Runblock (You should never see this error)
     error('Invalid modeflag');
