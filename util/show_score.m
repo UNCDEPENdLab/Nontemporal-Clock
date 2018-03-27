@@ -5,9 +5,9 @@ if ~add
     global scorewheelcolor
     
     persistent seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
-    
+    try seg_scorekeeper = csvread('seg_scorekeeper.csv');end
     if Trial == 1
-%         clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
+        clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
         scorecolormatrix = repmat(scorewheelcolor,num_wheel_boxes,3);
         for add_partition = 1:num_segments
             if add_partition == num_segments
@@ -96,6 +96,8 @@ if ~add
             end
         end
     end
+    
+    csvwrite('seg_scorekeeper.csv',seg_scorekeeper);
     
     for add_partition = 1:num_segments
         if add_partition == num_segments

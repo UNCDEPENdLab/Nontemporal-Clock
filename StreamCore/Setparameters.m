@@ -29,7 +29,8 @@ Parameters.Streamversion = '2.2.21';
 
 if(nargin > 1)
     %Determine the set of blockfiles that will be run in the experiment:
-    Parameters.blocklist = {'clock_task','clock_task','clock_task','clock_task','clock_task','clock_task','clock_task','clock_task'};
+    Parameters.blocklist = {'practice_task','practice_task','practice_task', ... 
+        'clock_task','clock_task','clock_task','clock_task','clock_task','clock_task','clock_task','clock_task'};
 end
 
 

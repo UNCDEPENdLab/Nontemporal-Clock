@@ -15,7 +15,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %% Trial Parameters% (Not all. For the rest, scroll down to "The Experiment Display" section.)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Parameters.blocklist
-    Blocknum
+    Blocknum = Blocknum - length(Demodata.practice_struct);
     try
         con_num = Demodata.condition_struct(Blocknum);
     catch
@@ -782,8 +782,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 end
                 Events = newevent_show_stimulus(Events,whose_turn,2,locx,locy-400,seg_wheel_time,'screenshot_no','clear_no'); %your turn!
                 %Click Instructions
-                Events = newevent_show_stimulus(Events,sub_but_text,1,locx,locy-25,seg_wheel_time,'screenshot_no','clear_no');
-                Events = newevent_show_stimulus(Events,sub_but_text,2,locx,locy+25,seg_wheel_time,'screenshot_no','clear_no');
+%                 Events = newevent_show_stimulus(Events,sub_but_text,1,locx,locy-25,seg_wheel_time,'screenshot_no','clear_no');
+%                 Events = newevent_show_stimulus(Events,sub_but_text,2,locx,locy+25,seg_wheel_time,'screenshot_no','clear_no');
             end
             trial_end_time = seg_wheel_time + .001; %when the trial ends
         else
@@ -821,6 +821,7 @@ elseif strcmp(Modeflag,'EndTrial')
             else
                 segment_response = (Events.windowclicked{segment_response})
                 if segment_response > 358
+%                     && num_segments == 4
                     segment_response = 1;
                 end
             end

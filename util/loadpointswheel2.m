@@ -1,6 +1,6 @@
 %Loads points wheel
 
-points_time = 0;
+% points_time = 0;
 
 %             command = 'scorecolormatrix=csvread(''scorecolormatrix.csv'');';
 %         Events = newevent_command(Events,points_time,command,'clear_no');
