@@ -20,7 +20,6 @@ if strcmp(Modeflag,'InitializeBlock')
         con_num = Demodata.condition_struct(blocknum);
     catch
         con_num = 1;
-        %         randi(8);
     end
     
     num_blocks = length(Parameters.blocklist);
@@ -394,9 +393,9 @@ if strcmp(Modeflag,'InitializeBlock')
     %Base blocks of the wheel
     setupwheelblocks;
     
-    if even_uneven == 1 || 2
+    if even_uneven < 3
         probs = [min_prob:((max_prob-min_prob)/(num_segments-1)):max_prob];
-    elseif even_uneven == 3 %gold mine
+    else %gold mine
         probs = [0.4 0.4 0.4 0.75];
     end
     

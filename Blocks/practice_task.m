@@ -32,24 +32,11 @@ if strcmp(Modeflag,'InitializeBlock')
         show_points = 0; even_uneven = 2; num_segments = 4;
     elseif con_num == 3
         show_points = 1; even_uneven = 2; num_segments = 8;
-%     elseif con_num == 4
-%         show_points = 1; even_uneven = 2; num_segments = 8;
-        %     elseif con_num == 5
-        %         show_points = 0; even_uneven = 1; num_segments = 4;
-        %     elseif con_num == 6
-        %         show_points = 0; even_uneven = 1; num_segments = 8;
-        %     elseif con_num == 7
-        %         show_points = 0; even_uneven = 0; num_segments = 4;
-        %     else
-        %         show_points = 0; even_uneven = 0; num_segments = 8;
     end
     
     %Total number of trials
     Numtrials = num_segments*2 + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
-%     
-%     expstruct{Blocknum} = table(repmat(Blocknum,Numtrials,1),repmat(con_num,Numtrials,1),(1:Numtrials)',zeros(Numtrials,1),repmat(show_points,Numtrials,1),repmat(even_uneven,Numtrials,1),repmat(num_segments,Numtrials,1), ...
-%         zeros(Numtrials,1),zeros(Numtrials,1),zeros(Numtrials,1),'VariableNames',{'block_num','con_num','trial','free_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
-%     
+    
     %Set the min & max win probability of the best & worst segment (random).
     %The rest of the segments are given probabilites on a gradient between these.
     min_prob = 0.4; %min segment probability
@@ -448,11 +435,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         bot_mode = 0
     end
     
-    %     if bot_mode
     section_tcount = num_segments;
-    %     else
-    %         section_tcount = 30;
-    %     end
     
     num_choices = num_segments;
     c_rows = round(section_tcount+1/num_choices);
@@ -498,10 +481,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     %Find bot's current choice
     try
-    bot_choice_count = bot_choice_count + 1;
-    click_choice = bot_choices(bot_choice_count);
+        bot_choice_count = bot_choice_count + 1;
+        click_choice = bot_choices(bot_choice_count);
     catch
-        sca;keyboard; 
+        sca;keyboard;
     end
     bot_click_zone = seg_values(seg_rows(click_choice),:);
     med_zone = round(median(bot_click_zone));
@@ -533,7 +516,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
     responsestruct.x = locx;
     responsestruct.y = locy;
     if Trial == 1
-        %         && Blocknum == 1
     else
         %Wheel borders
         Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
@@ -552,7 +534,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     if Trial == 1
-        %         && Blocknum == 1
     else
         %Loads segmented wheel
         loadclickablewheel;
@@ -579,7 +560,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %Loads points wheel
     points_time = instruction_display_time;
     if Trial == 1
-        %         && Blocknum == 1
     else
         if Trial ~= change_trial2
             loadpointswheel2;
@@ -602,7 +582,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_show_stimulus(Events,ins,8,locx,locy+175,instruction_display_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,ins,9,locx,locy+245,instruction_display_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,ins,10,locx,locy+315,instruction_display_time,'screenshot_no','clear_no');
-            %             Events = newevent_show_stimulus(Events,ins,11,locx,locy+375,instruction_display_time,'screenshot_no','clear_no');
             responsestruct.allowedchars = KbName('Space');
             Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
             seg_wheel_time = instruction_display_time + .01;
@@ -662,15 +641,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
             %Text
             Events = newevent_show_stimulus(Events,whose_turn,1,locx,locy-400,seg_wheel_time,'screenshot_no',clear_screen);
             if Trial == 1
-                %                 && Blocknum == 1
                 loadclickablewheel;
                 loadpointswheel2;
                 %Wheel borders
-                %         Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-                %         Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-                %         Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
                 Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-                %         Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
                 Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
             end
             if toggle_botbutton
@@ -903,7 +877,6 @@ elseif strcmp(Modeflag,'EndTrial')
         money_already_won = 0;
     end
     money_count = money_now_won + money_already_won;
-    %     csvwrite('money_count.csv',money_count);
     if Trial < Numtrials
         if ~bot_mode || turn_bot_off
             if speed_test
@@ -915,43 +888,10 @@ elseif strcmp(Modeflag,'EndTrial')
                 end
             end
         end
-        %         Trial_Export.bot_mode = bot_mode;
-        %         Trial_Export.condition = con_num;
-        %         Trial_Export.show_points = show_points;
-        %         [selected_row,w,x]=find(seg_values==segment_response);
-        %         Trial_Export.selected_seg = selected_row
-        %         selected_prob = wheel_probs(segment_response);
-        %         Trial_Export.selected_prob = selected_prob;
-        %         Trial_Export.seg_probs = probs;
-        %         if bot_mode
-        %             Trial_Export.num_bot_choices = num_choices;
-        %         else
-        %             Trial_Export.num_bot_choices = 0;
-        %         end
-        %         Trial_Export.even_or_uneven = even_uneven;
-        %     else
-        %         Trial_Export.selected_row = 'feedback trial';
-        %         if Blocknum == num_blocks
-        %             sprintf('The subject won $%d.',money_count)
-        %         end
+    elseif strcmp(Modeflag,'EndBlock')
+    else
+        %Something went wrong in Runblock (You should never see this error)
+        error('Invalid modeflag');
     end
-    
-    %Insert variables into output table
-    %     if Trial < Numtrials
-    %         expstruct{Blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
-    %         expstruct{Blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
-    %         expstruct{Blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
-    %         expstruct{Blocknum}{Trial,'win'} = win;
-    %     end
-    
-    %Concatenate output table across blocks
-    %     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
-    
-elseif strcmp(Modeflag,'EndBlock')
-    %     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
-else
-    %Something went wrong in Runblock (You should never see this error)
-    error('Invalid modeflag');
-end
-saveblockspace
+    saveblockspace
 end
