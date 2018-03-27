@@ -46,10 +46,10 @@ if strcmp(Modeflag,'InitializeBlock')
     
     %Total number of trials
     Numtrials = num_segments*2 + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
-    
-    expstruct{Blocknum} = table(repmat(Blocknum,Numtrials,1),repmat(con_num,Numtrials,1),(1:Numtrials)',zeros(Numtrials,1),repmat(show_points,Numtrials,1),repmat(even_uneven,Numtrials,1),repmat(num_segments,Numtrials,1), ...
-        zeros(Numtrials,1),zeros(Numtrials,1),zeros(Numtrials,1),'VariableNames',{'block_num','con_num','trial','free_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
-    
+%     
+%     expstruct{Blocknum} = table(repmat(Blocknum,Numtrials,1),repmat(con_num,Numtrials,1),(1:Numtrials)',zeros(Numtrials,1),repmat(show_points,Numtrials,1),repmat(even_uneven,Numtrials,1),repmat(num_segments,Numtrials,1), ...
+%         zeros(Numtrials,1),zeros(Numtrials,1),zeros(Numtrials,1),'VariableNames',{'block_num','con_num','trial','free_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
+%     
     %Set the min & max win probability of the best & worst segment (random).
     %The rest of the segments are given probabilites on a gradient between these.
     min_prob = 0.4; %min segment probability
@@ -456,12 +456,22 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     num_choices = num_segments;
     c_rows = round(section_tcount+1/num_choices);
-    bot_choices = 0;
-    for crow = 1:c_rows
-        if crow == 1
-            bot_choices(end:end+num_choices-1) = randperm(num_choices);
-        else
-            bot_choices(end+1:end+num_choices) = randperm(num_choices);
+    if Trial == 1
+        bot_choices = 0;
+        for crow = 1:c_rows
+            if crow == 1
+                if even_uneven == 1
+                    bot_choices(end:end+num_choices-1) = randperm(num_choices);
+                else
+                    bot_choices(end:end+num_choices-1) = randi(num_choices,1,num_choices);
+                end
+            else
+                if even_uneven == 1
+                    bot_choices(end+1:end+num_choices) = randperm(num_choices);
+                else
+                    bot_choices(end+1:end+num_choices) = randi(num_choices,1,num_choices);
+                end
+            end
         end
     end
     
@@ -487,9 +497,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     %Find bot's current choice
+    try
     bot_choice_count = bot_choice_count + 1;
     click_choice = bot_choices(bot_choice_count);
-    
+    catch
+        sca;keyboard; 
+    end
     bot_click_zone = seg_values(seg_rows(click_choice),:);
     med_zone = round(median(bot_click_zone));
     if num_segments == 4
@@ -601,9 +614,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         end
         segment_score = zeros(num_segments,2);
     elseif Trial == 1 && Blocknum == 2
-        Events = newevent_show_stimulus(Events,ins,11,locx,locy-50,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,ins,11,locx,locy-75,instruction_display_time,'screenshot_no','clear_no');
         Events = newevent_show_stimulus(Events,ins,12,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,ins,13,locx,locy+50,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,ins,13,locx,locy+75,instruction_display_time,'screenshot_no','clear_no');
         responsestruct.allowedchars = KbName('Space');
         Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
         seg_wheel_time = instruction_display_time + .01;
@@ -612,9 +625,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         reward_time = seg_wheel_time + .01;
         clear_screen = 'clear_yes';
     elseif Trial == 1 && Blocknum == 3
-        Events = newevent_show_stimulus(Events,ins,14,locx,locy-50,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,ins,14,locx,locy-75,instruction_display_time,'screenshot_no','clear_no');
         Events = newevent_show_stimulus(Events,ins,15,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,ins,13,locx,locy+50,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,ins,13,locx,locy+75,instruction_display_time,'screenshot_no','clear_no');
         responsestruct.allowedchars = KbName('Space');
         Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
         seg_wheel_time = instruction_display_time + .01;
@@ -623,9 +636,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         reward_time = seg_wheel_time + .01;
         clear_screen = 'clear_yes';
     elseif Trial == 1 && Blocknum == 4
-        Events = newevent_show_stimulus(Events,ins,16,locx,locy-50,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,ins,16,locx,locy-75,instruction_display_time,'screenshot_no','clear_no');
         Events = newevent_show_stimulus(Events,ins,17,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,ins,13,locx,locy+50,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,ins,13,locx,locy+75,instruction_display_time,'screenshot_no','clear_no');
         responsestruct.allowedchars = KbName('Space');
         Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
         seg_wheel_time = instruction_display_time + .01;
@@ -871,8 +884,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     if Trial == Numtrials && Blocknum == length(Demodata.practice_struct)
-        Events = newevent_show_stimulus(Events,ins,16,locx,locy-50,trial_end_time,'screenshot_no','clear_yes');
-        Events = newevent_show_stimulus(Events,ins,17,locx,locy,trial_end_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,ins,18,locx,locy-50,trial_end_time,'screenshot_no','clear_yes');
+        Events = newevent_show_stimulus(Events,ins,19,locx,locy,trial_end_time,'screenshot_no','clear_no');
         trial_end_time2 = trial_end_time + 5;
         Events = newevent_end_trial(Events,trial_end_time2);
     else

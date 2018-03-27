@@ -31,9 +31,9 @@ if strcmp(Modeflag,'InitializeBlock')
     elseif con_num == 2
         show_points = 0; even_uneven = 2; num_segments = 4;
     elseif con_num == 3
-        show_points = 0; even_uneven = 1; num_segments = 8;
-    elseif con_num == 4
         show_points = 1; even_uneven = 2; num_segments = 8;
+%     elseif con_num == 4
+%         show_points = 1; even_uneven = 2; num_segments = 8;
         %     elseif con_num == 5
         %         show_points = 0; even_uneven = 1; num_segments = 4;
         %     elseif con_num == 6
@@ -355,7 +355,7 @@ if strcmp(Modeflag,'InitializeBlock')
     stimstruct.stimuli = {'You and the computer will be playing a game together.','The goal of the game is to win as many nickels as possible,','which will be exchanged for actual money at the end of the game.' ...
         'During each trial, you will see a blue, segmented wheel.','Your task is to find the segment on the wheel that awards nickels most frequently.','After clicking on a segment, you will see whether' ...
         'you gained a nickel (indicated with the color yellow) or not (red).','To help you get an idea of how the game works,','we''ve provided a training section to complete before you begin.','Press Spacebar to continue to training.', ...
-        'In this section, the points wheel will be hidden,''Press Spacebar to continue.' ... %11-13
+        'In this section, the points wheel will be hidden,','meaning you''ll have to pay closer attention!','Press Spacebar to continue.' ... %11-13
         'Great job so far!','The number of segments has increased to 8.' ... %14-15
         'One more training phase to complete.','The scoring wheel is back!' ... %16-17
         'Training complete!','Now loading the main experiment...'}; %18-19
@@ -457,11 +457,21 @@ elseif strcmp(Modeflag,'InitializeTrial')
     num_choices = num_segments;
     c_rows = round(section_tcount+1/num_choices);
     bot_choices = 0;
-    for crow = 1:c_rows
-        if crow == 1
-            bot_choices(end:end+num_choices-1) = randperm(num_choices);
-        else
-            bot_choices(end+1:end+num_choices) = randperm(num_choices);
+    if Trial == 1
+        for crow = 1:c_rows
+            if crow == 1
+                if even_uneven == 1
+                    bot_choices(end:end+num_choices-1) = randperm(num_choices);
+                else
+                    bot_choices(end:end+num_choices-1) = randi(num_choices,1,num_choices);
+                end
+            else
+                if even_uneven == 1
+                    bot_choices(end+1:end+num_choices) = randperm(num_choices);
+                else
+                    bot_choices(end+1:end+num_choices) = randi(num_choices,1,num_choices);
+                end
+            end
         end
     end
     
@@ -487,9 +497,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     %Find bot's current choice
+    try
     bot_choice_count = bot_choice_count + 1;
     click_choice = bot_choices(bot_choice_count);
-    
+    catch
+        sca;keyboard; end
     bot_click_zone = seg_values(seg_rows(click_choice),:);
     med_zone = round(median(bot_click_zone));
     if num_segments == 4
@@ -897,7 +909,7 @@ elseif strcmp(Modeflag,'EndTrial')
                 segment_response = randi(360)
             else
                 segment_response = (Events.windowclicked{segment_response})
-                if segment_response > 359
+                if segment_response > 358 && num_segments == 4
                     segment_response = 1;
                 end
             end

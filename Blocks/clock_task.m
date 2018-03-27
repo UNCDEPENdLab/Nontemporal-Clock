@@ -15,9 +15,9 @@ if strcmp(Modeflag,'InitializeBlock')
     %% Trial Parameters% (Not all. For the rest, scroll down to "The Experiment Display" section.)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Parameters.blocklist
-    Blocknum = Blocknum - length(Demodata.practice_struct);
+    blocknum = Blocknum - length(Demodata.practice_struct)
     try
-        con_num = Demodata.condition_struct(Blocknum);
+        con_num = Demodata.condition_struct(blocknum);
     catch
         con_num = 1;
         %         randi(8);
@@ -48,7 +48,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %Total number of trials
     Numtrials = 30 + num_segments + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
     
-    expstruct{Blocknum} = table(repmat(Blocknum,Numtrials,1),repmat(con_num,Numtrials,1),(1:Numtrials)',zeros(Numtrials,1),repmat(show_points,Numtrials,1),repmat(even_uneven,Numtrials,1),repmat(num_segments,Numtrials,1), ...
+    expstruct{blocknum} = table(repmat(blocknum,Numtrials,1),repmat(con_num,Numtrials,1),(1:Numtrials)',zeros(Numtrials,1),repmat(show_points,Numtrials,1),repmat(even_uneven,Numtrials,1),repmat(num_segments,Numtrials,1), ...
         zeros(Numtrials,1),zeros(Numtrials,1),zeros(Numtrials,1),'VariableNames',{'block_num','con_num','trial','free_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
     
     %Set the min & max win probability of the best & worst segment (random).
@@ -452,12 +452,22 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     num_choices = num_segments;
     c_rows = round(section_tcount+1/num_choices);
-    bot_choices = 0;
-    for crow = 1:c_rows
-        if crow == 1
-            bot_choices(end:end+num_choices-1) = randperm(num_choices);
-        else
-            bot_choices(end+1:end+num_choices) = randperm(num_choices);
+    if Trial == 1
+        bot_choices = 0;
+        for crow = 1:c_rows
+            if crow == 1
+                if even_uneven == 1
+                    bot_choices(end:end+num_choices-1) = randperm(num_choices);
+                else
+                    bot_choices(end:end+num_choices-1) = randi(num_choices,1,num_choices);
+                end
+            else
+                if even_uneven == 1
+                    bot_choices(end+1:end+num_choices) = randperm(num_choices);
+                else
+                    bot_choices(end+1:end+num_choices) = randi(num_choices,1,num_choices);
+                end
+            end
         end
     end
     
@@ -782,14 +792,14 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 end
                 Events = newevent_show_stimulus(Events,whose_turn,2,locx,locy-400,seg_wheel_time,'screenshot_no','clear_no'); %your turn!
                 %Click Instructions
-%                 Events = newevent_show_stimulus(Events,sub_but_text,1,locx,locy-25,seg_wheel_time,'screenshot_no','clear_no');
-%                 Events = newevent_show_stimulus(Events,sub_but_text,2,locx,locy+25,seg_wheel_time,'screenshot_no','clear_no');
+                %                 Events = newevent_show_stimulus(Events,sub_but_text,1,locx,locy-25,seg_wheel_time,'screenshot_no','clear_no');
+                %                 Events = newevent_show_stimulus(Events,sub_but_text,2,locx,locy+25,seg_wheel_time,'screenshot_no','clear_no');
             end
             trial_end_time = seg_wheel_time + .001; %when the trial ends
         else
             trial_end_time = reward_time + total_feedback_time; %when the trial ends
         end
-    elseif Trial == Numtrials && Blocknum < num_blocks
+    elseif Trial == Numtrials && blocknum < num_blocks
         trial_end_time = total_feedback_time;
     else
         token_win_time = total_feedback_time + .01;
@@ -807,7 +817,7 @@ elseif strcmp(Modeflag,'EndTrial')
     %% Record output data in structure & save in .MAT file
     seg_rows=csvread('seg_rows.csv');
     money_now_won = sum(segment_score(:,1))*0.05;
-    if Blocknum > 1
+    if blocknum > 1
         money_already_won = csvread('money_count.csv');
     else
         money_already_won = 0;
@@ -817,11 +827,11 @@ elseif strcmp(Modeflag,'EndTrial')
     if Trial < Numtrials
         if ~bot_mode || turn_bot_off
             if speed_test
-                segment_response = randi(360)
+                segment_response = randi(360);
             else
                 segment_response = (Events.windowclicked{segment_response})
                 if segment_response > 358
-%                     && num_segments == 4
+                    %                     && num_segments == 4
                     segment_response = 1;
                 end
             end
@@ -842,17 +852,21 @@ elseif strcmp(Modeflag,'EndTrial')
         Trial_Export.even_or_uneven = even_uneven;
     else
         Trial_Export.selected_row = 'feedback trial';
-        if Blocknum == num_blocks
+        if blocknum == num_blocks
             sprintf('The subject won $%d.',money_count)
         end
     end
     
     %Insert variables into output table
     if Trial < Numtrials
-        expstruct{Blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
-        expstruct{Blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
-        expstruct{Blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
-        expstruct{Blocknum}{Trial,'win'} = win;
+        try
+        expstruct{blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
+        expstruct{blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
+        expstruct{blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
+        expstruct{blocknum}{Trial,'win'} = win;
+        catch
+            sca;keyboard
+        end
     end
     
     %Concatenate output table across blocks
