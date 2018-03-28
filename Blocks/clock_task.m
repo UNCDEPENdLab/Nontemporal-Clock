@@ -47,8 +47,8 @@ if strcmp(Modeflag,'InitializeBlock')
     %Total number of trials
     Numtrials = 30 + num_segments + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
     
-    expstruct{blocknum} = table(repmat(blocknum,Numtrials,1),repmat(con_num,Numtrials,1),(1:Numtrials)',zeros(Numtrials,1),repmat(show_points,Numtrials,1),repmat(even_uneven,Numtrials,1),repmat(num_segments,Numtrials,1), ...
-        zeros(Numtrials,1),zeros(Numtrials,1),zeros(Numtrials,1),'VariableNames',{'block_num','con_num','trial','free_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
+    expstruct{blocknum} = table(repmat(blocknum,Numtrials-1,1),repmat(con_num,Numtrials-1,1),(1:Numtrials-1)',zeros(Numtrials-1,1),repmat(show_points,Numtrials-1,1),repmat(even_uneven,Numtrials-1,1),repmat(num_segments,Numtrials-1,1), ...
+        zeros(Numtrials-1,1),zeros(Numtrials-1,1),zeros(Numtrials-1,1),'VariableNames',{'block_num','con_num','trial','forced_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
     
     %Set the min & max win probability of the best & worst segment (random).
     %The rest of the segments are given probabilites on a gradient between these.
@@ -859,7 +859,7 @@ elseif strcmp(Modeflag,'EndTrial')
     %Insert variables into output table
     if Trial < Numtrials
         try
-        expstruct{blocknum}{Trial,'free_choice'} = Trial_Export.bot_mode;
+        expstruct{blocknum}{Trial,'forced_choice'} = Trial_Export.bot_mode;
         expstruct{blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
         expstruct{blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
         expstruct{blocknum}{Trial,'win'} = win;

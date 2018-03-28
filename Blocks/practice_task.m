@@ -413,11 +413,13 @@ if strcmp(Modeflag,'InitializeBlock')
     bot_mode = 1
     bot_choice_count = 0;
     ready_for_score = 0;
-    
+    save('workspace');
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
+    if Trial == 1;     load('workspace'); end
+    if Trial == 0; Trial = 1; end
     Trial
-    
+    instruction_display_time = 0;
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
     end
@@ -583,7 +585,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_show_stimulus(Events,ins,9,locx,locy+245,instruction_display_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,ins,10,locx,locy+315,instruction_display_time,'screenshot_no','clear_no');
             responsestruct.allowedchars = KbName('Space');
-            Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
+            if ~speed_test
+                Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
+            end
             seg_wheel_time = instruction_display_time + .01;
             points_time = seg_wheel_time;
             clickwheeltime = points_time;
@@ -597,7 +601,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         Events = newevent_show_stimulus(Events,ins,12,locx,locy,instruction_display_time,'screenshot_no','clear_no');
         Events = newevent_show_stimulus(Events,ins,13,locx,locy+75,instruction_display_time,'screenshot_no','clear_no');
         responsestruct.allowedchars = KbName('Space');
-        Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
+        if ~speed_test
+            Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
+        end
         seg_wheel_time = instruction_display_time + .01;
         points_time = seg_wheel_time;
         clickwheeltime = points_time;
@@ -608,7 +614,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         Events = newevent_show_stimulus(Events,ins,15,locx,locy,instruction_display_time,'screenshot_no','clear_no');
         Events = newevent_show_stimulus(Events,ins,13,locx,locy+75,instruction_display_time,'screenshot_no','clear_no');
         responsestruct.allowedchars = KbName('Space');
-        Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
+        if ~speed_test
+            Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
+        end
         seg_wheel_time = instruction_display_time + .01;
         points_time = seg_wheel_time;
         clickwheeltime = points_time;
@@ -619,7 +627,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         Events = newevent_show_stimulus(Events,ins,17,locx,locy,instruction_display_time,'screenshot_no','clear_no');
         Events = newevent_show_stimulus(Events,ins,13,locx,locy+75,instruction_display_time,'screenshot_no','clear_no');
         responsestruct.allowedchars = KbName('Space');
-        Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
+        if ~speed_test
+            Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
+        end
         seg_wheel_time = instruction_display_time + .01;
         points_time = seg_wheel_time;
         clickwheeltime = points_time;
@@ -866,8 +876,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         %% Ends trial
         Events = newevent_end_trial(Events,trial_end_time);
     end
-    
+    save('workspace2');
 elseif strcmp(Modeflag,'EndTrial')
+    load('workspace2');
     %% Record output data in structure & save in .MAT file
     seg_rows=csvread('seg_rows.csv');
     money_now_won = sum(segment_score(:,1))*0.05;
@@ -888,10 +899,11 @@ elseif strcmp(Modeflag,'EndTrial')
                 end
             end
         end
-    elseif strcmp(Modeflag,'EndBlock')
-    else
-        %Something went wrong in Runblock (You should never see this error)
-        error('Invalid modeflag');
     end
-    saveblockspace
+elseif strcmp(Modeflag,'EndBlock')
+else
+    %Something went wrong in Runblock (You should never see this error)
+    error('Invalid modeflag');
+end
+saveblockspace
 end
