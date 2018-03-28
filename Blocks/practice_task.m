@@ -413,11 +413,11 @@ if strcmp(Modeflag,'InitializeBlock')
     bot_mode = 1
     bot_choice_count = 0;
     ready_for_score = 0;
-    save('workspace');
+%     save('workspace');
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
-    if Trial == 1;     load('workspace'); end
-    if Trial == 0; Trial = 1; end
+%     if Trial == 1;     load('workspace'); end
+%     if Trial == 0; Trial = 1; end
     Trial
     instruction_display_time = 0;
     if Trial == 1
@@ -876,9 +876,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         %% Ends trial
         Events = newevent_end_trial(Events,trial_end_time);
     end
-    save('workspace2');
+%     save('workspace2');
 elseif strcmp(Modeflag,'EndTrial')
-    load('workspace2');
+%     load('workspace2');
     %% Record output data in structure & save in .MAT file
     seg_rows=csvread('seg_rows.csv');
     money_now_won = sum(segment_score(:,1))*0.05;
