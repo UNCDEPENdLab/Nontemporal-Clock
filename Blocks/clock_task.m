@@ -15,11 +15,15 @@ if strcmp(Modeflag,'InitializeBlock')
     %% Trial Parameters% (Not all. For the rest, scroll down to "The Experiment Display" section.)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Parameters.blocklist
-    blocknum = Blocknum - length(Demodata.practice_struct)
+    try
+        blocknum = Blocknum - length(Demodata.practice_struct);
+    catch
+        blocknum = 1;
+    end
     try
         con_num = Demodata.condition_struct(blocknum);
     catch
-        con_num = 1;
+        con_num = 2;
     end
     
     num_blocks = length(Parameters.blocklist);
@@ -100,6 +104,16 @@ if strcmp(Modeflag,'InitializeBlock')
         for add_seg_val = 1:length(seg_values(1,:))
             add_choice = add_choice + 1;
             possible_bot_choices(add_choice) = seg_values(seg_rows(add_seg_row),add_seg_val);
+        end
+    end
+    
+    dead_spots = zeros(11,1)';
+    for i = 1:length(change_spot)
+        current_spot = change_spot(i);
+        if i == 1
+            dead_spots(1:11) = [current_spot-5:current_spot+5];
+        else
+            dead_spots(end+1:end+11) = [current_spot-5:current_spot+5];
         end
     end
     
@@ -200,13 +214,13 @@ if strcmp(Modeflag,'InitializeBlock')
     %Used for mouse clicks on color wheel
     for i = 1:num_wheel_boxes
         but_count = but_count + 1;
-        if i < num_wheel_boxes
-            buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),22];
-        else
+        if any(dead_spots == i)
             buttonlocs{but_count} = [0.1,0.1,1];
+        else
+            buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),22];
         end
     end
-    
+    %     sca;keyboard
     loc_off = -2;
     
     firstpoint1(1,1) = mean(round(pointsWheelLocations1(1,1)),round(pointsWheelLocations1(1,2)));
@@ -859,10 +873,10 @@ elseif strcmp(Modeflag,'EndTrial')
     %Insert variables into output table
     if Trial < Numtrials
         try
-        expstruct{blocknum}{Trial,'forced_choice'} = Trial_Export.bot_mode;
-        expstruct{blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
-        expstruct{blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
-        expstruct{blocknum}{Trial,'win'} = win;
+            expstruct{blocknum}{Trial,'forced_choice'} = Trial_Export.bot_mode;
+            expstruct{blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
+            expstruct{blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
+            expstruct{blocknum}{Trial,'win'} = win;
         catch
             sca;keyboard
         end
