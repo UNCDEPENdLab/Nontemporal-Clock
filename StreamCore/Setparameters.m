@@ -64,9 +64,9 @@ Parameters.skipsynctests = 1;
 Parameters.datafilename = 'ExpSub';    %data file prefix
 Parameters.whichscreen = max(Screen('Screens'));  %which of the displays do we use?  (only relevant if there are multiple monitors)
 % if sum(Screen('Screens')) > 0
-%     Parameters.whichscreen = 2;
+    Parameters.whichscreen = 1;
 % else
-    Parameters.whichscreen = 0;  %which of the displays do we use?  (only relevant if there are multiple monitors)
+%     Parameters.whichscreen = 0;  %which of the displays do we use?  (only relevant if there are multiple monitors)
 % end
 backcolor = 255;
 Parameters.backgroundcolor = repmat(backcolor,1,3);   %what color is the background screen in RGB (0-255)

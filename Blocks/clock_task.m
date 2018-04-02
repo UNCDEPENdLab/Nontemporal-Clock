@@ -68,6 +68,9 @@ if strcmp(Modeflag,'InitializeBlock')
         Numtrials = 30;
     end
     
+    %
+    create_value_matrix;
+    
     seg_colors{1} = [0 105 255]; %colors of segments
     seg_colors{2} = seg_colors{1};
     add_wheel_borders = 1;
@@ -227,7 +230,7 @@ if strcmp(Modeflag,'InitializeBlock')
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
     %Location Wheel
-        locationWheelRadius = colorWheelRadius4; %radius of color wheel
+    locationWheelRadius = colorWheelRadius4; %radius of color wheel
     %Cartesian Conversion
     locationWheelLocations4 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
@@ -248,7 +251,7 @@ if strcmp(Modeflag,'InitializeBlock')
     
     but_count = 0;
     %Used for mouse clicks on color wheel
-    for i = 1:num_wheel_boxes
+    for i = 1:length(locationWheelLocations(1,:))
         but_count = but_count + 1;
         if any(dead_spots == i)
             buttonlocs{but_count} = [0.1,0.1,1];
@@ -256,7 +259,7 @@ if strcmp(Modeflag,'InitializeBlock')
             buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),22];
         end
     end
-    %     sca;keyboard
+    
     loc_off = -2;
     
     firstpoint1(1,1) = mean(round(pointsWheelLocations1(1,1)),round(pointsWheelLocations1(1,2)));
@@ -661,7 +664,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         %Mouse Click Windows
         for i = 1:length(bot_click_zone)
             try
-                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),25];
+                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),34];
             catch
                 sca;keyboard
             end
@@ -880,6 +883,13 @@ elseif strcmp(Modeflag,'EndTrial')
                 segment_response = randi(360);
             else
                 segment_response = (Events.windowclicked{segment_response})
+                if ~bot_mode
+                    try
+                        [segment_response,y] = find(value_matrix==segment_response)
+                    catch
+                        sca;keyboard
+                    end
+                end
                 if segment_response > 358
                     %                     && num_segments == 4
                     segment_response = 1;
