@@ -131,23 +131,41 @@ if strcmp(Modeflag,'InitializeBlock')
     %Enables mouse
     Parameters.mouse.enabled = 1;
     
-    %Color Wheel 1 (Outer)
+    %Color Wheel 1 (Outer Outer)
     colorWheelRadius1 = 260; %radius of color wheel
     %Cartesian Conversion
     colorWheelLocations1 = [cosd(1:num_wheel_boxes).*colorWheelRadius1 + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*colorWheelRadius1 + Parameters.centery];
     
-    %Color Wheel 2 (Mid)
+    %Color Wheel 2 (Outer Mid)
     colorWheelRadius2 = 252; %radius of color wheel
     %Cartesian Conversion
     colorWheelLocations2 = [cosd(1:num_wheel_boxes).*colorWheelRadius2 + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*colorWheelRadius2 + Parameters.centery];
     
-    %Color Wheel 3 (Inner)
+    %Color Wheel 3 (Outer Inner)
     colorWheelRadius3 = 244; %radius of color wheel
     %Cartesian Conversion
     colorWheelLocations3 = [cosd(1:num_wheel_boxes).*colorWheelRadius3 + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*colorWheelRadius3+ Parameters.centery];
+    
+    %Color Wheel 4 (Inner Outer)
+    colorWheelRadius4 = 238; %radius of color wheel
+    %Cartesian Conversion
+    colorWheelLocations4 = [cosd(1:num_wheel_boxes).*colorWheelRadius4 + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*colorWheelRadius4 + Parameters.centery];
+    
+    %Color Wheel 5 (Inner Mid)
+    colorWheelRadius5 = 232; %radius of color wheel
+    %Cartesian Conversion
+    colorWheelLocations5 = [cosd(1:num_wheel_boxes).*colorWheelRadius5 + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*colorWheelRadius5 + Parameters.centery];
+    
+    %Color Wheel 6 (Inner Inner)
+    colorWheelRadius6 = 226; %radius of color wheel
+    %Cartesian Conversion
+    colorWheelLocations6 = [cosd(1:num_wheel_boxes).*colorWheelRadius6 + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*colorWheelRadius6+ Parameters.centery];
     
     %Points Wheel 1 (Inner)
     pointsWheelRadius1 = colorWheelRadius1 + 40; %radius of color wheel
@@ -208,7 +226,25 @@ if strcmp(Modeflag,'InitializeBlock')
     locationWheelLocations3 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
-    locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3];
+    %Location Wheel
+        locationWheelRadius = colorWheelRadius4; %radius of color wheel
+    %Cartesian Conversion
+    locationWheelLocations4 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
+    
+    %Location Wheel
+    locationWheelRadius = colorWheelRadius5; %radius of color wheel
+    %Cartesian Conversion
+    locationWheelLocations5 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
+    
+    %Location Wheel
+    locationWheelRadius = colorWheelRadius6; %radius of color wheel
+    %Cartesian Conversion
+    locationWheelLocations6 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
+    
+    locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3 locationWheelLocations4 locationWheelLocations5 locationWheelLocations6];
     
     but_count = 0;
     %Used for mouse clicks on color wheel
@@ -235,7 +271,8 @@ if strcmp(Modeflag,'InitializeBlock')
     firstpoint4(2,1) = mean(round(pointsWheel2Locations2(2,1)),round(pointsWheel2Locations2(2,2)))+loc_off;
     firstcolor2 = scorecolormatrix2(360,:);
     
-    save('colorWheelLocations','colorWheelLocations1','colorWheelLocations2','colorWheelLocations3');
+    save('colorWheelLocations','colorWheelLocations1','colorWheelLocations2','colorWheelLocations3', ...
+        'colorWheelLocations4','colorWheelLocations5','colorWheelLocations6');
     save('pointsWheelLocations','pointsWheelLocations1','pointsWheelLocations2','pointsWheel2Locations1', ...
         'pointsWheel2Locations2','firstpoint1','firstpoint2','firstpoint3','firstpoint4','firstcolor','firstcolor2');
     save('pointswheel_endnotches','pointswheel1_endnotch','pointswheel2_endnotch');
