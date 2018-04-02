@@ -22,13 +22,17 @@ Events = newevent_command(Events,points_time,command,'clear_no');
 % command = 'eval(firstcolor = scorecolormatrix(360,:)';
 % Events = newevent_command(Events,points_time,command,'clear_no');
 
-command =   'Screen(''DrawDots'', Parameters.window, firstpoint1, 6, firstcolor'', [], 1);';
+command = 'try;firstslotcolor = csvread(''firstslotcolor.csv'');end';
 Events = newevent_command(Events,points_time,command,'clear_no');
-command =   'Screen(''DrawDots'', Parameters.window, firstpoint2, 6, firstcolor'', [], 1);';
+command = 'try;firstslotcolor2 = csvread(''firstslotcolor2.csv'');end';
 Events = newevent_command(Events,points_time,command,'clear_no');
-command =   'Screen(''DrawDots'', Parameters.window, firstpoint3, 6.5, firstcolor2'', [], 1);';
+command =   'Screen(''DrawDots'', Parameters.window, firstpoint1, 6, firstslotcolor'', [], 1);';
 Events = newevent_command(Events,points_time,command,'clear_no');
-command =   'Screen(''DrawDots'', Parameters.window, firstpoint4, 6.5, firstcolor2'', [], 1);';
+command =   'Screen(''DrawDots'', Parameters.window, firstpoint2, 6, firstslotcolor'', [], 1);';
+Events = newevent_command(Events,points_time,command,'clear_no');
+command =   'Screen(''DrawDots'', Parameters.window, firstpoint3, 6.5, firstslotcolor2'', [], 1);';
+Events = newevent_command(Events,points_time,command,'clear_no');
+command =   'Screen(''DrawDots'', Parameters.window, firstpoint4, 6.5, firstslotcolor2'', [], 1);';
 Events = newevent_command(Events,points_time,command,'clear_no');
 
 command = 'scorecolormatrix3 = scorecolormatrix;';

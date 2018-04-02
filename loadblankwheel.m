@@ -25,10 +25,10 @@ Events = newevent_command(Events,points_time,command,'clear_no');
 % command = 'eval(firstcolor = scorecolormatrix(360,:)';
 % Events = newevent_command(Events,points_time,command,'clear_no');
 
-command =   'Screen(''DrawDots'', Parameters.window, firstpoint1, 5.5, firstcolor'', [], 1);';
-Events = newevent_command(Events,points_time,command,'clear_no');
-command =   'Screen(''DrawDots'', Parameters.window, firstpoint2, 5.5, firstcolor'', [], 1);';
-Events = newevent_command(Events,points_time,command,'clear_no');
+% command =   'Screen(''DrawDots'', Parameters.window, firstpoint1, 5.5, firstcolor'', [], 1);';
+% Events = newevent_command(Events,points_time,command,'clear_no');
+% command =   'Screen(''DrawDots'', Parameters.window, firstpoint2, 5.5, firstcolor'', [], 1);';
+% Events = newevent_command(Events,points_time,command,'clear_no');
 % command =   'Screen(''DrawDots'', Parameters.window, firstpoint3, 5.5, firstcolor2'', [], 1);';
 % Events = newevent_command(Events,points_time,command,'clear_no');
 % command =   'Screen(''DrawDots'', Parameters.window, firstpoint4, 5.5, firstcolor2'', [], 1);';

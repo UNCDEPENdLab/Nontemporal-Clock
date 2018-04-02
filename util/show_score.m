@@ -46,12 +46,15 @@ if ~add
     end
     
     if selected_row == 1 && current_seg_score > 1
-        seg_score_currentpoint = seg_score_startingpoint +  current_seg_score - num_wheel_boxes/num_segments + current_seg_score - 2;
+        seg_score_currentpoint = seg_score_startingpoint +  current_seg_score - num_wheel_boxes/num_segments + current_seg_score - 1;
     end
     if num_segments == 8
-        score_offset = 22;
+        score_offset = 21;
     else
-        score_offset = 44;
+        score_offset = 42;
+    end
+    if selected_row > 1
+    seg_score_currentpoint = seg_score_currentpoint + 1;
     end
     try
         if seg_score_currentpoint < 1; seg_score_currentpoint = 1;end
@@ -89,6 +92,7 @@ if ~add
                     end
                     if score_row == 1 && segment_score(selected_row,2) == 1
                         firstslotcolor = scorecolormatrix(i,:);
+                        csvwrite('firstslotcolor.csv',firstslotcolor);
                     else
                         scorecolormatrix(i+1,:) = repmat(scorewheelcolor,1,3);
                     end
@@ -108,8 +112,9 @@ if ~add
     end
     
     try
-        scorecolormatrix(360,:) = firstslotcolor;
-        scorecolormatrix(1,:) = repmat(scorewheelcolor,1,3);
+        %         scorecolormatrix(360,:) = firstslotcolor;
+        scorecolormatrix(1,:) = firstslotcolor;
+        %         scorecolormatrix(1,:) = repmat(scorewheelcolor,1,3);
     end
     
     csvwrite('scorecolormatrix.csv',scorecolormatrix);
@@ -128,6 +133,7 @@ if ~add
                         end
                         if score_row == 1 && segment_score(selected_row,2) == score_offset+2
                             firstslotcolor2 = scorecolormatrix2(i,:);
+                            csvwrite('firstslotcolor2.csv',firstslotcolor2);
                         else
                             scorecolormatrix2(i+1,:) = repmat(scorewheelcolor,1,3);
                         end
@@ -146,8 +152,9 @@ if ~add
     end
     
     try
-        scorecolormatrix2(360,:) = firstslotcolor2;
-        scorecolormatrix2(1,:) = repmat(scorewheelcolor,1,3);
+%         scorecolormatrix2(360,:) = firstslotcolor2;
+scorecolormatrix2(1,:) = firstslotcolor2;
+%         scorecolormatrix2(1,:) = repmat(scorewheelcolor,1,3);
     end
     
     csvwrite('scorecolormatrix2.csv',scorecolormatrix2);

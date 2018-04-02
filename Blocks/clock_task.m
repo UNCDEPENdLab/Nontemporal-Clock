@@ -274,10 +274,17 @@ if strcmp(Modeflag,'InitializeBlock')
     firstpoint4(2,1) = mean(round(pointsWheel2Locations2(2,1)),round(pointsWheel2Locations2(2,2)))+loc_off;
     firstcolor2 = scorecolormatrix2(360,:);
     
+    firstslotcolor = firstcolor;
+    firstslotcolor2 = firstcolor2;
+    
+    csvwrite('firstslotcolor.csv',firstslotcolor);
+    csvwrite('firstslotcolor2.csv',firstslotcolor2);
+    
     save('colorWheelLocations','colorWheelLocations1','colorWheelLocations2','colorWheelLocations3', ...
         'colorWheelLocations4','colorWheelLocations5','colorWheelLocations6');
     save('pointsWheelLocations','pointsWheelLocations1','pointsWheelLocations2','pointsWheel2Locations1', ...
-        'pointsWheel2Locations2','firstpoint1','firstpoint2','firstpoint3','firstpoint4','firstcolor','firstcolor2');
+        'pointsWheel2Locations2','firstpoint1','firstpoint2','firstpoint3','firstpoint4', ...
+        'firstcolor','firstcolor2','firstslotcolor','firstslotcolor2');
     save('pointswheel_endnotches','pointswheel1_endnotch','pointswheel2_endnotch');
     
     locx = Parameters.centerx;
@@ -475,7 +482,7 @@ if strcmp(Modeflag,'InitializeBlock')
     bot_mode = 1
     bot_choice_count = 0;
     ready_for_score = 0;
-    
+    choose_one  = 0;
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
     Trial
@@ -566,6 +573,12 @@ elseif strcmp(Modeflag,'InitializeTrial')
     if bot_mode && ~turn_bot_off
         segment_response = seg_values(seg_rows(click_choice),45);
         selected_prob = click_choice;
+        if click_choice == 1 && choose_one == 0
+            load_first_seg = 1;
+            choose_one = 1;
+        else
+            load_first_seg = 0;
+        end
     end
     
     %Center coordinates
@@ -622,10 +635,14 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     %Loads points wheel
     points_time = instruction_display_time;
-    if Trial ~= change_trial2
-        loadpointswheel2;
+    if ~load_first_seg
+        if Trial ~= change_trial2
+            loadpointswheel2;
+        else
+            loadblankwheel;
+        end
     else
-        loadblankwheel;
+        loadpointswheel3;
     end
     
     %% If bot mode, wait for segment click before continuing
@@ -881,11 +898,12 @@ elseif strcmp(Modeflag,'EndTrial')
         if ~bot_mode || turn_bot_off
             if speed_test
                 segment_response = randi(360);
+                segment_response = 1;
             else
-                segment_response = (Events.windowclicked{segment_response})
+                segment_response = (Events.windowclicked{segment_response});
                 if ~bot_mode
                     try
-                        [segment_response,y] = find(value_matrix==segment_response)
+                        [segment_response,y] = find(value_matrix==segment_response);
                     catch
                         sca;keyboard
                     end

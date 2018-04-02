@@ -60,7 +60,6 @@ else
     Events = newevent_command(Events,clickwheeltime,command,'clear_no');
     command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations3, 10, selected_segment'', [], 1);';
     Events = newevent_command(Events,clickwheeltime,command,'clear_no');
-    Events = newevent_command(Events,clickwheeltime,command,'clear_no');
     command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations4, 10, selected_segment'', [], 1);';
     Events = newevent_command(Events,clickwheeltime,command,'clear_no');
     command =   'Screen(''DrawDots'', Parameters.window, colorWheelLocations5, 10, selected_segment'', [], 1);';
