@@ -573,7 +573,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     if bot_mode && ~turn_bot_off
         segment_response = seg_values(seg_rows(click_choice),45);
         selected_prob = click_choice;
-        if click_choice == 1 && choose_one == 0
+        if segment_response < 91 && choose_one == 0
             load_first_seg = 1;
             choose_one = 1;
         else
@@ -898,7 +898,6 @@ elseif strcmp(Modeflag,'EndTrial')
         if ~bot_mode || turn_bot_off
             if speed_test
                 segment_response = randi(360);
-                segment_response = 1;
             else
                 segment_response = (Events.windowclicked{segment_response});
                 if ~bot_mode

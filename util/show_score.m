@@ -51,7 +51,7 @@ if ~add
     if num_segments == 8
         score_offset = 21;
     else
-        score_offset = 42;
+        score_offset = 43;
     end
     if selected_row > 1
     seg_score_currentpoint = seg_score_currentpoint + 1;
@@ -153,6 +153,7 @@ if ~add
     
     try
 %         scorecolormatrix2(360,:) = firstslotcolor2;
+scorecolormatrix2(2,:) = repmat(scorewheelcolor,1,3);
 scorecolormatrix2(1,:) = firstslotcolor2;
 %         scorecolormatrix2(1,:) = repmat(scorewheelcolor,1,3);
     end
