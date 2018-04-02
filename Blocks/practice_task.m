@@ -51,6 +51,8 @@ if strcmp(Modeflag,'InitializeBlock')
         Numtrials = 30;
     end
     
+    create_value_matrix;
+    
     seg_colors{1} = [0 105 255]; %colors of segments
     seg_colors{2} = seg_colors{1};
     add_wheel_borders = 1;
@@ -90,6 +92,16 @@ if strcmp(Modeflag,'InitializeBlock')
         end
     end
     
+    dead_spots = zeros(11,1)';
+    for i = 1:length(change_spot)
+        current_spot = change_spot(i);
+        if i == 1
+            dead_spots(1:11) = [current_spot-5:current_spot+5];
+        else
+            dead_spots(end+1:end+11) = [current_spot-5:current_spot+5];
+        end
+    end
+    
     csvwrite('scorecolormatrix.csv',scorecolormatrix);
     scorecolormatrix2 = scorecolormatrix;
     csvwrite('scorecolormatrix2.csv',scorecolormatrix2);
@@ -104,23 +116,41 @@ if strcmp(Modeflag,'InitializeBlock')
     %Enables mouse
     Parameters.mouse.enabled = 1;
     
-    %Color Wheel 1 (Outer)
+    %Color Wheel 1 (Outer Outer)
     colorWheelRadius1 = 260; %radius of color wheel
     %Cartesian Conversion
     colorWheelLocations1 = [cosd(1:num_wheel_boxes).*colorWheelRadius1 + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*colorWheelRadius1 + Parameters.centery];
     
-    %Color Wheel 2 (Mid)
+    %Color Wheel 2 (Outer Mid)
     colorWheelRadius2 = 252; %radius of color wheel
     %Cartesian Conversion
     colorWheelLocations2 = [cosd(1:num_wheel_boxes).*colorWheelRadius2 + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*colorWheelRadius2 + Parameters.centery];
     
-    %Color Wheel 3 (Inner)
+    %Color Wheel 3 (Outer Inner)
     colorWheelRadius3 = 244; %radius of color wheel
     %Cartesian Conversion
     colorWheelLocations3 = [cosd(1:num_wheel_boxes).*colorWheelRadius3 + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*colorWheelRadius3+ Parameters.centery];
+    
+    %Color Wheel 4 (Inner Outer)
+    colorWheelRadius4 = 238; %radius of color wheel
+    %Cartesian Conversion
+    colorWheelLocations4 = [cosd(1:num_wheel_boxes).*colorWheelRadius4 + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*colorWheelRadius4 + Parameters.centery];
+    
+    %Color Wheel 5 (Inner Mid)
+    colorWheelRadius5 = 232; %radius of color wheel
+    %Cartesian Conversion
+    colorWheelLocations5 = [cosd(1:num_wheel_boxes).*colorWheelRadius5 + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*colorWheelRadius5 + Parameters.centery];
+    
+    %Color Wheel 6 (Inner Inner)
+    colorWheelRadius6 = 226; %radius of color wheel
+    %Cartesian Conversion
+    colorWheelLocations6 = [cosd(1:num_wheel_boxes).*colorWheelRadius6 + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*colorWheelRadius6+ Parameters.centery];
     
     %Points Wheel 1 (Inner)
     pointsWheelRadius1 = colorWheelRadius1 + 40; %radius of color wheel
@@ -181,16 +211,35 @@ if strcmp(Modeflag,'InitializeBlock')
     locationWheelLocations3 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
         sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
     
-    locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3];
+    %Location Wheel
+    locationWheelRadius = colorWheelRadius4; %radius of color wheel
+    %Cartesian Conversion
+    locationWheelLocations4 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
+    
+    %Location Wheel
+    locationWheelRadius = colorWheelRadius5; %radius of color wheel
+    %Cartesian Conversion
+    locationWheelLocations5 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
+    
+    %Location Wheel
+    locationWheelRadius = colorWheelRadius6; %radius of color wheel
+    %Cartesian Conversion
+    locationWheelLocations6 = [cosd(1:num_wheel_boxes).*locationWheelRadius + Parameters.centerx; ...
+        sind(1:num_wheel_boxes).*locationWheelRadius + Parameters.centery];
+    
+    
+    locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3 locationWheelLocations4 locationWheelLocations5 locationWheelLocations6];
     
     but_count = 0;
     %Used for mouse clicks on color wheel
-    for i = 1:num_wheel_boxes
+    for i = 1:length(locationWheelLocations(1,:))
         but_count = but_count + 1;
-        if i < num_wheel_boxes
-            buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),22];
-        else
+        if any(dead_spots == i)
             buttonlocs{but_count} = [0.1,0.1,1];
+        else
+            buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),34];
         end
     end
     
@@ -208,9 +257,17 @@ if strcmp(Modeflag,'InitializeBlock')
     firstpoint4(2,1) = mean(round(pointsWheel2Locations2(2,1)),round(pointsWheel2Locations2(2,2)))+loc_off;
     firstcolor2 = scorecolormatrix2(360,:);
     
-    save('colorWheelLocations','colorWheelLocations1','colorWheelLocations2','colorWheelLocations3');
+    firstslotcolor = firstcolor;
+    firstslotcolor2 = firstcolor2;
+    
+    csvwrite('firstslotcolor.csv',firstslotcolor);
+    csvwrite('firstslotcolor2.csv',firstslotcolor2);
+    
+    save('colorWheelLocations','colorWheelLocations1','colorWheelLocations2','colorWheelLocations3', ...
+        'colorWheelLocations4','colorWheelLocations5','colorWheelLocations6');
     save('pointsWheelLocations','pointsWheelLocations1','pointsWheelLocations2','pointsWheel2Locations1', ...
-        'pointsWheel2Locations2','firstpoint1','firstpoint2','firstpoint3','firstpoint4','firstcolor','firstcolor2');
+        'pointsWheel2Locations2','firstpoint1','firstpoint2','firstpoint3','firstpoint4', ...
+        'firstcolor','firstcolor2','firstslotcolor','firstslotcolor2');
     save('pointswheel_endnotches','pointswheel1_endnotch','pointswheel2_endnotch');
     
     locx = Parameters.centerx;
@@ -413,11 +470,12 @@ if strcmp(Modeflag,'InitializeBlock')
     bot_mode = 1
     bot_choice_count = 0;
     ready_for_score = 0;
-%     save('workspace');
+    %     save('workspace');
+    choose_one  = 0;
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
-%     if Trial == 1;     load('workspace'); end
-%     if Trial == 0; Trial = 1; end
+    %     if Trial == 1;     load('workspace'); end
+    %     if Trial == 0; Trial = 1; end
     Trial
     instruction_display_time = 0;
     if Trial == 1
@@ -447,12 +505,14 @@ elseif strcmp(Modeflag,'InitializeTrial')
             if crow == 1
                 if even_uneven == 1
                     bot_choices(end:end+num_choices-1) = randperm(num_choices);
+%                     if con_num == 1; bot_choices(end:end+num_choices-1) = [2 3 4 1]; end
                 else
                     bot_choices(end:end+num_choices-1) = randi(num_choices,1,num_choices);
                 end
             else
                 if even_uneven == 1
                     bot_choices(end+1:end+num_choices) = randperm(num_choices);
+%                     if con_num == 1; bot_choices(end+1:end+num_choices) = [2 3 4 1]; end
                 else
                     bot_choices(end+1:end+num_choices) = randi(num_choices,1,num_choices);
                 end
@@ -481,10 +541,13 @@ elseif strcmp(Modeflag,'InitializeTrial')
         num_pos_bot_seg_choices = num_choices;
     end
     
+    if con_num == 1; bot_choices(1:4) = [3 2 4 1]; end
+    
     %Find bot's current choice
     try
         bot_choice_count = bot_choice_count + 1;
-        click_choice = bot_choices(bot_choice_count);
+        click_choice = bot_choices(bot_choice_count)
+%         sca;keyboard
     catch
         sca;keyboard;
     end
@@ -499,8 +562,14 @@ elseif strcmp(Modeflag,'InitializeTrial')
     bot_click_zone = med_zone-med_off:med_zone+med_off;
     
     if bot_mode && ~turn_bot_off
-        segment_response = seg_values(seg_rows(click_choice),12);
+        segment_response = seg_values(seg_rows(click_choice),45);
         selected_prob = click_choice;
+        if segment_response < 91 && choose_one == 0
+            load_first_seg = 1;
+            choose_one = 1;
+        else
+            load_first_seg = 0;
+        end
     end
     
     %Center coordinates
@@ -563,10 +632,14 @@ elseif strcmp(Modeflag,'InitializeTrial')
     points_time = instruction_display_time;
     if Trial == 1
     else
-        if Trial ~= change_trial2
-            loadpointswheel2;
+        if ~load_first_seg
+            if Trial ~= change_trial2
+                loadpointswheel2;
+            else
+                loadblankwheel;
+            end
         else
-            loadblankwheel;
+            loadpointswheel3;
         end
     end
     if Trial == 1; segment_score = zeros(num_segments,2); end
@@ -683,7 +756,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         %Mouse Click Windows
         for i = 1:length(bot_click_zone)
             try
-                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),25];
+                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),34];
             catch
                 sca;keyboard
             end
@@ -876,9 +949,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         %% Ends trial
         Events = newevent_end_trial(Events,trial_end_time);
     end
-%     save('workspace2');
+    %     save('workspace2');
 elseif strcmp(Modeflag,'EndTrial')
-%     load('workspace2');
+    %     load('workspace2');
     %% Record output data in structure & save in .MAT file
     seg_rows=csvread('seg_rows.csv');
     money_now_won = sum(segment_score(:,1))*0.05;
@@ -894,7 +967,9 @@ elseif strcmp(Modeflag,'EndTrial')
                 segment_response = randi(360)
             else
                 segment_response = (Events.windowclicked{segment_response})
-                if segment_response > 358 && num_segments == 4
+                [segment_response,y] = find(value_matrix==segment_response);
+                if segment_response > 358
+                    %                     && num_segments == 4
                     segment_response = 1;
                 end
             end

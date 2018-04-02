@@ -23,7 +23,7 @@ if strcmp(Modeflag,'InitializeBlock')
     try
         con_num = Demodata.condition_struct(blocknum);
     catch
-        con_num = 2;
+        con_num = 1;
     end
     
     num_blocks = length(Parameters.blocklist);
@@ -256,7 +256,7 @@ if strcmp(Modeflag,'InitializeBlock')
         if any(dead_spots == i)
             buttonlocs{but_count} = [0.1,0.1,1];
         else
-            buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),22];
+            buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),34];
         end
     end
     
