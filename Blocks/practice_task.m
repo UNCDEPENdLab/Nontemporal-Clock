@@ -541,7 +541,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         num_pos_bot_seg_choices = num_choices;
     end
     
-    if con_num == 1; bot_choices(1:4) = [3 2 4 1]; end
+    if con_num == 1; seg_rows = 1:4; bot_choices(1:4) = [3 2 4 1]; end
     
     %Find bot's current choice
     try
@@ -551,6 +551,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     catch
         sca;keyboard;
     end
+%     sca;keyboard
     bot_click_zone = seg_values(seg_rows(click_choice),:);
     med_zone = round(median(bot_click_zone));
     if num_segments == 4
