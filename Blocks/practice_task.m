@@ -51,8 +51,6 @@ if strcmp(Modeflag,'InitializeBlock')
         Numtrials = 30;
     end
     
-    create_value_matrix;
-    
     seg_colors{1} = [0 105 255]; %colors of segments
     seg_colors{2} = seg_colors{1};
     add_wheel_borders = 1;
@@ -89,16 +87,6 @@ if strcmp(Modeflag,'InitializeBlock')
         for add_seg_val = 1:length(seg_values(1,:))
             add_choice = add_choice + 1;
             possible_bot_choices(add_choice) = seg_values(seg_rows(add_seg_row),add_seg_val);
-        end
-    end
-    
-    dead_spots = zeros(11,1)';
-    for i = 1:length(change_spot)
-        current_spot = change_spot(i);
-        if i == 1
-            dead_spots(1:11) = [current_spot-5:current_spot+5];
-        else
-            dead_spots(end+1:end+11) = [current_spot-5:current_spot+5];
         end
     end
     
@@ -232,11 +220,47 @@ if strcmp(Modeflag,'InitializeBlock')
     
     locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3 locationWheelLocations4 locationWheelLocations5 locationWheelLocations6];
     
+    num_rings = 6;
+    
+    %Assign click values around & across the number of click wheel rings
+    create_value_matrix;
+    
+    if num_segments == 4
+        dead_offset = 8;
+    else
+        dead_offset = 6;
+    end
+    num_deads = (dead_offset*2)+1;
+    dead_spots = zeros(num_deads,1)';
+    for i = 1:length(change_spot)
+        current_spot = change_spot(i);
+        if i == 1
+            dead_spots(1:num_deads) = [current_spot-dead_offset:current_spot+dead_offset];
+        elseif i ~= length(change_spot)
+            dead_spots(end+1:end+num_deads) = [current_spot-dead_offset:current_spot+dead_offset];
+        else
+            dead_offset = 10;
+            num_deads = (dead_offset*2)+1;
+            dead_spots(end+1:end+num_deads-dead_offset) = [current_spot-dead_offset:current_spot];
+        end
+    end
+    
+    for i = 1:length(dead_spots)
+        if dead_spots(i) > 360
+            dead_spots(i) = dead_spots(i) - 360;
+        end
+        if i == 1
+            new_dead_spots(1:num_rings) = value_matrix(dead_spots(i),:);
+        else
+            new_dead_spots(end+1:end+num_rings) = value_matrix(dead_spots(i),:);
+        end
+    end
+    
     but_count = 0;
     %Used for mouse clicks on color wheel
     for i = 1:length(locationWheelLocations(1,:))
         but_count = but_count + 1;
-        if any(dead_spots == i)
+        if any(new_dead_spots == i)
             buttonlocs{but_count} = [0.1,0.1,1];
         else
             buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),34];
@@ -477,6 +501,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %     if Trial == 1;     load('workspace'); end
     %     if Trial == 0; Trial = 1; end
     Trial
+    clear new_bot_click_zone bot_click_zone
     instruction_display_time = 0;
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
@@ -505,14 +530,14 @@ elseif strcmp(Modeflag,'InitializeTrial')
             if crow == 1
                 if even_uneven == 1
                     bot_choices(end:end+num_choices-1) = randperm(num_choices);
-%                     if con_num == 1; bot_choices(end:end+num_choices-1) = [2 3 4 1]; end
+                    %                     if con_num == 1; bot_choices(end:end+num_choices-1) = [2 3 4 1]; end
                 else
                     bot_choices(end:end+num_choices-1) = randi(num_choices,1,num_choices);
                 end
             else
                 if even_uneven == 1
                     bot_choices(end+1:end+num_choices) = randperm(num_choices);
-%                     if con_num == 1; bot_choices(end+1:end+num_choices) = [2 3 4 1]; end
+                    %                     if con_num == 1; bot_choices(end+1:end+num_choices) = [2 3 4 1]; end
                 else
                     bot_choices(end+1:end+num_choices) = randi(num_choices,1,num_choices);
                 end
@@ -544,24 +569,38 @@ elseif strcmp(Modeflag,'InitializeTrial')
     if con_num == 1; seg_rows = 1:4; bot_choices(1:4) = [3 2 4 1]; end
     
     %Find bot's current choice
-    try
-        bot_choice_count = bot_choice_count + 1;
-        click_choice = bot_choices(bot_choice_count)
-%         sca;keyboard
-    catch
-        sca;keyboard;
-    end
-%     sca;keyboard
+    bot_choice_count = bot_choice_count + 1;
+    click_choice = bot_choices(bot_choice_count);
+    %     sca;keyboard
     bot_click_zone = seg_values(seg_rows(click_choice),:);
     med_zone = round(median(bot_click_zone));
     if num_segments == 4
-        med_off = 40;
+        med_off = 36;
+        bot_click_zone = med_zone-med_off:med_zone+med_off;
     else
-        med_off = 18;
+        med_off = 14;
+        bot_click_zone = med_zone-med_off+1:med_zone+med_off+1;
     end
     
-    bot_click_zone = med_zone-med_off:med_zone+med_off;
+    %     sca;keyboard
     
+    %         bot_click_zone = med_zone-med_off-2:med_zone+med_off-2;
+    
+    for i = 1:length(bot_click_zone)
+        if bot_click_zone(i) > 360
+            bot_click_zone(i) = bot_click_zone(i) - 360;
+        end
+        if bot_click_zone(i) >= 355
+            bot_click_zone(i) = 350;
+        end
+        if i == 1
+            new_bot_click_zone(1:num_rings) = value_matrix(bot_click_zone(i),:);
+        else
+            new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
+        end
+    end
+%     bot_click_zone = new_bot_click_zone;
+%             sca;keyboard
     if bot_mode && ~turn_bot_off
         segment_response = seg_values(seg_rows(click_choice),45);
         selected_prob = click_choice;
@@ -572,6 +611,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             load_first_seg = 0;
         end
     end
+    
     
     %Center coordinates
     locx = Parameters.centerx;
@@ -755,9 +795,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,Parameters.mouse.cursorsize);
         
         %Mouse Click Windows
-        for i = 1:length(bot_click_zone)
+        for i = 1:length(new_bot_click_zone)
             try
-                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),34];
+                pos_buttonlocs{i} = [locationWheelLocations(1,new_bot_click_zone(i)),locationWheelLocations(2,new_bot_click_zone(i)),34];
             catch
                 sca;keyboard
             end

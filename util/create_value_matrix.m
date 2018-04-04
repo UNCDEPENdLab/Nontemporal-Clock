@@ -1,5 +1,3 @@
-num_wheel_boxes = 360;
-num_rings = 6;
 col_count = 1; row_count = 0;
 for i = 1:(num_wheel_boxes*num_rings)
     row_count = row_count + 1;
