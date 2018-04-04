@@ -30,6 +30,10 @@ if strcmp(Modeflag,'InitializeBlock')
     s_cb = mod(Demodata.s_num,2);
     s_cb = s_cb(1);
     
+    %con_num encodes the block number. this is a 2 x 2 x 2 design
+    % show_points = 0 / 1   -- whether to display the score wheel
+    % even_uneven = 0 / 1   -- even versus uneven sampling in the first phase
+    % num_segments = 4 / 8  -- number of segments to choose among
     if con_num == 1
         show_points = 1; even_uneven = 1; num_segments = 4;
     elseif con_num == 2
@@ -96,7 +100,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %% Set up Stimuli
     
     %Create segments on click wheel
-    [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
+    [seg_values, scorecolormatrix, change_spot, num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
     seg_rows = randperm(num_segments);
     
     csvwrite('seg_rows.csv',seg_rows);
@@ -406,7 +410,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %Fixation Cross & Questions
     stimstruct = CreateStimStruct('text');
     stimstruct.wrapat = 0;
-    stimstruct.stimuli = {'+','Click anywhere on the points wheel to try to score a nickel.'};
+    stimstruct.stimuli = {'+','Click anywhere on the points wheel to try to win a nickel.'};
     stimstruct.stimsize = 20;
     Stimuli_sets(30) = Preparestimuli(Parameters,stimstruct);
     
@@ -436,7 +440,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %Whose turn
     whose_turn = 1112; %turn
     stimstruct = CreateStimStruct('text');
-    stimstruct.stimuli = {'Computer''s turn!','Your Turn!'};
+    stimstruct.stimuli = {'Click the highlighted segment','Choose a segment'};
     stimstruct.stimsize = 52;
     Stimuli_sets(whose_turn) = Preparestimuli(Parameters,stimstruct);
     
@@ -444,7 +448,7 @@ if strcmp(Modeflag,'InitializeBlock')
     reward = 300;
     stimstruct = CreateStimStruct('text');
     stimstruct.wrapat = 0;
-    stimstruct.stimuli = {'Congrats! You won a nickel!', 'Sorry, no nickel this time.','Congrats! You won another nickel!','Total: '};
+    stimstruct.stimuli = {'Congrats! You won a nickel!', 'Sorry, no nickel this time.', 'Congrats! You won another nickel!','Total: '};
     stimstruct.stimsize = 30;
     stimstruct.vSpacing = 5;
     Stimuli_sets(reward) = Preparestimuli(Parameters,stimstruct);
@@ -453,30 +457,36 @@ if strcmp(Modeflag,'InitializeBlock')
     
     %Base blocks of the wheel
     setupwheelblocks;
+
+    %get the reward probabilities for this block
+    probs = get_block_probabilities(num_segments, 0.35, 0.65, 0.5); %35--65% with mean of 50%
     
-    if even_uneven < 3
-        probs = [min_prob:((max_prob-min_prob)/(num_segments-1)):max_prob];
-    else %gold mine
-        probs = [0.4 0.4 0.4 0.75];
-    end
+%     if even_uneven < 3
+%         probs = [min_prob:((max_prob-min_prob)/(num_segments-1)):max_prob];
+%     else %gold mine
+%         probs = [0.4 0.4 0.4 0.75];
+%     end
+%     
+%     try
+%         probs = Shuffle(probs);
+%     catch
+%         probs = shuffle(probs);
+%     end
     
-    try
-        probs = Shuffle(probs);
-    catch
-        probs = shuffle(probs);
-    end
-    
+    %assign probabilities to each segment around the wheel
     try
         prob_count = 1;
         for i = 1:360
+            wheel_probs(i) = probs(prob_count);
+            %change to next probability at segment boundaries
             if ~mod(i,(360/length(probs))) && i < 360
                 prob_count = prob_count + 1;
             end
-            wheel_probs(i) = probs(prob_count);
         end
     catch
         sca;keyboard
     end
+
     score = 0;
     
     bot_mode = 1
