@@ -23,12 +23,17 @@ if strcmp(Modeflag,'InitializeBlock')
     try
         con_num = Demodata.condition_struct(blocknum);
     catch
-        con_num = 1;
+        con_num = 2;
     end
     
     num_blocks = length(Parameters.blocklist);
     s_cb = mod(Demodata.s_num,2);
     s_cb = s_cb(1);
+    
+    % con_num encodes the block number. this is a 2 x 2 x 2 design
+    % show_points = 0 / 1   -- whether to display the score wheel
+    % even_uneven = 0 / 1   -- even versus uneven sampling in the first phase
+    % num_segments = 4 / 8  -- number of segments to choose among
     
     if con_num == 1
         show_points = 1; even_uneven = 1; num_segments = 4;
@@ -68,9 +73,6 @@ if strcmp(Modeflag,'InitializeBlock')
         Numtrials = 30;
     end
     
-    %
-    create_value_matrix;
-    
     seg_colors{1} = [0 105 255]; %colors of segments
     seg_colors{2} = seg_colors{1};
     add_wheel_borders = 1;
@@ -107,16 +109,6 @@ if strcmp(Modeflag,'InitializeBlock')
         for add_seg_val = 1:length(seg_values(1,:))
             add_choice = add_choice + 1;
             possible_bot_choices(add_choice) = seg_values(seg_rows(add_seg_row),add_seg_val);
-        end
-    end
-    
-    dead_spots = zeros(11,1)';
-    for i = 1:length(change_spot)
-        current_spot = change_spot(i);
-        if i == 1
-            dead_spots(1:11) = [current_spot-5:current_spot+5];
-        else
-            dead_spots(end+1:end+11) = [current_spot-5:current_spot+5];
         end
     end
     
@@ -249,11 +241,47 @@ if strcmp(Modeflag,'InitializeBlock')
     
     locationWheelLocations = [locationWheelLocations1 locationWheelLocations2 locationWheelLocations3 locationWheelLocations4 locationWheelLocations5 locationWheelLocations6];
     
+    num_rings = 6;
+    
+    %Assign click values around & across the number of click wheel rings
+    create_value_matrix;
+    
+    if num_segments == 4
+        dead_offset = 8;
+    else
+        dead_offset = 6;
+    end
+    num_deads = (dead_offset*2)+1;
+    dead_spots = zeros(num_deads,1)';
+    for i = 1:length(change_spot)
+        current_spot = change_spot(i);
+        if i == 1
+            dead_spots(1:num_deads) = [current_spot-dead_offset:current_spot+dead_offset];
+        elseif i ~= length(change_spot)
+            dead_spots(end+1:end+num_deads) = [current_spot-dead_offset:current_spot+dead_offset];
+        else
+            dead_offset = 10;
+            num_deads = (dead_offset*2)+1;
+            dead_spots(end+1:end+num_deads-dead_offset) = [current_spot-dead_offset:current_spot];
+        end
+    end
+    
+    for i = 1:length(dead_spots)
+        if dead_spots(i) > 360
+            dead_spots(i) = dead_spots(i) - 360;
+        end
+        if i == 1
+            new_dead_spots(1:num_rings) = value_matrix(dead_spots(i),:);
+        else
+            new_dead_spots(end+1:end+num_rings) = value_matrix(dead_spots(i),:);
+        end
+    end
+    
     but_count = 0;
     %Used for mouse clicks on color wheel
     for i = 1:length(locationWheelLocations(1,:))
         but_count = but_count + 1;
-        if any(dead_spots == i)
+        if any(new_dead_spots == i)
             buttonlocs{but_count} = [0.1,0.1,1];
         else
             buttonlocs{but_count} = [locationWheelLocations(1,i),locationWheelLocations(2,i),34];
@@ -406,18 +434,19 @@ if strcmp(Modeflag,'InitializeBlock')
     %Fixation Cross & Questions
     stimstruct = CreateStimStruct('text');
     stimstruct.wrapat = 0;
-    stimstruct.stimuli = {'+','Click anywhere on the points wheel to try to score a nickel.'};
+    stimstruct.stimuli = {'+','Click anywhere on the points wheel to try to win a nickel.'};
     stimstruct.stimsize = 20;
     Stimuli_sets(30) = Preparestimuli(Parameters,stimstruct);
     
     %Instructions (before practice trials)
     stimstruct = CreateStimStruct('text');
+    ins = 31;
     stimstruct.wrapat = 0;
-    stimstruct.stimuli = {'On each trial, you will see a "points wheel".','Your task is to click on different parts of this points wheel in','order to figure out which section is more likely to award you more points.','Press any button once you''re ready to begin.'};
-    stimstruct.stimsize = 20;
+    stimstruct.stimuli = {'New wheel!','The probabilities','have been shuffled!'};
+    stimstruct.stimsize = 32;
     stimstruct.wrapat = 0;
     stimstruct.vSpacing = 5;
-    Stimuli_sets(31) = Preparestimuli(Parameters,stimstruct);
+    Stimuli_sets(ins) = Preparestimuli(Parameters,stimstruct);
     
     %Bot button text
     bot_but_text = 1110; %click here
@@ -436,7 +465,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %Whose turn
     whose_turn = 1112; %turn
     stimstruct = CreateStimStruct('text');
-    stimstruct.stimuli = {'Computer''s turn!','Your Turn!'};
+    stimstruct.stimuli = {'Click the highlighted segment','Choose a segment'};
     stimstruct.stimsize = 52;
     Stimuli_sets(whose_turn) = Preparestimuli(Parameters,stimstruct);
     
@@ -454,29 +483,23 @@ if strcmp(Modeflag,'InitializeBlock')
     %Base blocks of the wheel
     setupwheelblocks;
     
-    if even_uneven < 3
-        probs = [min_prob:((max_prob-min_prob)/(num_segments-1)):max_prob];
-    else %gold mine
-        probs = [0.4 0.4 0.4 0.75];
-    end
+    %get the reward probabilities for this block
+    probs = get_block_probabilities(num_segments, 0.35, 0.65, 0.5); %35--65% with mean of 50%
     
-    try
-        probs = Shuffle(probs);
-    catch
-        probs = shuffle(probs);
-    end
-    
-    try
-        prob_count = 1;
-        for i = 1:360
-            if ~mod(i,(360/length(probs))) && i < 360
-                prob_count = prob_count + 1;
-            end
+       %assign probabilities to each segment around the wheel
+     try
+         prob_count = 1;
+         for i = 1:360
             wheel_probs(i) = probs(prob_count);
-        end
-    catch
-        sca;keyboard
-    end
+            %change to next probability at segment boundaries
+             if ~mod(i,(360/length(probs))) && i < 360
+                 prob_count = prob_count + 1;
+             end
+            wheel_probs(i) = probs(prob_count);
+         end
+     catch
+         sca;keyboard
+     end
     score = 0;
     
     bot_mode = 1
@@ -486,7 +509,7 @@ if strcmp(Modeflag,'InitializeBlock')
 elseif strcmp(Modeflag,'InitializeTrial')
     %% Set up other experiment parameters
     Trial
-    
+    clear new_bot_click_zone bot_click_zone
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
     end
@@ -555,21 +578,36 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %Find bot's current choice
     bot_choice_count = bot_choice_count + 1;
     click_choice = bot_choices(bot_choice_count);
-    
+%     sca;keyboard
     bot_click_zone = seg_values(seg_rows(click_choice),:);
     med_zone = round(median(bot_click_zone));
     if num_segments == 4
-        med_off = 40;
+        med_off = 36;
+                    bot_click_zone = med_zone-med_off:med_zone+med_off;
     else
-        med_off = 18;
+        med_off = 14;
+                    bot_click_zone = med_zone-med_off+1:med_zone+med_off+1;
     end
     
-    try
-        bot_click_zone = med_zone-med_off:med_zone+med_off;
-    catch
-        sca;keyboard
-    end
+%     sca;keyboard
     
+%         bot_click_zone = med_zone-med_off-2:med_zone+med_off-2;
+        
+        for i = 1:length(bot_click_zone)
+            if bot_click_zone(i) > 360
+                bot_click_zone(i) = bot_click_zone(i) - 360;
+            end
+            if bot_click_zone(i) >= 355
+                bot_click_zone(i) = 350;
+            end
+            if i == 1
+                new_bot_click_zone(1:num_rings) = value_matrix(bot_click_zone(i),:);
+            else
+                new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
+            end
+        end
+%         bot_click_zone = new_bot_click_zone;
+%         sca;keyboard
     if bot_mode && ~turn_bot_off
         segment_response = seg_values(seg_rows(click_choice),45);
         selected_prob = click_choice;
@@ -670,8 +708,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 end
             else
                 %Bot Instructions
-                Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,instruction_display_time,'screenshot_no','clear_no');
-                Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,instruction_display_time,'screenshot_no','clear_no');
+%                 Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,instruction_display_time,'screenshot_no','clear_no');
+%                 Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,instruction_display_time,'screenshot_no','clear_no');
             end
         end
         
@@ -679,9 +717,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         Events = newevent_mouse_cursor(Events,instruction_display_time,locx,locy,Parameters.mouse.cursorsize);
         
         %Mouse Click Windows
-        for i = 1:length(bot_click_zone)
+        for i = 1:length(new_bot_click_zone)
             try
-                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),34];
+                pos_buttonlocs{i} = [locationWheelLocations(1,new_bot_click_zone(i)),locationWheelLocations(2,new_bot_click_zone(i)),34];
             catch
                 sca;keyboard
             end
@@ -695,14 +733,14 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %% Instruction Display (before practice trials) %%
     if Trial == 1
         
-        %         if ~test_mode
+                if ~test_mode
         %             Events = newevent_mouse_cursor(Events,0,locx,locy,0);
-        %             Events = newevent_show_stimulus(Events,31,1,locx,locy-100,instruction_display_time,'screenshot_no','clear_yes');
-        %             Events = newevent_show_stimulus(Events,31,2,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        %             Events = newevent_show_stimulus(Events,31,3,locx,locy+100,instruction_display_time,'screenshot_no','clear_no');
+                    Events = newevent_show_stimulus(Events,ins,1,locx,locy-100,instruction_display_time,'screenshot_no','clear_no');
+                    Events = newevent_show_stimulus(Events,ins,2,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+                    Events = newevent_show_stimulus(Events,ins,3,locx,locy+50,instruction_display_time,'screenshot_no','clear_no');
         %             responsestruct.allowedchars = 0;
         %             Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
-        %         end
+                end
         segment_score = zeros(num_segments,2);
         
     end
@@ -899,7 +937,7 @@ elseif strcmp(Modeflag,'EndTrial')
             if speed_test
                 segment_response = randi(360);
             else
-                segment_response = (Events.windowclicked{segment_response});
+                segment_response = (Events.windowclicked{segment_response})
                 if ~bot_mode
                     try
                         [segment_response,y] = find(value_matrix==segment_response);
@@ -945,7 +983,7 @@ elseif strcmp(Modeflag,'EndTrial')
             sca;keyboard
         end
     end
-    
+    segment_response
     %Concatenate output table across blocks
     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
     

@@ -420,13 +420,13 @@ if strcmp(Modeflag,'InitializeBlock')
     %Instructions (before practice trials)
     ins = 31;
     stimstruct = CreateStimStruct('text');
-    stimstruct.stimuli = {'The goal of this game is to win as many nickels as possible.','At the end of the experiment,','you will paid the total amount won during the game.' ...
-         'During each trial, you will see a blue, segmented wheel.','Your task is to find the segment on the wheel that awards nickels most frequently.','After clicking on a segment, you will see whether' ...
-         'you gained a nickel (indicated with the color yellow) or not (red).','To help you get an idea of how the game works,','we''ve provided a training section to complete before you begin.','Press Spacebar to continue to training.', ...
-        'In this section, the points wheel will be hidden,','meaning you''ll have to remember which segments are best!','Press Spacebar to continue.' ... %11-13
-         'Great job so far!','The number of segments has increased to 8.' ... %14-15
-         'One more training phase to complete.','The scoring wheel is back!' ... %16-17
-         'Training complete!','Now loading the main experiment...'}; %18-19
+    stimstruct.stimuli = {'You and the computer will be playing a game together.','The goal of the game is to win as many nickels as possible,','which will be exchanged for actual money at the end of the game.' ...
+        'During each trial, you will see a blue, segmented wheel.','Your task is to find the segment on the wheel that awards nickels most frequently.','After clicking on a segment, you will see whether' ...
+        'you gained a nickel (indicated with the color yellow) or not (red).','To help you get an idea of how the game works,','we''ve provided a training section to complete before you begin.','Press Spacebar to continue to training.', ...
+        'In this section, the points wheel will be hidden,','meaning you''ll have to pay closer attention!','Press Spacebar to continue.' ... %11-13
+        'Great job so far!','The number of segments has increased to 8.' ... %14-15
+        'One more training phase to complete.','The scoring wheel is back!' ... %16-17
+        'Training complete!','Now loading the main experiment...'}; %18-19
     stimstruct.stimsize = 20;
     stimstruct.vSpacing = 5;
     Stimuli_sets(ins) = Preparestimuli(Parameters,stimstruct);
@@ -501,7 +501,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %     if Trial == 1;     load('workspace'); end
     %     if Trial == 0; Trial = 1; end
     Trial
-    clear new_bot_click_zone bot_click_zone
     instruction_display_time = 0;
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
@@ -575,11 +574,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
     bot_click_zone = seg_values(seg_rows(click_choice),:);
     med_zone = round(median(bot_click_zone));
     if num_segments == 4
-        med_off = 36;
-        bot_click_zone = med_zone-med_off:med_zone+med_off;
+        med_off = 38;
+        bot_click_zone = med_zone-med_off-2:med_zone+med_off-2;
     else
         med_off = 14;
-        bot_click_zone = med_zone-med_off+1:med_zone+med_off+1;
+        bot_click_zone = med_zone-med_off:med_zone+med_off;
     end
     
     %     sca;keyboard
@@ -588,10 +587,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     for i = 1:length(bot_click_zone)
         if bot_click_zone(i) > 360
-            bot_click_zone(i) = bot_click_zone(i) - 360;
+            bot_click_zone(i) = dead_spots(i) - 360;
         end
         if bot_click_zone(i) >= 355
-            bot_click_zone(i) = 350;
+            bot_click_zone(i = 350;
         end
         if i == 1
             new_bot_click_zone(1:num_rings) = value_matrix(bot_click_zone(i),:);
@@ -599,8 +598,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
             new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
         end
     end
-%     bot_click_zone = new_bot_click_zone;
-%             sca;keyboard
+    bot_click_zone = new_bot_click_zone;
+            sca;keyboard
     if bot_mode && ~turn_bot_off
         segment_response = seg_values(seg_rows(click_choice),45);
         selected_prob = click_choice;
@@ -795,9 +794,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
         Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,Parameters.mouse.cursorsize);
         
         %Mouse Click Windows
-        for i = 1:length(new_bot_click_zone)
+        for i = 1:length(bot_click_zone)
             try
-                pos_buttonlocs{i} = [locationWheelLocations(1,new_bot_click_zone(i)),locationWheelLocations(2,new_bot_click_zone(i)),34];
+                pos_buttonlocs{i} = [locationWheelLocations(1,bot_click_zone(i)),locationWheelLocations(2,bot_click_zone(i)),34];
             catch
                 sca;keyboard
             end
