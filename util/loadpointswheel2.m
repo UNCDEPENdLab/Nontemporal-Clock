@@ -33,6 +33,7 @@ Events = newevent_command(Events,points_time,command,'clear_no');
 command =   'Screen(''DrawDots'', Parameters.window, pointsWheel2Locations2, 10, scorecolormatrix4'', [], 1);';
 Events = newevent_command(Events,points_time,command,'clear_no');
 
+
 command = 'try;firstslotcolor = csvread(''firstslotcolor3.csv'');end';
 Events = newevent_command(Events,points_time,command,'clear_no');
 command = 'try;firstslotcolor2 = csvread(''firstslotcolor4.csv'');end';

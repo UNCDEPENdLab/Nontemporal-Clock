@@ -365,6 +365,16 @@ if strcmp(Modeflag,'InitializeBlock')
         Stimuli_sets(pwb2+i-1) = Preparestimuli(Parameters,stimstruct);
     end
     
+    %Highlight Oval
+    stimstruct = CreateStimStruct('shape');
+    highlight = 2000;
+    stimstruct.stimuli = {'FrameOval'};
+    stimstruct.xdim = 30;
+    stimstruct.ydim = 30;
+    stimstruct.color = [0 0 255];
+    stimstruct.stimsize = 1;
+    Stimuli_sets(highlight) = Preparestimuli(Parameters,stimstruct);
+    
     %Bot button
     bot_but = 1010;
     stimstruct = CreateStimStruct('shape');
@@ -687,7 +697,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %Loads points wheel
     points_time = instruction_display_time;
     if ~load_first_seg
-        if Trial ~= change_trial2
+        if Trial ~= change_trial2 && Trial ~= 1
             loadpointswheel2;
         else
             loadblankwheel;

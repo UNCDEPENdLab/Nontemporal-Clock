@@ -41,9 +41,10 @@ end
 
 save('selected_segment','selected_segment');
 
-% command = 'score_spot = csvread(''score_spot.csv'');';
-% Events = newevent_command(Events,reward_time,command,'clear_no');
-% command =   'load(''pointsWheelLocations'');';
-% Events = newevent_command(Events,reward_time,command,'clear_no');
-% command = 'Screen(''DrawDots'',Parameters.window,pointsWheelLocations1(:,score_spot),75,[0 0 220]'',[],1);';
-% Events = newevent_command(Events,reward_time,command,'clear_no');
+command = 'score_spot = csvread(''score_spot'');';
+Events = newevent_command(Events,reward_time,command,'clear_no');
+command =   'load(''pointsWheelLocations'');';
+Events = newevent_command(Events,points_time,command,'clear_no');
+% Events = newevent_show_stimulus(Events,highlight,1,locx,locy,reward_time,'screenshot_no','clear_no');
+command = 'Screen(''DrawDots'',Parameters.window,pointsWheelLocations1(:,,10,[0 0 255]'',[],1;';
+Events = newevent_command(Events,points_time,command,'clear_no');
