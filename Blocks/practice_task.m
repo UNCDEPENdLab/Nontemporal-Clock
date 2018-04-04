@@ -420,13 +420,13 @@ if strcmp(Modeflag,'InitializeBlock')
     %Instructions (before practice trials)
     ins = 31;
     stimstruct = CreateStimStruct('text');
-    stimstruct.stimuli = {'The goal of this game is to win as many nickels as possible.','At the end of the experiment,','you will paid the total amount won during the game.' ...
-         'During each trial, you will see a blue, segmented wheel.','Your task is to find the segment on the wheel that awards nickels most frequently.','After clicking on a segment, you will see whether' ...
-         'you gained a nickel (indicated with the color yellow) or not (red).','To help you get an idea of how the game works,','we''ve provided a training section to complete before you begin.','Press Spacebar to continue to training.', ...
+    stimstruct.stimuli = {'The goal of this game is to win as many nickels as possible.','At the end of the experiment, you will paid the total amount won during the game.' ...
+        'During each trial, you will see a blue, segmented wheel.','Your task is to find the segment on the wheel that awards nickels most frequently.','After clicking on a segment, you will see whether' ...
+        'you gained a nickel (indicated with the color yellow) or not (red).','To help you get an idea of how the game works,','we''ve provided a training section to complete before you begin.','Press Spacebar to continue to training.', ...
         'In this section, the points wheel will be hidden,','meaning you''ll have to remember which segments are best!','Press Spacebar to continue.' ... %11-13
-         'Great job so far!','The number of segments has increased to 8.' ... %14-15
-         'One more training phase to complete.','The scoring wheel is back!' ... %16-17
-         'Training complete!','Now loading the main experiment...'}; %18-19
+        'Great job so far!','The number of segments has increased to 8.' ... %14-15
+        'One more training phase to complete.','The scoring wheel is back!' ... %16-17
+        'Training complete!','Now loading the main experiment...'}; %18-19
     stimstruct.stimsize = 20;
     stimstruct.vSpacing = 5;
     Stimuli_sets(ins) = Preparestimuli(Parameters,stimstruct);
@@ -448,7 +448,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %Whose turn
     whose_turn = 1112; %turn
     stimstruct = CreateStimStruct('text');
-    stimstruct.stimuli = {'Computer''s turn!','Your Turn!'};
+    stimstruct.stimuli = {'Click the highlighted segment','Choose a segment'};
     stimstruct.stimsize = 52;
     Stimuli_sets(whose_turn) = Preparestimuli(Parameters,stimstruct);
     

@@ -30,12 +30,11 @@ if strcmp(Modeflag,'InitializeBlock')
     s_cb = mod(Demodata.s_num,2);
     s_cb = s_cb(1);
     
-
-    %con_num encodes the block number. this is a 2 x 2 x 2 design
+    % con_num encodes the block number. this is a 2 x 2 x 2 design
     % show_points = 0 / 1   -- whether to display the score wheel
     % even_uneven = 0 / 1   -- even versus uneven sampling in the first phase
     % num_segments = 4 / 8  -- number of segments to choose among
-
+    
     if con_num == 1
         show_points = 1; even_uneven = 1; num_segments = 4;
     elseif con_num == 2
@@ -99,7 +98,7 @@ if strcmp(Modeflag,'InitializeBlock')
     %% Set up Stimuli
     
     %Create segments on click wheel
-    [seg_values, scorecolormatrix, change_spot, num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
+    [seg_values scorecolormatrix change_spot num_wheel_boxes] = segment_wheel(num_segments,seg_colors,add_wheel_borders);
     seg_rows = randperm(num_segments);
     
     csvwrite('seg_rows.csv',seg_rows);
@@ -474,7 +473,7 @@ if strcmp(Modeflag,'InitializeBlock')
     reward = 300;
     stimstruct = CreateStimStruct('text');
     stimstruct.wrapat = 0;
-    stimstruct.stimuli = {'Congrats! You won a nickel!', 'Sorry, no nickel this time.', 'Congrats! You won another nickel!','Total: '};
+    stimstruct.stimuli = {'Congrats! You won a nickel!', 'Sorry, no nickel this time.','Congrats! You won another nickel!','Total: '};
     stimstruct.stimsize = 30;
     stimstruct.vSpacing = 5;
     Stimuli_sets(reward) = Preparestimuli(Parameters,stimstruct);
@@ -501,30 +500,13 @@ if strcmp(Modeflag,'InitializeBlock')
      catch
          sca;keyboard
      end
-    
-    %assign probabilities to each segment around the wheel
-    try
-        prob_count = 1;
-        for i = 1:360
-            wheel_probs(i) = probs(prob_count);
-            %change to next probability at segment boundaries
-            if ~mod(i,(360/length(probs))) && i < 360
-                prob_count = prob_count + 1;
-            end
-        end
-    catch
-        sca;keyboard
-    end
-
     score = 0;
     
     bot_mode = 1
     bot_choice_count = 0;
     ready_for_score = 0;
     choose_one  = 0;
-    
 elseif strcmp(Modeflag,'InitializeTrial')
-    
     %% Set up other experiment parameters
     Trial
     clear new_bot_click_zone bot_click_zone
