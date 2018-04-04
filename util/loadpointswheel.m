@@ -43,3 +43,13 @@ command = 'scorecolormatrix4 = scorecolormatrix2;';
 Events = newevent_command(Events,points_time,command,'clear_no');
 command = 'csvwrite(''scorecolormatrix4.csv'',scorecolormatrix4);';
 Events = newevent_command(Events,points_time,command,'clear_no');
+
+command = 'firstslotcolor3 = firstslotcolor;';
+Events = newevent_command(Events,points_time,command,'clear_no');
+command = 'firstslotcolor4 = firstslotcolor2;';
+Events = newevent_command(Events,points_time,command,'clear_no');
+command = 'csvwrite(''firstslotcolor3.csv'',firstslotcolor3)';
+Events = newevent_command(Events,points_time,command,'clear_no');
+command = 'csvwrite(''firstslotcolor4.csv'',firstslotcolor4)';
+Events = newevent_command(Events,points_time,command,'clear_no');
+

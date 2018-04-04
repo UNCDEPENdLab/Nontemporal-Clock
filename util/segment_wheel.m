@@ -48,7 +48,7 @@ if add_wheel_borders
     end
 end
 
-scorewheelcolor = 190;
+scorewheelcolor = 200;
 scorecolormatrix = repmat(scorewheelcolor,num_wheel_boxes,3);
 basecolormatrix = repmat(215,num_wheel_boxes,3);
 save('basecolormatrix','basecolormatrix');

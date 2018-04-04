@@ -3,7 +3,7 @@ function [Events Parameters Stimuli_sets Block_Export Trial_Export  Numtrials]=c
 
 load('blockvars');addpath(genpath('util'));
 
-%Paradigm programmed by Michael R Hess, March '18
+%Paradigm programmed by Michael R Hess, April '18
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Parameters%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

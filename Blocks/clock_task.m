@@ -23,7 +23,7 @@ if strcmp(Modeflag,'InitializeBlock')
     try
         con_num = Demodata.condition_struct(blocknum);
     catch
-        con_num = 2;
+        con_num = 1;
     end
     
     num_blocks = length(Parameters.blocklist);
@@ -596,7 +596,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %Find bot's current choice
     bot_choice_count = bot_choice_count + 1;
     click_choice = bot_choices(bot_choice_count);
-%     sca;keyboard
     bot_click_zone = seg_values(seg_rows(click_choice),:);
     med_zone = round(median(bot_click_zone));
     if num_segments == 4
@@ -607,9 +606,6 @@ elseif strcmp(Modeflag,'InitializeTrial')
                     bot_click_zone = med_zone-med_off+1:med_zone+med_off+1;
     end
     
-%     sca;keyboard
-    
-%         bot_click_zone = med_zone-med_off-2:med_zone+med_off-2;
         
         for i = 1:length(bot_click_zone)
             if bot_click_zone(i) > 360
@@ -624,8 +620,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
             end
         end
-%         bot_click_zone = new_bot_click_zone;
-%         sca;keyboard
+        
     if bot_mode && ~turn_bot_off
         segment_response = seg_values(seg_rows(click_choice),45);
         selected_prob = click_choice;
@@ -685,8 +680,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
         scorecolormatrix3 = scorecolormatrix;
         scorecolormatrix4 = scorecolormatrix;
         csvwrite('scorecolormatrix2',scorecolormatrix2);
-        csvwrite('scorecolormatrix3',scorecolormatrix3);
-        csvwrite('scorecolormatrix4',scorecolormatrix4);
+%         csvwrite('scorecolormatrix3',scorecolormatrix3);
+%         csvwrite('scorecolormatrix4',scorecolormatrix4);
     end
     
     %Loads points wheel
@@ -752,12 +747,9 @@ elseif strcmp(Modeflag,'InitializeTrial')
     if Trial == 1
         
                 if ~test_mode
-        %             Events = newevent_mouse_cursor(Events,0,locx,locy,0);
                     Events = newevent_show_stimulus(Events,ins,1,locx,locy-100,instruction_display_time,'screenshot_no','clear_no');
                     Events = newevent_show_stimulus(Events,ins,2,locx,locy,instruction_display_time,'screenshot_no','clear_no');
                     Events = newevent_show_stimulus(Events,ins,3,locx,locy+50,instruction_display_time,'screenshot_no','clear_no');
-        %             responsestruct.allowedchars = 0;
-        %             Events = newevent_keyboard(Events,instruction_display_time,responsestruct);
                 end
         segment_score = zeros(num_segments,2);
         
@@ -853,7 +845,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
             
             %Loads points wheel
             points_time = reward_time;
-            loadpointswheel
+            loadpointswheel;
             
             %"No reward" test
             Events = newevent_show_stimulus(Events,reward,2,locx,rewardtext_locy+y_offset-100,reward_time,'screenshot_no','clear_no');
@@ -964,7 +956,6 @@ elseif strcmp(Modeflag,'EndTrial')
                     end
                 end
                 if segment_response > 358
-                    %                     && num_segments == 4
                     segment_response = 1;
                 end
             end
