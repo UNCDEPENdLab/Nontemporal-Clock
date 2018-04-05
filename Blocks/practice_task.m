@@ -665,8 +665,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
         scorecolormatrix3 = scorecolormatrix;
         scorecolormatrix4 = scorecolormatrix;
         csvwrite('scorecolormatrix2',scorecolormatrix2);
-        csvwrite('scorecolormatrix3',scorecolormatrix3);
-        csvwrite('scorecolormatrix4',scorecolormatrix4);
+%         csvwrite('scorecolormatrix3',scorecolormatrix3);
+%         csvwrite('scorecolormatrix4',scorecolormatrix4);
     end
     
     %Loads points wheel
@@ -674,7 +674,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     if Trial == 1
     else
         if ~load_first_seg
-            if Trial ~= change_trial2
+            if Trial ~= change_trial2 &&  Trial ~= 1
                 loadpointswheel2;
             else
                 loadblankwheel;
@@ -820,7 +820,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         end
         
         if speed_test
-            seg_wheel_time = reward_time + .01;
+            seg_wheel_time = reward_time + 2;
         end
         
         y_offset = 100;

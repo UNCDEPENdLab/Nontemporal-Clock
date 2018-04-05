@@ -30,12 +30,12 @@ if strcmp(Modeflag,'InitializeBlock')
     s_cb = mod(Demodata.s_num,2);
     s_cb = s_cb(1);
     
-
+    
     %con_num encodes the block number. this is a 2 x 2 x 2 design
     % show_points = 0 / 1   -- whether to display the score wheel
     % even_uneven = 0 / 1   -- even versus uneven sampling in the first phase
     % num_segments = 4 / 8  -- number of segments to choose among
-
+    
     if con_num == 1
         show_points = 1; even_uneven = 1; num_segments = 4;
     elseif con_num == 2
@@ -82,7 +82,7 @@ if strcmp(Modeflag,'InitializeBlock')
     
     %When the instructions will be displayed from the start of the experiment (Trial 1)
     instruction_display_time = 0;
-    reward_time = instruction_display_time+.01;
+    reward_time = instruction_display_time+.001;
     
     %When the segment wheel will appear
     seg_wheel_time = instruction_display_time + 2;
@@ -497,20 +497,20 @@ if strcmp(Modeflag,'InitializeBlock')
     %get the reward probabilities for this block
     probs = get_block_probabilities(num_segments, 0.35, 0.65, 0.5); %35--65% with mean of 50%
     
-       %assign probabilities to each segment around the wheel
-     try
-         prob_count = 1;
-         for i = 1:360
+    %assign probabilities to each segment around the wheel
+    try
+        prob_count = 1;
+        for i = 1:360
             wheel_probs(i) = probs(prob_count);
             %change to next probability at segment boundaries
-             if ~mod(i,(360/length(probs))) && i < 360
-                 prob_count = prob_count + 1;
-             end
+            if ~mod(i,(360/length(probs))) && i < 360
+                prob_count = prob_count + 1;
+            end
             wheel_probs(i) = probs(prob_count);
-         end
-     catch
-         sca;keyboard
-     end
+        end
+    catch
+        sca;keyboard
+    end
     
     %assign probabilities to each segment around the wheel
     try
@@ -525,7 +525,7 @@ if strcmp(Modeflag,'InitializeBlock')
     catch
         sca;keyboard
     end
-
+    
     score = 0;
     
     bot_mode = 1
@@ -610,27 +610,27 @@ elseif strcmp(Modeflag,'InitializeTrial')
     med_zone = round(median(bot_click_zone));
     if num_segments == 4
         med_off = 36;
-                    bot_click_zone = med_zone-med_off:med_zone+med_off;
+        bot_click_zone = med_zone-med_off:med_zone+med_off;
     else
         med_off = 14;
-                    bot_click_zone = med_zone-med_off+1:med_zone+med_off+1;
+        bot_click_zone = med_zone-med_off+1:med_zone+med_off+1;
     end
     
-        
-        for i = 1:length(bot_click_zone)
-            if bot_click_zone(i) > 360
-                bot_click_zone(i) = bot_click_zone(i) - 360;
-            end
-            if bot_click_zone(i) >= 355
-                bot_click_zone(i) = 350;
-            end
-            if i == 1
-                new_bot_click_zone(1:num_rings) = value_matrix(bot_click_zone(i),:);
-            else
-                new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
-            end
+    
+    for i = 1:length(bot_click_zone)
+        if bot_click_zone(i) > 360
+            bot_click_zone(i) = bot_click_zone(i) - 360;
         end
-        
+        if bot_click_zone(i) >= 355
+            bot_click_zone(i) = 350;
+        end
+        if i == 1
+            new_bot_click_zone(1:num_rings) = value_matrix(bot_click_zone(i),:);
+        else
+            new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
+        end
+    end
+    
     if bot_mode && ~turn_bot_off
         segment_response = seg_values(seg_rows(click_choice),45);
         selected_prob = click_choice;
@@ -690,8 +690,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
         scorecolormatrix3 = scorecolormatrix;
         scorecolormatrix4 = scorecolormatrix;
         csvwrite('scorecolormatrix2',scorecolormatrix2);
-%         csvwrite('scorecolormatrix3',scorecolormatrix3);
-%         csvwrite('scorecolormatrix4',scorecolormatrix4);
+        %         csvwrite('scorecolormatrix3',scorecolormatrix3);
+        %         csvwrite('scorecolormatrix4',scorecolormatrix4);
     end
     
     %Loads points wheel
@@ -731,8 +731,8 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 end
             else
                 %Bot Instructions
-%                 Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,instruction_display_time,'screenshot_no','clear_no');
-%                 Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,instruction_display_time,'screenshot_no','clear_no');
+                %                 Events = newevent_show_stimulus(Events,bot_but_text,1,locx,locy-25,instruction_display_time,'screenshot_no','clear_no');
+                %                 Events = newevent_show_stimulus(Events,bot_but_text,2,locx,locy+25,instruction_display_time,'screenshot_no','clear_no');
             end
         end
         
@@ -756,11 +756,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %% Instruction Display (before practice trials) %%
     if Trial == 1
         
-                if ~test_mode
-                    Events = newevent_show_stimulus(Events,ins,1,locx,locy-100,instruction_display_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,ins,2,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-                    Events = newevent_show_stimulus(Events,ins,3,locx,locy+50,instruction_display_time,'screenshot_no','clear_no');
-                end
+        if ~test_mode
+            Events = newevent_show_stimulus(Events,ins,1,locx,locy-100,instruction_display_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,ins,2,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,ins,3,locx,locy+50,instruction_display_time,'screenshot_no','clear_no');
+        end
         segment_score = zeros(num_segments,2);
         
     end
@@ -777,7 +777,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         end
         
         if speed_test
-            seg_wheel_time = reward_time + .01;
+            seg_wheel_time = reward_time + 2;
         end
         
         y_offset = 100;
@@ -927,7 +927,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         else
             trial_end_time = reward_time + total_feedback_time; %when the trial ends
         end
-    elseif Trial == Numtrials && blocknum < num_blocks
+    elseif Trial == Numtrials && blocknum < num_blocks - length(Demodata.practice_struct)
         trial_end_time = total_feedback_time;
     else
         token_win_time = total_feedback_time + .01;
@@ -943,7 +943,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
 elseif strcmp(Modeflag,'EndTrial')
     %% Record output data in structure & save in .MAT file
-    seg_rows=csvread('seg_rows.csv');
+    %     seg_rows=csvread('seg_rows.csv');
     money_now_won = sum(segment_score(:,1))*0.05;
     if blocknum > 1
         money_already_won = csvread('money_count.csv');
@@ -1003,8 +1003,9 @@ elseif strcmp(Modeflag,'EndTrial')
         end
     end
     segment_response
+    
     %Concatenate output table across blocks
-    writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
+    %     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
     
 elseif strcmp(Modeflag,'EndBlock')
     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
