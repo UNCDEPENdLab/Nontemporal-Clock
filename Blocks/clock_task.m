@@ -560,13 +560,13 @@ elseif strcmp(Modeflag,'InitializeTrial')
                 if even_uneven == 1
                     bot_choices(end:end+num_choices-1) = randperm(num_choices);
                 else
-                    bot_choices(end:end+num_choices-1) = randi(num_choices,1,num_choices);
+                    bot_choices(end:end+num_choices-1) = uneven_sample(probs); %randi(num_choices,1,num_choices);
                 end
             else
                 if even_uneven == 1
                     bot_choices(end+1:end+num_choices) = randperm(num_choices);
                 else
-                    bot_choices(end+1:end+num_choices) = randi(num_choices,1,num_choices);
+                    bot_choices(end+1:end+num_choices) = uneven_sample(probs); %randi(num_choices,1,num_choices);
                 end
             end
         end

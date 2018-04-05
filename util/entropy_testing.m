@@ -10,11 +10,13 @@ num_segments=8;
 y=NaN(nreps,1);
 p=NaN(nreps, num_segments);
 for k=1:nreps
-  %[p(k,:), y(k)] = get_block_probabilities(8, 0.4, 0.6, 0.5); %this yields an odd distribution of contingencies and entropy is non-Gaussian
-  [p(k,:), y(k)] = get_block_probabilities(num_segments, 0.35, 0.65, 0.5); %entropy becomes beautifully Gaussian
+  %40--60 this yields an odd distribution of contingencies and entropy is non-Gaussian. Options too narrow
+  %[p(k,:), y(k)] = get_block_probabilities(8, 0.4, 0.6, 0.5); 
+  %[p(k,:), y(k)] = get_block_probabilities(num_segments, 0.35, 0.65, 0.5); %entropy becomes beautifully Gaussian
+  [p(k,:), y(k)] = get_block_probabilities(num_segments, 0.30, 0.70, 0.5); %entropy becomes beautifully Gaussian
 end
 
-%notes about 35--65 8 segments: 
+
 [qs] = quantile(y, [.05 .5 .95 .499 .501])
 
 hist(y)
@@ -54,6 +56,7 @@ hist(dists)
 %[d, pairx] = compute_avg_dist(mide(1,:));
 %hist(pairx(find(tril(pairx,-1))))
 
+%notes about 35--65 8 segments: 
 %entropy distribution for 35--65 50% avg 8 segments
 % 
 % [qs] = quantile(y, [.05 .5 .95])
@@ -74,10 +77,30 @@ hist(dists)
 %new direction: choose 4 distributions of 8 options: 1 per block. Fix these across subjects,
 %Select them from the middle of the relative entropy distribution (so that 4 and 8 are equated on relative entropy)
 %and also sort them based on average pairwise distance between options so that the inter-choice distances are as uniform as possible.
+%here, start with 200 contingencies from 49.9% -- 50.1%
 mide = p(find(y > qs(4) & y < qs(5)),:);
+midH = y(y > qs(4) & y < qs(5));
 dists = zeros(size(mide,1), 1);
+
+
 for i = 1:size(dists,1)
-dists(i) = compute_avg_dist(mide(i,:));
+    %on further reflection, we want the distance from the next closest choice to be similar (equal intervals)
+    %dists(i) = compute_avg_dist(mide(i,:));
+    dists(i) = std(diff(sort(mide(i,:))));
 end
 
-[S,O] = sort(dists - median(dists));
+%this is for the avg dist
+%[S,O] = sort(abs(dists - median(dists)));
+
+%this is for the sd approach (we just want the ones with the lowest SD)
+[S,O] = sort(dists);
+
+%abs(dists(O(1:5)) - median(dists)) == S(1:5)
+S(1:4)
+mide(O(1:4),:)
+midH(O(1:4))
+figure(1)
+plot(mide(O(1:50),:),'*')
+figure(2)
+plot(mide(O(96:99),:), '*')
+
