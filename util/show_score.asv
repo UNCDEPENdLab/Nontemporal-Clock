@@ -102,7 +102,6 @@ if ~add
         end
     end
     
-    csvwrite('score_spot.csv',score_spot);
     csvwrite('seg_scorekeeper.csv',seg_scorekeeper);
     
     for add_partition = 1:num_segments
@@ -128,7 +127,6 @@ if ~add
                 for wheel = 1:360
                     [current_row,w,x]=find(seg_values==wheel);
                     if current_row == score_row
-                        score_spot = wheel;
                         if seg_scorekeeper2(i) == 2
                             scorecolormatrix2(i,:) = [255 255 0];
                         else
@@ -145,8 +143,6 @@ if ~add
             end
         end
     end
-    
-        csvwrite('score_spot.csv',score_spot);
     
     for add_partition = 1:num_segments
         if add_partition == num_segments
