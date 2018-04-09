@@ -43,7 +43,7 @@ if strcmp(Modeflag,'InitializeBlock')
     max_prob = 0.6; %max segmenet probability
     
     test_mode = 0; %test mode deactivates instructions atm
-    speed_test = 0; %disables mouse
+    speed_test = 1; %disables mouse
     turn_bot_off = 0; %turn off bot mode?
     toggle_botbutton = 0; %0 = click wheel during bot mode, 1 = click button
     

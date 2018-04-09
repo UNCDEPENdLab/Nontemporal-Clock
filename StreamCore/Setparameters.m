@@ -102,7 +102,7 @@ Parameters.ScreenResolutionY = 1080;
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%%% use the mouse?
 Parameters.mouse.enabled = 1;
-Parameters.mouse.datastore = 0;
+Parameters.mouse.datastore = 1;
 Parameters.mouse.cursorsize = 8;
 Parameters.mouse.cursorcolor = [0,205,45];
 
@@ -114,7 +114,7 @@ Parameters.Progressbaritems_done = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Parameters for specific blocks
-Parameters.saveevery = 1;   %save a backup file after every X trials
+Parameters.saveevery = 34;   %save a backup file after every X trials
 
 %%%%%%%%%%%%%%%%%%%%%
 %%%% Parameters pertaining to Parallel port
@@ -200,15 +200,15 @@ Parameters.invalidkeys_ParallelPortmark = 0;
 %%%%%%%%%%%%%%%%%%%%%
 %%%% Parameters pertaining to eyetracking
 Parameters.eyetracking =0;   %enable eye tracking
-Parameters.Eyelink =1;   %enable eye tracking
+Parameters.Eyelink =0;   %enable eye tracking
 Parameters.TobiiX2 =0;   %enable eye tracking
 Parameters.trackerId = 'X230C-010103334692';  %For Tobii
 Parameters.eyecalibrate = 0;
 
 
 Parameters.edffilename = 'DEF';  %EDF filename can only be a total of 8 characters!  So remember that the subject number will be added to this
-Parameters.eyerealtime =1;    %track of the eye position in real time in *addition* to storing the information on the eyetrack computer  (warning, may slow down your experiment)
-Parameters.eyedatastore =1 ;    %store every eye data point (warning,larger data files!)  You MUST have eyerealtime enabled for this to work
+Parameters.eyerealtime = 0;    %track of the eye position in real time in *addition* to storing the information on the eyetrack computer  (warning, may slow down your experiment)
+Parameters.eyedatastore = 0;    %store every eye data point (warning,larger data files!)  You MUST have eyerealtime enabled for this to work
 Parameters.eyesamplingrate = 40;   %this is used to calculate how much space is required to store all of the eye data.  This is an estimate of how manu times per second the eyes will move
 Parameters.eyecursor =2;%display a cursor where the eyes are:  1 = always on,  2 = F1 triggered
 Parameters.eyecursorcolor = [255,0,0]; %Set the color of the eye cursor
