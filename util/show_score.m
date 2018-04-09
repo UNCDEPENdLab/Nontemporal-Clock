@@ -5,9 +5,14 @@ if ~add
     global scorewheelcolor
     
     persistent seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
-    try seg_scorekeeper = csvread('seg_scorekeeper.csv');end
+    
+%     try seg_scorekeeper = csvread('seg_scorekeeper.csv');end
     if Trial == 1
-        clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
+%         clear seg_scorekeeper seg_scorekeeper2 firstslotcolor firstslotcolor2
+        seg_scorekeeper = zeros(1,360);
+        seg_scorekeeper2 = zeros(1,360);
+        firstslotcolor = repmat(scorewheelcolor,1,3);
+        firstslotcolor2 = repmat(scorewheelcolor,1,3);
         scorecolormatrix = repmat(scorewheelcolor,num_wheel_boxes,3);
         for add_partition = 1:num_segments
             if add_partition == num_segments
@@ -32,7 +37,7 @@ if ~add
         csvwrite('scorecolormatrix4',scorecolormatrix4);
     end
     
-    load('seg_values','seg_values');
+    %     load('seg_values','seg_values');
     [selected_row,w,x]=find(seg_values==segment_response);
     
     seg_score_startingpoint = change_spot(selected_row) - 1;
@@ -54,18 +59,18 @@ if ~add
         score_offset = 43;
     end
     if selected_row > 1
-    seg_score_currentpoint = seg_score_currentpoint + 1;
+        seg_score_currentpoint = seg_score_currentpoint + 1;
     end
     try
         if seg_score_currentpoint < 1; seg_score_currentpoint = 1;end
         if selected_row == 1
-        if current_seg_score <= score_offset+1
-            seg_scorekeeper(seg_score_currentpoint) = win + 1;
-        elseif current_seg_score == score_offset+2
-            seg_scorekeeper2(seg_score_currentpoint-(score_offset*2)-1) = win+1;
-        else
-            seg_scorekeeper2(seg_score_currentpoint-(score_offset*2)-2) = win+1;
-        end
+            if current_seg_score <= score_offset+1
+                seg_scorekeeper(seg_score_currentpoint) = win + 1;
+            elseif current_seg_score == score_offset+2
+                seg_scorekeeper2(seg_score_currentpoint-(score_offset*2)-1) = win+1;
+            else
+                seg_scorekeeper2(seg_score_currentpoint-(score_offset*2)-2) = win+1;
+            end
         else
             if current_seg_score <= score_offset
                 seg_scorekeeper(seg_score_currentpoint) = win + 1;
@@ -102,8 +107,8 @@ if ~add
         end
     end
     
-    csvwrite('score_spot.csv',score_spot);
-    csvwrite('seg_scorekeeper.csv',seg_scorekeeper);
+    %     csvwrite('score_spot.csv',score_spot);
+%     csvwrite('seg_scorekeeper.csv',seg_scorekeeper);
     
     for add_partition = 1:num_segments
         if add_partition == num_segments
@@ -146,7 +151,7 @@ if ~add
         end
     end
     
-        csvwrite('score_spot.csv',score_spot);
+    %         csvwrite('score_spot.csv',score_spot);
     
     for add_partition = 1:num_segments
         if add_partition == num_segments
@@ -157,10 +162,10 @@ if ~add
     end
     
     try
-%         scorecolormatrix2(360,:) = firstslotcolor2;
-scorecolormatrix2(2,:) = repmat(scorewheelcolor,1,3);
-scorecolormatrix2(1,:) = firstslotcolor2;
-%         scorecolormatrix2(1,:) = repmat(scorewheelcolor,1,3);
+        %         scorecolormatrix2(360,:) = firstslotcolor2;
+        scorecolormatrix2(2,:) = repmat(scorewheelcolor,1,3);
+        scorecolormatrix2(1,:) = firstslotcolor2;
+        %         scorecolormatrix2(1,:) = repmat(scorewheelcolor,1,3);
     end
     
     csvwrite('scorecolormatrix2.csv',scorecolormatrix2);

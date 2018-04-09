@@ -603,31 +603,33 @@ elseif strcmp(Modeflag,'InitializeTrial')
         num_pos_bot_seg_choices = num_choices;
     end
     
-    %Find bot's current choice
-    bot_choice_count = bot_choice_count + 1;
-    click_choice = bot_choices(bot_choice_count);
-    bot_click_zone = seg_values(seg_rows(click_choice),:);
-    med_zone = round(median(bot_click_zone));
-    if num_segments == 4
-        med_off = 36;
-        bot_click_zone = med_zone-med_off:med_zone+med_off;
-    else
-        med_off = 14;
-        bot_click_zone = med_zone-med_off+1:med_zone+med_off+1;
-    end
-    
-    
-    for i = 1:length(bot_click_zone)
-        if bot_click_zone(i) > 360
-            bot_click_zone(i) = bot_click_zone(i) - 360;
-        end
-        if bot_click_zone(i) >= 355
-            bot_click_zone(i) = 350;
-        end
-        if i == 1
-            new_bot_click_zone(1:num_rings) = value_matrix(bot_click_zone(i),:);
+    if bot_mode
+        %Find bot's current choice
+        bot_choice_count = bot_choice_count + 1;
+        click_choice = bot_choices(bot_choice_count);
+        bot_click_zone = seg_values(seg_rows(click_choice),:);
+        med_zone = round(median(bot_click_zone));
+        if num_segments == 4
+            med_off = 36;
+            bot_click_zone = med_zone-med_off:med_zone+med_off;
         else
-            new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
+            med_off = 14;
+            bot_click_zone = med_zone-med_off+1:med_zone+med_off+1;
+        end
+        
+        
+        for i = 1:length(bot_click_zone)
+            if bot_click_zone(i) > 360
+                bot_click_zone(i) = bot_click_zone(i) - 360;
+            end
+            if bot_click_zone(i) >= 355
+                bot_click_zone(i) = 350;
+            end
+            if i == 1
+                new_bot_click_zone(1:num_rings) = value_matrix(bot_click_zone(i),:);
+            else
+                new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
+            end
         end
     end
     
@@ -658,11 +660,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
     responsestruct.y = locy;
     
     %Wheel borders
-    Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-    Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-    Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+    %     Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+    %     Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+    %     Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
     Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-    Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+    %     Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
     Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
     
     clickwheeltime = instruction_display_time;
@@ -805,11 +807,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
             end
             
             %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
-            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+            %             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
+            %             Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+            %             Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
+            %             Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
             
             %Loads segmented wheel
@@ -835,17 +837,16 @@ elseif strcmp(Modeflag,'InitializeTrial')
             
             %Calculate segment score
             segment_score(selected_row,2) = segment_score(selected_row,2) + 1;
-            scorecolormatrix=csvread('scorecolormatrix.csv');
             if show_points
                 [add] = show_score(segment_score,add,scorecolormatrix,scorecolormatrix2,win,seg_values,segment_response,change_spot,Trial,num_wheel_boxes,num_segments,change_trial2);
             end
             
             %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
-            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+            %             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
+            %             Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+            %             Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
+            %             Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
             
             %Loads segmented wheel
@@ -877,11 +878,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,Parameters.mouse.cursorsize);
             
             %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_yes');
-            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            %             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_yes');
+            %             Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            %             Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_yes');
+            %             Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
             
             %Loads segmented wheel
@@ -944,14 +945,15 @@ elseif strcmp(Modeflag,'InitializeTrial')
 elseif strcmp(Modeflag,'EndTrial')
     %% Record output data in structure & save in .MAT file
     %     seg_rows=csvread('seg_rows.csv');
+    
     money_now_won = sum(segment_score(:,1))*0.05;
     if blocknum > 1
-        money_already_won = csvread('money_count.csv');
+        %         money_already_won = csvread('money_count.csv');
     else
         money_already_won = 0;
     end
     money_count = money_now_won + money_already_won;
-    csvwrite('money_count.csv',money_count);
+    %     csvwrite('money_count.csv',money_count);
     if Trial < Numtrials
         if ~bot_mode || turn_bot_off
             if speed_test
@@ -1008,6 +1010,7 @@ elseif strcmp(Modeflag,'EndTrial')
     %     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
     
 elseif strcmp(Modeflag,'EndBlock')
+    csvwrite('money_count.csv',money_count);
     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
 else
     %Something went wrong in Runblock (You should never see this error)

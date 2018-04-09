@@ -568,6 +568,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
     if con_num == 1; seg_rows = 1:4; bot_choices(1:4) = [3 2 4 1]; end
     
+    if bot_mode
     %Find bot's current choice
     bot_choice_count = bot_choice_count + 1;
     click_choice = bot_choices(bot_choice_count);
@@ -585,18 +586,18 @@ elseif strcmp(Modeflag,'InitializeTrial')
     %     sca;keyboard
     
     %         bot_click_zone = med_zone-med_off-2:med_zone+med_off-2;
-    
-    for i = 1:length(bot_click_zone)
-        if bot_click_zone(i) > 360
-            bot_click_zone(i) = bot_click_zone(i) - 360;
-        end
-        if bot_click_zone(i) >= 355
-            bot_click_zone(i) = 350;
-        end
-        if i == 1
-            new_bot_click_zone(1:num_rings) = value_matrix(bot_click_zone(i),:);
-        else
-            new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
+        for i = 1:length(bot_click_zone)
+            if bot_click_zone(i) > 360
+                bot_click_zone(i) = bot_click_zone(i) - 360;
+            end
+            if bot_click_zone(i) >= 355
+                bot_click_zone(i) = 350;
+            end
+            if i == 1
+                new_bot_click_zone(1:num_rings) = value_matrix(bot_click_zone(i),:);
+            else
+                new_bot_click_zone(end+1:end+num_rings) = value_matrix(bot_click_zone(i),:);
+            end
         end
     end
 %     bot_click_zone = new_bot_click_zone;
@@ -630,11 +631,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
     if Trial == 1
     else
         %Wheel borders
-        Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
-        Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+%         Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+%         Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+%         Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
+        Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,instruction_display_time,'screenshot_no','clear_yes');
+%         Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
         Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,instruction_display_time,'screenshot_no','clear_no');
     end
     clickwheeltime = instruction_display_time;
@@ -848,11 +849,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
             end
             
             %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
-            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+%             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
+%             Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+%             Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
+%             Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
             
             %Loads segmented wheel
@@ -884,11 +885,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
             end
             
             %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
-            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+%             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
+%             Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
+%             Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,reward_time,'screenshot_no','clear_yes');
+%             Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,reward_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,reward_time,'screenshot_no','clear_no');
             
             %Loads segmented wheel
@@ -920,11 +921,11 @@ elseif strcmp(Modeflag,'InitializeTrial')
             Events = newevent_mouse_cursor(Events,seg_wheel_time,locx,locy,Parameters.mouse.cursorsize);
             
             %Wheel borders
-            Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_yes');
-            Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
-            Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+%             Events = newevent_show_stimulus(Events,cwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_yes');
+%             Events = newevent_show_stimulus(Events,cwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+%             Events = newevent_show_stimulus(Events,cwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
+            Events = newevent_show_stimulus(Events,pwb1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_yes');
+%             Events = newevent_show_stimulus(Events,pwb2,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
             Events = newevent_show_stimulus(Events,pwb2+1,1,locx,locy,seg_wheel_time,'screenshot_no','clear_no');
             
             %Loads segmented wheel
