@@ -423,10 +423,11 @@ if strcmp(Modeflag,'InitializeBlock')
     stimstruct.stimuli = {'The goal of this game is to win as many nickels as possible.','At the end of the experiment,','you will paid the total amount won during the game.' ...
          'During each trial, you will see a blue, segmented wheel.','Your task is to find the segment on the wheel that awards nickels most frequently.','After clicking on a segment, you will see whether' ...
          'you gained a nickel (indicated with the color yellow) or not (red).','To help you get an idea of how the game works,','we''ve provided a training section to complete before you begin.','Press Spacebar to continue to training.', ...
-        'In this section, the points wheel will be hidden,','meaning you''ll have to remember which segments are best!','Press Spacebar to continue.' ... %11-13
+         'In this section, the points wheel will be hidden,','meaning you''ll have to remember which segments are best!','Press Spacebar to continue.' ... %11-13
          'Great job so far!','The number of segments has increased to 8.' ... %14-15
          'One more training phase to complete.','The scoring wheel is back!' ... %16-17
-         'Training complete!','Now loading the main experiment...'}; %18-19
+         'Training complete!','Please wait for the RA to continue.' ...%18-19
+         'Now loading the main experiment...'}; %20
     stimstruct.stimsize = 20;
     stimstruct.vSpacing = 5;
     Stimuli_sets(ins) = Preparestimuli(Parameters,stimstruct);
@@ -983,10 +984,25 @@ elseif strcmp(Modeflag,'InitializeTrial')
     end
     
     if Trial == Numtrials && Blocknum == length(Demodata.practice_struct)
+        
         Events = newevent_show_stimulus(Events,ins,18,locx,locy-50,trial_end_time,'screenshot_no','clear_yes');
         Events = newevent_show_stimulus(Events,ins,19,locx,locy,trial_end_time,'screenshot_no','clear_no');
-        trial_end_time2 = trial_end_time + 5;
-        Events = newevent_end_trial(Events,trial_end_time2);
+        
+        responsestruct = CreateResponseStruct;
+            responsestruct.x = locx;
+            responsestruct.y = locy;
+            allowed_id = [];
+            for nums = {'N'}
+                allowed_id = [allowed_id KbName(nums)];
+            end
+            responsestruct.allowedchars = allowed_id;
+            [Events] = newevent_keyboard(Events,trial_end_time,responsestruct);
+            
+                trial_end_time2 = trial_end_time + .01;
+        Events = newevent_show_stimulus(Events,ins,20,locx,locy-50,trial_end_time2,'screenshot_no','clear_yes');
+                Events = newevent_show_stimulus(Events,ins,20,locx,locy-50,trial_end_time2+.001,'screenshot_no','clear_yes');
+        trial_end_time3 = trial_end_time2 + 3;
+        Events = newevent_end_trial(Events,trial_end_time3);
     else
         %% Ends trial
         Events = newevent_end_trial(Events,trial_end_time);
