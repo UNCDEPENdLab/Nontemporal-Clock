@@ -52,11 +52,17 @@
 }
 
 .numbox {
-  width:30vw;
-  height: 30vw;
+  width:22vw;
+  height: 22vw;
   position:absolute;
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-40%,-50%);
+}
+
+.currentResponseCSS {
+  width:30vw;
+  height: 6vw;
+font-size: 50px; 
 }

@@ -46,7 +46,6 @@ var setStims = function() {
     var num = randomDraw(nums.filter(function(x) {return Math.abs(x-last_num)>2}))
     last_num = num
     curr_seq.push(num)
-// return '<div class = centerbox><div class = center-text>' + curr_seg.push(num) + ' Digits</p></div>'
     stim_array.push('<div class = centerbox><div class = digit-span-text>' + num.toString() +
       '</div></div>')
     time_array.push(stim_time)
@@ -74,19 +73,44 @@ var getFeedback = function() {
   return '<div class = centerbox><div class = center-text>' + feedback + '</div></div>'
 }
 
-var recordClick = function(elm) {
-response.push(Number($(elm).text()))
-$('#currentResponse').empty().append('Current Response: ' + response.join());
+var updateCurrentResponsePreview = function () {
+  var previewElement = $('#currentResponse');
+  if ( previewElement && response ) previewElement.empty().append(response.join());
 }
 
-var showResponse = function() {
-  return '<div class = centerbox><div class = center-text>' + response.push(Number($(elm).text())) + '</p></div>'
+var recordClick = function(elm) {
+  response.push(Number($(elm).text()))
+  updateCurrentResponsePreview();
 }
 
 var clearResponse = function() {
-  response = []
-$('#currentResponse').empty().append('Current Response: ');
+  response = [];
+  updateCurrentResponsePreview();
 }
+
+var handleKeyPress = function (keyEvent) {
+  var key = keyEvent.keyCode || keyEvent.charCode;
+  if (key >= 48 && key <= 57) {
+    response.push(key - 48);
+    updateCurrentResponsePreview();
+  }
+  // Backspace
+  if ( key === 8 ) {
+    response.pop();
+    updateCurrentResponsePreview(); 
+  }
+
+  // Enter
+  if ( key === 13 ) {
+    var submitButtonElement = $("#SubmitButton");
+
+    if ( submitButtonElement && submitButtonElement.length > 0 ) {
+      submitButtonElement.trigger("click");
+    }
+  }
+}
+
+$(document).keydown(handleKeyPress);
 
 
 
@@ -115,7 +139,7 @@ var stim_array = getStims()
 
 var response_grid =
   '<div class = numbox>' +
-  '<div id = currentResponse></div>' +
+  '<div id = currentResponse class = "currentResponseCSS"></div>' +
   '<button id = button_1 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>1</div></div></button>' +
   '<button id = button_2 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>2</div></div></button>' +
   '<button id = button_3 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>3</div></div></button>' +
@@ -269,6 +293,7 @@ var test_block = {
   timing_response: getTotalTime,
   timing_post_trial: 0,
   on_finish: function() {
+    response = [];
     jsPsych.data.addDataToLastTrial({
       "sequence": curr_seq,
       "num_digits": num_digits
@@ -281,7 +306,6 @@ var forward_response_block = {
   type: 'single-stim-button',
   stimulus: response_grid,
   button_class: 'submit_button',
-// return '<span style="color:green">' + response + '</span>',
   data: {
     trial_id: "response",
     exp_stage: 'test'
@@ -297,9 +321,7 @@ var forward_response_block = {
       // staircase
     if (arraysEqual(response, curr_seq)) {
       num_digits += 1
-       feedback = '<span style="color:green">Correct!</span>'
-// feedback = '<span style="color:green">' + response + '</span>'
-// return '<div class = centerbox><div class = center-text>' + response.push(Number($(elm).text())) + ' Digits</p></div>'
+      feedback = '<span style="color:green">Correct!</span>'
       stims = setStims()
       correct = true
     } else {
@@ -339,7 +361,6 @@ var reverse_response_block = {
     if (arraysEqual(response.reverse(), curr_seq)) {
       num_digits += 1
       feedback = '<span style="color:green">Correct!</span>'
-// feedback = '<span style="color:green">response.reverse()</span>'
       stims = setStims()
       correct = true
     } else {
