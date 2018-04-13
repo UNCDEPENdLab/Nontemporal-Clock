@@ -150,7 +150,7 @@ var response_grid =
   '<button id = button_8 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>8</div></div></button>' +
   '<button id = button_9 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>9</div></div></button>' +
   '<button class = clear_button id = "ClearButton" onclick = "clearResponse()">Clear</button>' +
-  '<button class = submit_button id = "SubmitButton">Submit Answer</button></div>'
+  '<button class = submit_button id = "SubmitButton">Submit</button></div>'
 
 /* ************************************ */
 /* Set up jsPsych blocks */
