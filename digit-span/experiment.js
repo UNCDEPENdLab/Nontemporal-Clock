@@ -75,7 +75,10 @@ var getFeedback = function() {
 }
 
 var recordClick = function(elm) {
-  response.push(Number($(elm).text()))
+response.push(Number($(elm).text()))
+//<div id='answer'></div>
+//document.getElementById('answer').innerHTML = "answer is:" + Number($(elm).text())
+// responsegrid.push(Number($(elm).text()));
 // document.writeln = ("Hello")
 // response_text = '<span style="color:green">' + response + '</span>'
  // text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>'
