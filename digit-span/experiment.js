@@ -76,17 +76,7 @@ var getFeedback = function() {
 
 var recordClick = function(elm) {
 response.push(Number($(elm).text()))
-//<div id='answer'></div>
-//document.getElementById('answer').innerHTML = "answer is:" + Number($(elm).text())
-// responsegrid.push(Number($(elm).text()));
-// document.writeln = ("Hello")
-// response_text = '<span style="color:green">' + response + '</span>'
- // text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>'
-//'<span style="color:green">' + response + 'response</span>'
- // return '<div class = centerbox><div class = center-text>' + response_text + '</p></div>'
-// text = 'response'
-// return response
-// return response.push(Number($(elm).text()))
+$('#currentResponse').empty().append('Current Response: ' + response.join());
 }
 
 var showResponse = function() {
@@ -95,6 +85,7 @@ var showResponse = function() {
 
 var clearResponse = function() {
   response = []
+$('#currentResponse').empty().append('Current Response: ');
 }
 
 
@@ -124,6 +115,7 @@ var stim_array = getStims()
 
 var response_grid =
   '<div class = numbox>' +
+  '<div id = currentResponse></div>' +
   '<button id = button_1 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>1</div></div></button>' +
   '<button id = button_2 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>2</div></div></button>' +
   '<button id = button_3 class = "square num-button" onclick = "recordClick(this)"><div class = content><div class = numbers>3</div></div></button>' +

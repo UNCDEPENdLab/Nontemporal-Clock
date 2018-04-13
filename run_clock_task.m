@@ -9,6 +9,6 @@ while run_task == 0
     end
 end
 temp=csvread('digit-span_results.csv');
-csvwrite(sprintf('ExpSub%d-digitspan.csv',sub_num),temp);
+csvwrite(sprintf('data/ExpSub%d-digitspan.csv',sub_num),temp);
 Runexp;
 end
