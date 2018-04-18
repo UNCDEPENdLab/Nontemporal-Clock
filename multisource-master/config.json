@@ -1,0 +1,18 @@
+{
+    "cognitive_atlas_task_id": "trm_5696b61ff253e",
+    "instructions":"Respond to the stimuli on the screen.",
+    "description":"Expfactory experiment",
+    "url":"https://www.github.com/expfactory-experiments/multisource",
+    "contributors": [
+        "Ian Eisenberg",
+        "Zeynep Enkavi",
+        "Patrick Bissett",
+        "Vanessa Sochat",
+        "Russell Poldrack"
+    ],
+    "exp_id": "multisource",
+    "name": "Multi-Source Interference Task",
+    "reference":[ "Condition records current block (practice/test control/interference), trial_id records stimulus ID (where the target is: left, middle or right) and whether the target is large or small"],
+    "template": "jspsych",
+    "time": 7
+}
