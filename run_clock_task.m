@@ -28,7 +28,7 @@ eval('web(sprintf(''%s/index.html'',task),''-notoolbar'')');
 run_task = 0;
 while run_task == 0
     [isDown, secs, keyCode, deltaSecs] = KbCheck;
-    if find(keyCode==1)==KbName('N')
+    if find(keyCode==1)==KbName('-_')
         WaitSecs(0.1)
         run_task = 1;
     end
