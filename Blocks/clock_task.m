@@ -944,16 +944,16 @@ elseif strcmp(Modeflag,'InitializeTrial')
     
 elseif strcmp(Modeflag,'EndTrial')
     %% Record output data in structure & save in .MAT file
-    %     seg_rows=csvread('seg_rows.csv');
     
     money_now_won = sum(segment_score(:,1))*0.05;
     if blocknum > 1
-        %         money_already_won = csvread('money_count.csv');
+        money_already_won = csvread('money_count.csv');
     else
         money_already_won = 0;
     end
     money_count = money_now_won + money_already_won;
-    %     csvwrite('money_count.csv',money_count);
+    csvwrite('money_count.csv',money_count);
+    
     if Trial < Numtrials
         if ~bot_mode || turn_bot_off
             if speed_test

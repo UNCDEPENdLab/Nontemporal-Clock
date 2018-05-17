@@ -1007,18 +1007,10 @@ elseif strcmp(Modeflag,'InitializeTrial')
         %% Ends trial
         Events = newevent_end_trial(Events,trial_end_time);
     end
-    %     save('workspace2');
+    
 elseif strcmp(Modeflag,'EndTrial')
-    %     load('workspace2');
+
     %% Record output data in structure & save in .MAT file
-    seg_rows=csvread('seg_rows.csv');
-    money_now_won = sum(segment_score(:,1))*0.05;
-    if Blocknum > 1
-        money_already_won = csvread('money_count.csv');
-    else
-        money_already_won = 0;
-    end
-    money_count = money_now_won + money_already_won;
     if Trial < Numtrials
         if ~bot_mode || turn_bot_off
             if speed_test

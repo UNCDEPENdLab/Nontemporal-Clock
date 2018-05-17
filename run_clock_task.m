@@ -7,7 +7,7 @@ eval('clear all');
 load('sub_num');
 
 %Non-temporal Clock Task
-Runexp;
+% Runexp;
 
 which_tasks = randperm(3);
 
