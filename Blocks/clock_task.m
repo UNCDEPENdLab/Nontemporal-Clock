@@ -959,7 +959,7 @@ elseif strcmp(Modeflag,'EndTrial')
             if speed_test
                 segment_response = randi(360);
             else
-                segment_response = (Events.windowclicked{segment_response})
+                segment_response = (Events.windowclicked{segment_response});
                 if ~bot_mode
                     try
                         [segment_response,y] = find(value_matrix==segment_response);
