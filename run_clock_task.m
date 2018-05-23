@@ -7,7 +7,7 @@ eval('clear all');
 load('sub_num');
 
 %Non-temporal Clock Task
-% Runexp;
+Runexp;
 
 which_tasks = randperm(3);
 
@@ -20,24 +20,26 @@ catch
 end
 
 for task_num = 1:3
-
-task = rand_tasks(task_num);
-task = task{1};
-
-eval('web(sprintf(''%s/index.html'',task),''-notoolbar'')');
-run_task = 0;
-while run_task == 0
-    [isDown, secs, keyCode, deltaSecs] = KbCheck;
-    if find(keyCode==1)==KbName('-_')
-        WaitSecs(0.1)
-        run_task = 1;
+    
+    task = rand_tasks(task_num);
+    task = task{1};
+    
+    eval('web(sprintf(''%s/index.html'',task),''-notoolbar'')');
+    
+    try
+        temp_table=readtable(sprintf('%s_results.csv',task));
+        writetable(temp_table,sprintf('data/ExpSub%d-%s.csv',sub_num,task));
     end
-end
-try
-    temp=csvread(sprintf('%s_results.csv',task));
-    csvwrite(sprintf('data/ExpSub%d-%s.csv',sub_num,task),temp);
-end
-
+    
+    run_task = 0;
+    while run_task == 0
+        [isDown, secs, keyCode, deltaSecs] = KbCheck;
+        if find(keyCode==1)==KbName('-_')
+            WaitSecs(0.1)
+            run_task = 1;
+        end
+    end
+    
 end
 
 end
