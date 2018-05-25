@@ -58,7 +58,7 @@ if strcmp(Modeflag,'InitializeBlock')
     Numtrials = 30 + num_segments + 1; %Because of the way this block file runs, set Numtrials equal to the amount of trials you want and then add 1
     
     expstruct{blocknum} = table(repmat(blocknum,Numtrials-1,1),repmat(con_num,Numtrials-1,1),(1:Numtrials-1)',zeros(Numtrials-1,1),repmat(show_points,Numtrials-1,1),repmat(even_uneven,Numtrials-1,1),repmat(num_segments,Numtrials-1,1), ...
-        zeros(Numtrials-1,1),zeros(Numtrials-1,1),zeros(Numtrials-1,1),'VariableNames',{'block_num','con_num','trial','forced_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win'});
+        zeros(Numtrials-1,1),zeros(Numtrials-1,1),zeros(Numtrials-1,1),zeros(Numtrials-1,1),'VariableNames',{'block_num','con_num','trial','forced_choice','show_points','even_uneven','num_segments','selected_segment','selected_prob','win','RT'});
     
     %Set the min & max win probability of the best & worst segment (random).
     %The rest of the segments are given probabilites on a gradient between these.
@@ -526,9 +526,8 @@ if strcmp(Modeflag,'InitializeBlock')
         sca;keyboard
     end
     
-    score = 0;
-    
-    bot_mode = 1
+    score = 0;    
+    bot_mode = 1;
     bot_choice_count = 0;
     ready_for_score = 0;
     choose_one  = 0;
@@ -536,8 +535,9 @@ if strcmp(Modeflag,'InitializeBlock')
 elseif strcmp(Modeflag,'InitializeTrial')
     
     %% Set up other experiment parameters
-    Trial
+
     clear new_bot_click_zone bot_click_zone
+    
     if Trial == 1
         seg_wheel_time = instruction_display_time + .01;
     end
@@ -1000,14 +1000,14 @@ elseif strcmp(Modeflag,'EndTrial')
             expstruct{blocknum}{Trial,'selected_segment'} = Trial_Export.selected_seg;
             expstruct{blocknum}{Trial,'selected_prob'} = round(Trial_Export.selected_prob,2);
             expstruct{blocknum}{Trial,'win'} = win;
+            expstruct{blocknum}{Trial,'RT'} = Events.mouse_rt(end);
         catch
             sca;keyboard
         end
     end
-    segment_response
     
     %Concatenate output table across blocks
-    %     writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
+        writetable(vertcat(expstruct{:}),['data/' Demodata.s_num '_outstruct.csv'],'Delimiter',',','QuoteStrings',true);
     
 elseif strcmp(Modeflag,'EndBlock')
     csvwrite('money_count.csv',money_count);
