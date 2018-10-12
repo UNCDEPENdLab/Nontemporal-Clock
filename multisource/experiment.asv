@@ -629,7 +629,7 @@ for (var b = 0; b < num_blocks; b++) {
     type: 'poldrack-single-stim',
     timeline: block,
     is_html: true,
-    choices: [49, 50, 51, 97, 98, 99],
+    choices: [49, 50, 51,],
     timing_stim: 1750,
     timing_response: 1750,
     response_ends_trial: false,
