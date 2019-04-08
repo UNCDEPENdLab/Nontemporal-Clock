@@ -934,7 +934,7 @@ elseif strcmp(Modeflag,'InitializeTrial')
         token_win_time = total_feedback_time + .01;
         command = 'money_count = csvread(''money_count.csv'');';
         Events = newevent_command(Events,token_win_time,command,'clear_no');
-        command = 'DrawFormattedText(Parameters.window,sprintf(''You won $7 from this experiment! Congrats!''),''center'',''center'',[0 0 0]);';
+        command = 'DrawFormattedText(Parameters.window,sprintf(''You won $5 from this experiment! Congrats!''),''center'',''center'',[0 0 0]);';
         Events = newevent_command(Events,token_win_time,command,'clear_yes');
         trial_end_time = token_win_time + 3;
     end
