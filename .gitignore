@@ -17,6 +17,17 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Extra generated csv files
+firstslotcolor.csv
+ firstslotcolor3.csv
+money_count.csv
+scorecolormatrix
+scorecolormatrix.csv
+scorecolormatrix2
+scorecolormatrix3
+scorecolormatrix3.csv
+scorecolormatrix4
+seg_rows.csv
 # =========================
 # Operating System Files
 # =========================
